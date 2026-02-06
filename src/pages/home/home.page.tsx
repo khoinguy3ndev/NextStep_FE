@@ -1,14 +1,14 @@
 import { HeaderWidget } from "@/widgets/header/header.widget";
+import { Dashboard } from "@/widgets/dashboard";
 import { Footer } from "@/widgets/footer/footer.widget";
-import { LoginForm } from "@/features/auth/ui/login-form.ui";
 
-export function LoginPage() {
+export function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeaderWidget />
-      <div className="h-screen flex items-center justify-center">
-        <LoginForm />
-      </div>
+      <main className="container mx-auto py-8 px-4">
+        <Dashboard />
+      </main>
       <Footer />
     </div>
   );

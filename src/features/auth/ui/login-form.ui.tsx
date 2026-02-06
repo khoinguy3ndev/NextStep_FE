@@ -1,70 +1,76 @@
-import { useForm } from '@tanstack/react-form'
-import { z } from 'zod'
-import { useLogin } from '../model/login.model'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Label } from '@/shared/ui/label'
-import { Input } from '@/shared/ui/input'
-import { Button } from '@/shared/ui/button'
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
+import { useLogin } from "../model/login.model";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card";
+import { Label } from "@/shared/ui/label";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
+import { Link } from "@tanstack/react-router";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-})
+});
 
 export function LoginForm() {
-  const { login, error, loading } = useLogin()
+  const { login, error, loading } = useLogin();
 
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
 
     validators: {
       onSubmit: ({ value }) => {
-        const result = loginSchema.safeParse(value)
+        const result = loginSchema.safeParse(value);
 
         if (!result.success) {
-          return result.error.flatten().fieldErrors
+          return result.error.flatten().fieldErrors;
         }
       },
     },
 
     onSubmit: async ({ value }) => {
-      console.log('Submitting', value)
-      await login(value)
+      console.log("Submitting", value);
+      await login(value);
     },
-  })
+  });
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen w-full'>
+    <div className="flex flex-col items-center justify-center min-h-screen w-full">
       <div className="flex gap-4 mb-8 w-full align-items-center justify-center">
-        <div className='flex'>
-          <div className='flex items-center justify-center'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-          <div className="ml-4 flex items-center justify-center">
-            <h1 className="text-4xl font-medium">Todo</h1>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center">
+            <h1 className="text-4xl font-medium">Đăng nhập</h1>
           </div>
         </div>
       </div>
+
       <Card className="w-full max-w-sm flex flex-col gap-6">
         <CardHeader>
-          <CardTitle>Hello Bro</CardTitle>
+          <CardTitle>Chào mừng trở lại</CardTitle>
           <CardDescription>
-            Sign in to your account to continue
+            Đăng nhập vào tài khoản của bạn để tiếp tục
           </CardDescription>
         </CardHeader>
-        
-        <form 
+
+        <form
           onSubmit={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            form.handleSubmit()
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
           <CardContent>
             <div className="flex flex-col gap-6 mb-4">
-
               {/* Email */}
               <form.Field name="email">
                 {(field) => (
@@ -88,45 +94,60 @@ export function LoginForm() {
               </form.Field>
 
               {/* Password */}
-              <form.Field name='password'>
+              <form.Field name="password">
                 {(field) => (
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor={field.name}>Password</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor={field.name}>Mật khẩu</Label>
                     </div>
-                    <Input 
-                      id={field.name} 
-                      type="password" 
-                      placeholder="••••••••" 
-                      required 
-                      value={field.state.value} 
-                      onChange={(e) => field.setValue(e.target.value)} 
+                    <Input
+                      id={field.name}
+                      type="password"
+                      placeholder="••••••••"
+                      required
+                      value={field.state.value}
+                      onChange={(e) => field.setValue(e.target.value)}
                     />
                     {field.state.meta.errors?.[0] && (
                       <p className="text-sm text-red-500">
                         {field.state.meta.errors[0]}
                       </p>
                     )}
+                    {/* Thêm: Link quên mật khẩu (Thiếu cái này là user hay hỏi lắm) */}
+                    <div className="flex justify-end">
+                      {/* <Link
+                        to="/forgot-password"
+                        className="text-sm font-medium text-muted-foreground hover:underline outline-none"
+                      >
+                        Quên mật khẩu?
+                      </Link> */}
+                    </div>
                   </div>
                 )}
               </form.Field>
 
               {/* General error */}
               {error && (
-                <div className="text-sm text-red-500">
-                  Login failed
-                </div>
+                <div className="text-sm text-red-500">Đăng nhập thất bại</div>
               )}
             </div>
           </CardContent>
 
-          <CardFooter className="flex-col gap-2">
+          <CardFooter className="flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              Sign in
+              Đăng nhập
             </Button>
+
+            {/* Thêm: Link chuyển qua trang đăng ký (Bắt buộc phải có) */}
+            <div className="text-center text-sm text-gray-500">
+              Bạn chưa có tài khoản?{" "}
+              <Link to="/register" className="font-semibold hover:underline">
+                Đăng ký
+              </Link>
+            </div>
           </CardFooter>
         </form>
       </Card>
     </div>
-  )
+  );
 }
