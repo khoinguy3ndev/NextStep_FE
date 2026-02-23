@@ -1,6 +1,13 @@
 import { Upload, CheckCircle, Zap } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 export function AIResumeSection() {
+  const navigate = useNavigate();
+
+  const handleUploadClick = () => {
+    navigate({ to: "/jobs", search: { analyze: true } });
+  };
+
   return (
     <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
       <div className="max-w-6xl mx-auto">
@@ -60,7 +67,10 @@ export function AIResumeSection() {
               </div>
             </div>
 
-            <button className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold flex items-center gap-2 w-full md:w-auto justify-center">
+            <button
+              onClick={handleUploadClick}
+              className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg font-semibold flex items-center gap-2 w-full md:w-auto justify-center"
+            >
               <Upload className="w-5 h-5" />
               Tải Lên CV Ngay
             </button>

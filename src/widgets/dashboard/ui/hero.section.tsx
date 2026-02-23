@@ -2,13 +2,18 @@
 
 import { Search, MapPin } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 export function HeroSection() {
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
 
   const handleSearch = () => {
-    console.log("Search:", { keyword, location });
+    navigate({
+      to: "/jobs",
+      search: { q: keyword, l: location },
+    });
   };
 
   return (
