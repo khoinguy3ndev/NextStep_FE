@@ -1,13 +1,22 @@
 import { createRouter } from "@tanstack/react-router";
 import { rootRoute } from "./root";
-import { loginRoute, registerRoute, homeRoute, jobsRoute } from "./routes";
+import {
+  loginRoute,
+  registerRoute,
+  forgotPasswordRoute,
+  homeRoute,
+  jobsRoute,
+  dashboardRoute,
+} from "./routes";
 
 // Thêm homeRoute vào danh sách, bỏ todosRoute đi
 const routeTree = rootRoute.addChildren([
   homeRoute, // <-- Trang chủ
   loginRoute,
   registerRoute,
+  forgotPasswordRoute,
   jobsRoute,
+  dashboardRoute,
 ]);
 
 export const router = createRouter({
