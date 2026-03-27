@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { HeaderWidget } from "@/widgets/header/header.widget";
 import { Sidebar } from "@/widgets/sidebar";
 import { FeaturedJobs } from "@/widgets/dashboard/ui/jobs.section";
 import { JobDetailView } from "@/widgets/job-detail";
@@ -11,7 +10,6 @@ export function JobsPage() {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <HeaderWidget />
       <main className="flex flex-1 overflow-hidden">
         <aside className="w-64 border-r hidden lg:block">
           <Sidebar />

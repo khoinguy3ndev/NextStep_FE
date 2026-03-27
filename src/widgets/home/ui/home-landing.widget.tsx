@@ -5,7 +5,6 @@ import {
   CircleAlert,
   FileText,
   Lightbulb,
-  LogIn,
   MousePointerClick,
   Search,
   Star,
@@ -13,7 +12,14 @@ import {
   WandSparkles,
   Zap,
 } from "lucide-react";
-import { useMemo, useState, type ComponentType } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useState, type ComponentType } from "react";
+
+type SectionNavItem = {
+  id: "features" | "how-it-works" | "pricing";
+  label: string;
+  href: "#features" | "#how-it-works" | "#pricing";
+};
 
 type FeatureItem = {
   id: string;
@@ -138,8 +144,31 @@ const testimonials: TestimonialItem[] = [
 
 const logos = ["TECHCORP", "NEXUS", "QUANTUM", "ORBIT", "APEX"];
 
+const sectionNavItems: SectionNavItem[] = [
+  { id: "features", label: "Features", href: "#features" },
+  { id: "how-it-works", label: "How It Works", href: "#how-it-works" },
+  { id: "pricing", label: "Pricing", href: "#pricing" },
+];
+
 export function HomeLandingWidget() {
   const navigate = useNavigate();
+  const [activeSection, setActiveSection] =
+    useState<SectionNavItem["id"]>("features");
+
+  useEffect(() => {
+    const updateActiveSectionFromHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      const matched = sectionNavItems.find((item) => item.id === hash);
+      setActiveSection(matched?.id ?? "features");
+    };
+
+    updateActiveSectionFromHash();
+    window.addEventListener("hashchange", updateActiveSectionFromHash);
+
+    return () => {
+      window.removeEventListener("hashchange", updateActiveSectionFromHash);
+    };
+  }, []);
 
   const handleAnalyzeCV = () => {
     navigate({ to: "/jobs", search: { analyze: true } });
@@ -157,24 +186,31 @@ export function HomeLandingWidget() {
               NextStep
             </Link>
             <div className="hidden items-center gap-6 md:flex">
-              <a
-                className="border-b-2 border-[#0041c8] pb-1 text-sm font-semibold text-[#0041c8]"
-                href="#features"
-              >
-                Features
-              </a>
-              <a
-                className="text-sm text-zinc-500 transition-colors hover:text-zinc-900"
-                href="#how-it-works"
-              >
-                How It Works
-              </a>
-              <a
-                className="text-sm text-zinc-500 transition-colors hover:text-zinc-900"
-                href="#pricing"
-              >
-                Pricing
-              </a>
+              {sectionNavItems.map((item) => {
+                const isActive = activeSection === item.id;
+
+                return (
+                  <a
+                    key={item.id}
+                    href={item.href}
+                    onClick={() => setActiveSection(item.id)}
+                    className={[
+                      "relative pb-1 text-sm transition-colors",
+                      isActive
+                        ? "font-semibold text-zinc-900"
+                        : "text-zinc-500 hover:text-zinc-900",
+                    ].join(" ")}
+                  >
+                    {item.label}
+                    {isActive ? (
+                      <motion.div
+                        layoutId="navbar-underline"
+                        className="absolute bottom-0 left-0 h-0.5 w-full bg-[#0041c8]"
+                      />
+                    ) : null}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
