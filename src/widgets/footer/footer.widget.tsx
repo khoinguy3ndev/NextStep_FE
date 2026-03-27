@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-primary-foreground rounded-lg flex items-center justify-center">
                 <Briefcase className="w-5 h-5 text-foreground" />
               </div>
-              <span className="text-xl font-bold">CVInsight</span>
+              <span className="text-xl font-bold">Next Step</span>
             </div>
             <p className="text-primary-foreground/70 text-sm">
               Nền tảng tuyển dụng hàng đầu với công nghệ AI phân tích CV
@@ -103,7 +103,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-primary-foreground/70">
                 <Mail className="w-4 h-4" />
-                contact@cvinsight.com
+                contact@nextstep.com
               </li>
               <li className="flex items-center gap-2 text-primary-foreground/70">
                 <Phone className="w-4 h-4" />
@@ -123,7 +123,7 @@ export function Footer() {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <p className="text-sm text-primary-foreground/70">
-            © 2024 CVInsight. Tất cả quyền được bảo lưu.
+            © 2024 Next Step. Tất cả quyền được bảo lưu.
           </p>
           <div className="flex gap-6 text-sm">
             <a
