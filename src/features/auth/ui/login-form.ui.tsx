@@ -41,7 +41,7 @@ export function LoginForm() {
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
         <div>
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            NextStep
+            NextStepAI
           </Link>
         </div>
 
@@ -64,7 +64,7 @@ export function LoginForm() {
             ))}
           </div>
           <p className="text-sm italic font-medium leading-relaxed text-white/90">
-            "NextStep transformed my application process. I secured three
+            "NextStepAI transformed my application process. I secured three
             interviews within the first week of using their AI-optimized
             templates."
           </p>

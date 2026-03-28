@@ -116,7 +116,7 @@ const testimonials: TestimonialItem[] = [
   {
     id: "testimonial-1",
     quote:
-      "After months of rejection, NextStep showed me the exact skill gaps in my CV. I updated it and quickly got interviews.",
+      "After months of rejection, NextStepAI showed me the exact skill gaps in my CV. I updated it and quickly got interviews.",
     name: "Alex Rivera",
     role: "Backend Engineer @ Vercel",
     avatar:
@@ -183,7 +183,7 @@ export function HomeLandingWidget() {
               to="/"
               className="text-xl font-bold tracking-tight text-zinc-900"
             >
-              NextStep
+              NextStepAI
             </Link>
             <div className="hidden items-center gap-6 md:flex">
               {sectionNavItems.map((item) => {
@@ -237,7 +237,7 @@ export function HomeLandingWidget() {
             Know Exactly Why You&apos;re Getting Rejected
           </h1>
           <p className="mb-10 max-w-xl text-lg leading-relaxed text-[#434656] sm:text-xl">
-            NextStep uses advanced AI to analyze your resume against specific
+            NextStepAI uses advanced AI to analyze your resume against specific
             job descriptions. Get a precise match score and instant optimization
             steps to land more interviews.
           </p>
@@ -562,7 +562,7 @@ export function HomeLandingWidget() {
         </h2>
         <p className="mx-auto mb-12 max-w-xl text-lg text-[#434656]">
           Join 50,000+ professionals who have optimized their career paths with
-          NextStep.
+          NextStepAI.
         </p>
         <button
           onClick={handleAnalyzeCV}
@@ -577,7 +577,7 @@ export function HomeLandingWidget() {
           <div className="mb-14 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
               <span className="mb-4 block text-xl font-bold text-zinc-900">
-                NextStep
+                NextStepAI
               </span>
               <p className="max-w-xs text-sm leading-relaxed text-zinc-500">
                 AI-powered resume and job application platform. Precision
@@ -700,7 +700,7 @@ export function HomeLandingWidget() {
 
           <div className="flex flex-col items-center justify-between gap-4 border-t border-zinc-200 pt-8 md:flex-row">
             <span className="text-xs text-zinc-500">
-              © 2024 NextStep AI. Precision Engineered.
+              © 2024 NextStepAI. Precision Engineered.
             </span>
             <div className="flex gap-6">
               <a

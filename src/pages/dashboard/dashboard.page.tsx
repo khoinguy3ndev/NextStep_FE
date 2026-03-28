@@ -82,7 +82,7 @@ export function DashboardPage() {
     <div className="min-h-screen flex text-[#0D0D0D] bg-white">
       <aside className="w-[240px] bg-[#F7F7F7] border-r border-[#E5E5E5] flex flex-col">
         <div className="p-6">
-          <p className="text-xl font-bold">NextStep</p>
+          <p className="text-xl font-bold">NextStepAI</p>
         </div>
 
         <nav className="flex flex-col gap-2 px-4">

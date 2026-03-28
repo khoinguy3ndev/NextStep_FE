@@ -42,7 +42,7 @@ export function RegisterForm() {
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
         <div>
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            NextStep
+            NextStepAI
           </Link>
         </div>
 
