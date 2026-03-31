@@ -200,78 +200,98 @@ export function DashboardPage() {
             )}
 
             {/* New Scan Section */}
-            <div>
-              <h2 className="text-xl font-bold text-[#0f172a] mb-4">
+            <div className="bg-white border border-[#e8eaf0] rounded-xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-[#0f172a] mb-5">
                 New scan
               </h2>
-              <div className="bg-white border border-[#e8eaf0] rounded-xl overflow-hidden">
-                <div className="grid grid-cols-2">
-                  <div className="p-5 border-r border-[#e8eaf0]">
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="text-lg font-semibold text-[#0f172a]">
-                        Step 1: Upload a resume
-                      </label>
-                      <a
-                        href="#"
-                        className="text-sm text-[#0041c8] flex items-center gap-1 hover:underline"
-                      >
-                        <Star className="w-4 h-4" />
-                        Saved Resumes
-                      </a>
-                    </div>
+
+              <div className="grid grid-cols-2 gap-5 mb-6">
+                {/* Step 1 Column */}
+                <div className="border border-[#e8eaf0] rounded-xl overflow-hidden flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-4 bg-[#f8fafc] border-b border-[#e8eaf0]">
+                    <label className="text-sm font-semibold text-[#0f172a]">
+                      Step 1: Upload a resume
+                    </label>
+                    <a
+                      href="#"
+                      className="text-sm text-[#4a5068] flex items-center gap-1.5 hover:text-[#0041c8] transition-colors"
+                    >
+                      <Star className="w-4 h-4" />
+                      Saved Resumes
+                    </a>
+                  </div>
+                  {/* Content */}
+                  <div className="p-4 flex-1 flex flex-col gap-4 bg-[#f8fafc]/50">
                     <textarea
                       value={resumeText}
                       onChange={(e) => setResumeText(e.target.value)}
                       placeholder="Copy and paste resume here."
-                      className="w-full h-40 border border-[#e8eaf0] rounded-lg p-3 text-sm text-[#8892a4] resize-none outline-none focus:border-[#0041c8] transition-colors"
+                      className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-[#4a5068] resize-none outline-none placeholder:text-[#94a3b8]"
                     />
+                    <label className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-[#c0c8e0] rounded-lg text-sm font-medium text-[#4a5068] bg-white cursor-pointer hover:border-[#0041c8] hover:text-[#0041c8] transition-colors shadow-sm">
+                      <CloudUpload className="w-4 h-4" />
+                      Drag & Drop or Upload Your Resume
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.txt"
+                      />
+                    </label>
                   </div>
-                  <div className="p-5">
-                    <div className="text-lg font-semibold text-[#0f172a] mb-3">
+                </div>
+
+                {/* Step 2 Column */}
+                <div className="border border-[#e8eaf0] rounded-xl overflow-hidden flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-center p-4 bg-[#f8fafc] border-b border-[#e8eaf0]">
+                    <label className="text-sm font-semibold text-[#0f172a]">
                       Step 2: Paste a job description
-                    </div>
+                    </label>
+                  </div>
+                  {/* Content */}
+                  <div className="p-4 flex-1 flex flex-col bg-[#f8fafc]/50">
                     <textarea
                       value={jdText}
                       onChange={(e) => setJdText(e.target.value)}
                       placeholder="Copy and paste job description here. Aim to exclude: Benefits, Perks, and Legal Disclaimers"
-                      className="w-full h-40 border border-[#e8eaf0] rounded-lg p-3 text-sm text-[#8892a4] resize-none outline-none focus:border-[#0041c8] transition-colors"
+                      className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-[#4a5068] resize-none outline-none placeholder:text-[#94a3b8]"
                     />
                   </div>
                 </div>
-                <div className="border-t border-[#f0f1f5] p-4 flex items-center justify-between gap-3 flex-wrap">
-                  <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-[#c0c8e0] rounded-lg text-sm text-[#4a5068] bg-[#fafbff] cursor-pointer hover:border-[#0041c8] hover:text-[#0041c8] hover:bg-[#f0f4ff] transition-all">
-                    <CloudUpload className="w-4 h-4" />
-                    Drag & Drop or Upload Your Resume
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.doc,.docx,.txt"
-                    />
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <button className="text-sm text-[#8892a4] hover:text-[#0041c8]">
-                      View sample Scan
-                    </button>
+              </div>
+
+              {/* Action Footer */}
+              <div className="flex items-center justify-between pt-2">
+                <button className="text-sm font-medium text-[#4a5068] hover:text-[#0041c8] transition-colors">
+                  View sample Scan
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="bg-[#fff7ed] border border-[#ffedd5] rounded-md px-3 py-1.5 flex items-center gap-2">
                     <span className="text-sm text-[#4a5068]">
                       Available scans:{" "}
-                      <span className="bg-[#f0f3ff] text-[#0041c8] font-bold px-2 py-0.5 rounded-full text-xs">
-                        5
-                      </span>{" "}
-                      <a href="#" className="text-[#0041c8] font-semibold">
-                        Upgrade
-                      </a>
+                      <span className="font-bold text-[#0f172a]">5</span>
                     </span>
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#d0d8f0] rounded text-sm text-[#4a5068] hover:border-[#0041c8] hover:text-[#0041c8] transition-colors">
-                      <Zap className="w-3.5 h-3.5" />
-                      One-Click Optimize
-                    </button>
-                    <button
-                      disabled={!canScan}
-                      className="px-4 py-1.5 bg-[#0041c8] text-white rounded text-sm font-semibold hover:bg-[#002d8a] disabled:bg-[#c0c8e0] cursor-pointer disabled:cursor-default transition-colors"
+                    <a
+                      href="#"
+                      className="text-[#0041c8] font-semibold text-sm hover:underline"
                     >
-                      Scan
-                    </button>
+                      Upgrade
+                    </a>
                   </div>
+
+                  {/* Giả lập trạng thái disabled giống trong ảnh */}
+                  <button className="flex items-center gap-1.5 px-4 py-2 bg-[#f1f5f9] text-[#94a3b8] rounded-md text-sm font-semibold cursor-not-allowed">
+                    <Zap className="w-4 h-4" />
+                    One-Click Optimize
+                  </button>
+
+                  <button
+                    disabled={!canScan}
+                    className="px-6 py-2 bg-[#0041c8] text-white rounded-md text-sm font-semibold hover:bg-[#002d8a] disabled:bg-[#f1f5f9] disabled:text-[#94a3b8] cursor-pointer disabled:cursor-not-allowed transition-colors"
+                  >
+                    Scan
+                  </button>
                 </div>
               </div>
             </div>
@@ -284,10 +304,7 @@ export function DashboardPage() {
                   <h3 className="text-base font-bold text-[#0f172a]">
                     Latest Resume Scan
                   </h3>
-                  <a
-                    href="#"
-                    className="text-[#0041c8] text-sm hover:underline"
-                  >
+                  <a href="#" className="text-[#0041c8] text-sm">
                     →
                   </a>
                 </div>
@@ -314,10 +331,7 @@ export function DashboardPage() {
                       Job Tracker
                     </h3>
                   </div>
-                  <a
-                    href="#"
-                    className="text-[#0041c8] text-sm hover:underline"
-                  >
+                  <a href="#" className="text-[#0041c8] text-sm">
                     →
                   </a>
                 </div>
@@ -362,7 +376,7 @@ export function DashboardPage() {
                     AI Job Match
                   </h2>
                 </div>
-                <a href="#" className="text-sm text-[#0041c8] hover:underline">
+                <a href="#" className="text-sm text-[#0041c8]">
                   View all →
                 </a>
               </div>
@@ -442,7 +456,7 @@ export function DashboardPage() {
                   job boards. Create a scan to unlock personalized job
                   recommendations.
                 </p>
-                <button className="text-[#0041c8] text-sm font-semibold cursor-pointer hover:underline">
+                <button className="text-[#0041c8] text-sm font-semibold cursor-pointer">
                   + Create New Scan
                 </button>
               </div>
