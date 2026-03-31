@@ -5,16 +5,16 @@ import {
   registerRoute,
   forgotPasswordRoute,
   homeRoute,
-  jobsRoute,
+  dashboardRoute,
 } from "./routes";
 
 // Thêm homeRoute vào danh sách, bỏ todosRoute đi
 const routeTree = rootRoute.addChildren([
   homeRoute, // <-- Trang chủ
+  dashboardRoute,
   loginRoute,
   registerRoute,
   forgotPasswordRoute,
-  jobsRoute,
 ]);
 
 export const router = createRouter({

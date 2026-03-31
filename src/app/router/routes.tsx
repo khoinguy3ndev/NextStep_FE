@@ -4,8 +4,8 @@ import { rootRoute } from "./root";
 import { LoginPage } from "@/pages/login/login.page";
 import { RegisterPage } from "@/pages/register/register.page";
 import { HomePage } from "@/pages/home/home.page";
-import { JobsPage } from "@/pages/jobs/jobs.page";
 import { ForgotPasswordPage } from "@/pages/forgot-password/forgot-password.page";
+import { DashboardPage } from "@/pages/dashboard/dashboard.page";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -31,8 +31,8 @@ export const homeRoute = createRoute({
   component: HomePage,
 });
 
-export const jobsRoute = createRoute({
+export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/jobs",
-  component: JobsPage,
+  path: "/dashboard",
+  component: DashboardPage,
 });
