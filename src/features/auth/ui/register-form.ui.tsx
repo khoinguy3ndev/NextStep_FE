@@ -4,6 +4,7 @@ import { useRegister } from "../model/register.model";
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Star } from "lucide-react";
 import { useState } from "react";
+import { BRAND } from "@/shared/config/brand";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -42,7 +43,7 @@ export function RegisterForm() {
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
         <div>
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            NextStepAI
+            {BRAND.name}
           </Link>
         </div>
 
@@ -60,7 +61,7 @@ export function RegisterForm() {
             {[1, 2, 3, 4, 5].map((item) => (
               <Star
                 key={item}
-                className="h-4 w-4 fill-[#0055ff] text-[#0055ff]"
+                className="h-4 w-4 fill-[#0041c8] text-[#0041c8]"
               />
             ))}
           </div>
@@ -86,7 +87,7 @@ export function RegisterForm() {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-semibold text-[#0055ff] underline-offset-4 hover:underline"
+                className="font-semibold text-[#0041c8] underline-offset-4 hover:underline"
               >
                 Log in
               </Link>
@@ -209,7 +210,7 @@ export function RegisterForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#0055ff] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-xl bg-[#0041c8] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>

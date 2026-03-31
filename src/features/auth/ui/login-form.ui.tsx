@@ -4,6 +4,7 @@ import { useLogin } from "../model/login.model";
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Star } from "lucide-react";
 import { useState } from "react";
+import { BRAND } from "@/shared/config/brand";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -41,7 +42,7 @@ export function LoginForm() {
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
         <div>
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            NextStepAI
+            {BRAND.name}
           </Link>
         </div>
 
@@ -64,8 +65,8 @@ export function LoginForm() {
             ))}
           </div>
           <p className="text-sm italic font-medium leading-relaxed text-white/90">
-            "NextStepAI transformed my application process. I secured three
-            interviews within the first week of using their AI-optimized
+            "{" + BRAND.name + "} transformed my application process. I secured
+            three interviews within the first week of using their AI-optimized
             templates."
           </p>
           <p className="mt-3 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -86,7 +87,7 @@ export function LoginForm() {
               Don&apos;t have an account?{" "}
               <Link
                 to="/register"
-                className="font-semibold text-[#0055ff] underline-offset-4 hover:underline"
+                className="font-semibold text-[#0041c8] underline-offset-4 hover:underline"
               >
                 Sign up free
               </Link>
@@ -140,7 +141,7 @@ export function LoginForm() {
                     </label>
                     <Link
                       to="/forgot-password"
-                      className="text-xs font-semibold text-[#0055ff] hover:underline"
+                      className="text-xs font-semibold text-[#0041c8] hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -190,7 +191,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#0055ff] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-xl bg-[#0041c8] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Logging in..." : "Log In"}
             </button>

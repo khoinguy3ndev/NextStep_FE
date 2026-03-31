@@ -27,7 +27,7 @@ export function useLogin() {
         const { accessToken, refreshToken } = data.login;
         storage.set("accessToken", accessToken);
         storage.set("refreshToken", refreshToken);
-        navigate({ to: "/jobs" });
+        navigate({ to: "/" });
       },
     },
   );

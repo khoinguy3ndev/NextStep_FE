@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Mail, Star } from "lucide-react";
 import { useState } from "react";
+import { BRAND } from "@/shared/config/brand";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export function ForgotPasswordForm() {
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
         <div>
           <Link to="/" className="text-2xl font-bold tracking-tight text-white">
-            NextStepAI
+            {BRAND.name}
           </Link>
         </div>
 
@@ -35,7 +36,7 @@ export function ForgotPasswordForm() {
             {[1, 2, 3, 4, 5].map((item) => (
               <Star
                 key={item}
-                className="h-4 w-4 fill-[#0055ff] text-[#0055ff]"
+                className="h-4 w-4 fill-[#0041c8] text-[#0041c8]"
               />
             ))}
           </div>
@@ -87,7 +88,7 @@ export function ForgotPasswordForm() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-[#0055ff] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]"
+                className="w-full rounded-xl bg-[#0041c8] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]"
               >
                 Send reset link
               </button>
@@ -103,7 +104,7 @@ export function ForgotPasswordForm() {
           <div className="mt-8 text-center lg:text-left">
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#0055ff] transition-colors hover:text-[#0038ab]"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#0041c8] transition-colors hover:text-[#0038ab]"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to login
