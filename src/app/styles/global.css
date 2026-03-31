@@ -1,5 +1,6 @@
 @import url("https://unpkg.com/geist@latest/dist/fonts/geist-sans/style.css");
 @import url("https://unpkg.com/geist@latest/dist/fonts/geist-mono/style.css");
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 

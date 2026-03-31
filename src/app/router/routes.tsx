@@ -1,24 +1,38 @@
-import { createRoute } from '@tanstack/react-router'
-
-import { LoginPage } from '@/pages/login/login.page'
-import { RegisterPage } from '@/pages/register/register.page'
-import { rootRoute } from './root'
-import { TodosPage } from '@/pages/todos/todos.page'
+// src/app/router/routes.tsx
+import { createRoute } from "@tanstack/react-router";
+import { rootRoute } from "./root";
+import { LoginPage } from "@/pages/login/login.page";
+import { RegisterPage } from "@/pages/register/register.page";
+import { HomePage } from "@/pages/home/home.page";
+import { ForgotPasswordPage } from "@/pages/forgot-password/forgot-password.page";
+import { DashboardPage } from "@/pages/dashboard/dashboard.page";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/login',
+  path: "/login",
   component: LoginPage,
-})
+});
 
 export const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/register',
+  path: "/register",
   component: RegisterPage,
-})
+});
 
-export const todosRoute = createRoute({
+export const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/todos',
-  component: TodosPage,
-})
+  path: "/forgot-password",
+  component: ForgotPasswordPage,
+});
+
+export const homeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: HomePage,
+});
+
+export const dashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard",
+  component: DashboardPage,
+});

@@ -1,19 +1,28 @@
-import { createRouter } from '@tanstack/react-router'
-import { rootRoute } from './root'
-import { loginRoute, registerRoute, todosRoute } from './routes'
-
-const routeTree = rootRoute.addChildren([
+import { createRouter } from "@tanstack/react-router";
+import { rootRoute } from "./root";
+import {
   loginRoute,
   registerRoute,
-  todosRoute
-])
+  forgotPasswordRoute,
+  homeRoute,
+  dashboardRoute,
+} from "./routes";
+
+// Thêm homeRoute vào danh sách, bỏ todosRoute đi
+const routeTree = rootRoute.addChildren([
+  homeRoute, // <-- Trang chủ
+  dashboardRoute,
+  loginRoute,
+  registerRoute,
+  forgotPasswordRoute,
+]);
 
 export const router = createRouter({
   routeTree,
-})
+});
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }

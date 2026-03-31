@@ -1,132 +1,229 @@
-import { useForm } from '@tanstack/react-form'
-import { z } from 'zod'
-import { useLogin } from '../model/login.model'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Label } from '@/shared/ui/label'
-import { Input } from '@/shared/ui/input'
-import { Button } from '@/shared/ui/button'
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
+import { useLogin } from "../model/login.model";
+import { Link } from "@tanstack/react-router";
+import { Eye, EyeOff, Star } from "lucide-react";
+import { useState } from "react";
+import { BRAND } from "@/shared/config/brand";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-})
+});
 
 export function LoginForm() {
-  const { login, error, loading } = useLogin()
+  const { login, error, loading } = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
 
     validators: {
       onSubmit: ({ value }) => {
-        const result = loginSchema.safeParse(value)
+        const result = loginSchema.safeParse(value);
 
         if (!result.success) {
-          return result.error.flatten().fieldErrors
+          return result.error.flatten().fieldErrors;
         }
       },
     },
 
     onSubmit: async ({ value }) => {
-      console.log('Submitting', value)
-      await login(value)
+      console.log("Submitting", value);
+      await login(value);
     },
-  })
+  });
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen w-full'>
-      <div className="flex gap-4 mb-8 w-full align-items-center justify-center">
-        <div className='flex'>
-          <div className='flex items-center justify-center'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
-          <div className="ml-4 flex items-center justify-center">
-            <h1 className="text-4xl font-medium">Todo</h1>
-          </div>
+    <main className="flex h-screen w-full bg-[#fcf9f8] [font-family:'Instrument_Sans',sans-serif] text-[#1c1b1b]">
+      <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
+        <div>
+          <Link to="/" className="text-2xl font-bold tracking-tight text-white">
+            {BRAND.name}
+          </Link>
         </div>
-      </div>
-      <Card className="w-full max-w-sm flex flex-col gap-6">
-        <CardHeader>
-          <CardTitle>Hello Bro</CardTitle>
-          <CardDescription>
-            Sign in to your account to continue
-          </CardDescription>
-        </CardHeader>
-        
-        <form 
-          onSubmit={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            form.handleSubmit()
-          }}
-        >
-          <CardContent>
-            <div className="flex flex-col gap-6 mb-4">
 
-              {/* Email */}
-              <form.Field name="email">
-                {(field) => (
-                  <div className="grid gap-2">
-                    <Label htmlFor={field.name}>Email</Label>
-                    <Input
+        <div className="max-w-md">
+          <h1 className="mb-4 text-5xl font-bold leading-[1.1] tracking-tight text-white xl:text-6xl">
+            Land your next job faster
+          </h1>
+          <p className="text-lg font-medium text-slate-400">
+            The precision-engineered resume builder for modern professionals.
+          </p>
+        </div>
+
+        <div className="max-w-sm">
+          <div className="mb-3 flex gap-1">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <Star
+                key={item}
+                className="h-4 w-4 fill-[#0055ff] text-[#0055ff]"
+              />
+            ))}
+          </div>
+          <p className="text-sm italic font-medium leading-relaxed text-white/90">
+            "{" + BRAND.name + "} transformed my application process. I secured
+            three interviews within the first week of using their AI-optimized
+            templates."
+          </p>
+          <p className="mt-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+            Marcus Chen - Senior Product Designer
+          </p>
+        </div>
+
+        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full border border-white/5" />
+      </section>
+
+      <section className="flex w-full flex-col items-center justify-center bg-white px-6 py-12 lg:w-1/2 lg:px-24">
+        <div className="w-full max-w-[400px]">
+          <header className="mb-10 text-center lg:text-left">
+            <h2 className="mb-2 text-3xl font-bold tracking-tight text-[#0d0d0d]">
+              Welcome back
+            </h2>
+            <p className="text-sm text-[#434656]">
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/register"
+                className="font-semibold text-[#0041c8] underline-offset-4 hover:underline"
+              >
+                Sign up free
+              </Link>
+            </p>
+          </header>
+
+          <form
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+          >
+            <form.Field name="email">
+              {(field) => (
+                <div className="space-y-2">
+                  <label
+                    htmlFor={field.name}
+                    className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    id={field.name}
+                    type="email"
+                    placeholder="name@company.com"
+                    required
+                    value={field.state.value}
+                    onChange={(e) => field.setValue(e.target.value)}
+                    className="w-full rounded-xl border border-[#e5e5e5] bg-white px-4 py-3.5 text-sm transition-all placeholder:text-[#737688] focus:border-[#0d0d0d] focus:outline-none"
+                  />
+                  {field.state.meta.errors?.[0] && (
+                    <p className="text-sm text-red-500">
+                      {field.state.meta.errors[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field name="password">
+              {(field) => (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor={field.name}
+                      className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
+                    >
+                      Password
+                    </label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs font-semibold text-[#0041c8] hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+
+                  <div className="relative">
+                    <input
                       id={field.name}
-                      type="email"
-                      placeholder="m@example.com"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
                       required
                       value={field.state.value}
                       onChange={(e) => field.setValue(e.target.value)}
+                      className="w-full rounded-xl border border-[#e5e5e5] bg-white px-4 py-3.5 pr-12 text-sm transition-all placeholder:text-[#737688] focus:border-[#0d0d0d] focus:outline-none"
                     />
-                    {field.state.meta.errors?.[0] && (
-                      <p className="text-sm text-red-500">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#737688] transition-colors hover:text-[#1c1b1b]"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
                   </div>
-                )}
-              </form.Field>
 
-              {/* Password */}
-              <form.Field name='password'>
-                {(field) => (
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor={field.name}>Password</Label>
-                    </div>
-                    <Input 
-                      id={field.name} 
-                      type="password" 
-                      placeholder="••••••••" 
-                      required 
-                      value={field.state.value} 
-                      onChange={(e) => field.setValue(e.target.value)} 
-                    />
-                    {field.state.meta.errors?.[0] && (
-                      <p className="text-sm text-red-500">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </form.Field>
-
-              {/* General error */}
-              {error && (
-                <div className="text-sm text-red-500">
-                  Login failed
+                  {field.state.meta.errors?.[0] && (
+                    <p className="text-sm text-red-500">
+                      {field.state.meta.errors[0]}
+                    </p>
+                  )}
                 </div>
               )}
-            </div>
-          </CardContent>
+            </form.Field>
 
-          <CardFooter className="flex-col gap-2">
-            <Button type="submit" className="w-full" disabled={loading}>
-              Sign in
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
-  )
+            {error && (
+              <div className="text-sm text-red-500">
+                Login failed. Please try again.
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-[#0041c8] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Logging in..." : "Log In"}
+            </button>
+          </form>
+
+          <div className="relative my-10">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#e5e5e5]" />
+            </div>
+            <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
+              <span className="bg-white px-4 text-[#737688]">
+                or continue with
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              className="flex items-center justify-center gap-3 rounded-xl border border-[#e5e5e5] py-3.5 transition-colors duration-150 hover:bg-[#f6f3f2] active:scale-[0.98]"
+            >
+              <span className="text-sm font-bold text-[#1c1b1b]">Google</span>
+            </button>
+            <button
+              type="button"
+              className="flex items-center justify-center gap-3 rounded-xl border border-[#e5e5e5] py-3.5 transition-colors duration-150 hover:bg-[#f6f3f2] active:scale-[0.98]"
+            >
+              <span className="text-sm font-bold text-[#1c1b1b]">LinkedIn</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }
