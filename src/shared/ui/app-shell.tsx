@@ -1,15 +1,19 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Calendar,
   FileText,
+  LogOut,
   HelpCircle,
   Home,
   Linkedin,
   Menu,
+  Shield,
   Plus,
   Search,
+  Settings,
   Sparkles,
+  User,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
 
@@ -17,7 +21,7 @@ type NavItem = {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  to?: "/dashboard" | "/resume-optimizer";
+  to?: "/dashboard";
 };
 
 const navItems: NavItem[] = [
@@ -26,7 +30,6 @@ const navItems: NavItem[] = [
     id: "ai-optimize",
     label: "AI Optimize",
     icon: Sparkles,
-    to: "/resume-optimizer",
   },
   { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
   { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
@@ -44,8 +47,26 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!userMenuRef.current) return;
+
+      if (!userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   const collapsedBtnClass =
     "mx-auto w-10 h-10 rounded-lg flex items-center justify-center";
@@ -152,8 +173,66 @@ export function AppShell({ children }: AppShellProps) {
             <button className="bg-yellow-50 text-amber-700 border border-yellow-300 rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-yellow-100 transition-colors">
               ⭐ Get 7 days free
             </button>
-            <div className="w-8 h-8 bg-[#e8eaf0] rounded-full flex items-center justify-center text-xs font-semibold text-[#4a5068] cursor-pointer">
-              A
+            <div className="relative" ref={userMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                className="w-8 h-8 bg-[#e8eaf0] rounded-full flex items-center justify-center text-xs font-semibold text-[#4a5068] cursor-pointer hover:bg-[#dfe4ec] transition-colors"
+              >
+                A
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-10 w-72 bg-white border border-[#e8eaf0] rounded-xl shadow-xl overflow-hidden z-30">
+                  <div className="px-4 py-3 border-b border-[#eef1f6] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#e8eaf0] text-[#64748b] flex items-center justify-center">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#0f172a]">
+                        Alex
+                      </p>
+                      <p className="text-xs text-[#64748b]">
+                        alex@nextstepai.com
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="py-2">
+                    <button
+                      type="button"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Account Settings
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Privacy Policy
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Terms
+                    </button>
+                  </div>
+
+                  <div className="border-t border-[#eef1f6] p-2">
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 rounded-lg flex items-center gap-2 text-left text-sm text-[#b42318] hover:bg-[#fff5f5]"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Log out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>
