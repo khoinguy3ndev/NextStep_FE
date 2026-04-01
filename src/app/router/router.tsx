@@ -6,12 +6,16 @@ import {
   forgotPasswordRoute,
   homeRoute,
   dashboardRoute,
+  resumeOptimizerRoute,
+  jobsRoute,
 } from "./routes";
 
 // Thêm homeRoute vào danh sách, bỏ todosRoute đi
 const routeTree = rootRoute.addChildren([
   homeRoute, // <-- Trang chủ
   dashboardRoute,
+  resumeOptimizerRoute,
+  jobsRoute,
   loginRoute,
   registerRoute,
   forgotPasswordRoute,
