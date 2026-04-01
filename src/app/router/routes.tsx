@@ -6,6 +6,7 @@ import { RegisterPage } from "@/pages/register/register.page";
 import { HomePage } from "@/pages/home/home.page";
 import { ForgotPasswordPage } from "@/pages/forgot-password/forgot-password.page";
 import { DashboardPage } from "@/pages/dashboard/dashboard.page";
+import { ResumeOptimizerPage } from "@/pages/resume-optimizer/resume-optimizer.page";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -35,4 +36,10 @@ export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: DashboardPage,
+});
+
+export const resumeOptimizerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/resume-optimizer",
+  component: ResumeOptimizerPage,
 });
