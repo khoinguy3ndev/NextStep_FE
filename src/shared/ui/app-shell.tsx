@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
     id: "ai-optimize",
     label: "AI Optimize",
     icon: Sparkles,
+    to: "/resume-optimizer",
   },
   { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
   { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
