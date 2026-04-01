@@ -9,6 +9,7 @@ import { DashboardPage } from "@/pages/dashboard/dashboard.page";
 import { ResumeOptimizerPage } from "@/pages/resume-optimizer/resume-optimizer.page";
 import { JobsPage } from "@/pages/jobs/jobs.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
+import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -56,4 +57,10 @@ export const matchReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/match-report",
   component: MatchReportPage,
+});
+
+export const sampleReportRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sample-report",
+  component: SampleReportPage,
 });

@@ -346,6 +346,7 @@ export function HomeLandingWidget() {
           setScanProgress(14);
           setIsScanning(true);
         }}
+        onViewSampleReport={() => navigate({ to: "/sample-report" })}
       />
 
       {isScanning ? (

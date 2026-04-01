@@ -199,7 +199,13 @@ function Stepper({ current }: { current: number }) {
   );
 }
 
-function StepUpload({ onFile }: { onFile: (file: File) => void }) {
+function StepUpload({
+  onFile,
+  onViewSampleReport,
+}: {
+  onFile: (file: File) => void;
+  onViewSampleReport?: () => void;
+}) {
   const [dragging, setDragging] = useState(false);
   const [pasting, setPasting] = useState(false);
   const [pasteText, setPasteText] = useState("");
@@ -362,6 +368,8 @@ function StepUpload({ onFile }: { onFile: (file: File) => void }) {
       </button>
 
       <button
+        type="button"
+        onClick={onViewSampleReport}
         style={{
           display: "flex",
           alignItems: "center",
@@ -385,9 +393,11 @@ function StepUpload({ onFile }: { onFile: (file: File) => void }) {
 function StepJob({
   fileName,
   onScan,
+  onViewSampleReport,
 }: {
   fileName?: string;
   onScan: () => void;
+  onViewSampleReport?: () => void;
 }) {
   const [jd, setJd] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
@@ -588,6 +598,8 @@ function StepJob({
       </button>
 
       <button
+        type="button"
+        onClick={onViewSampleReport}
         style={{
           display: "flex",
           alignItems: "center",
@@ -610,9 +622,13 @@ function StepJob({
 
 type ScanWidgetProps = {
   onScanComplete: () => void;
+  onViewSampleReport?: () => void;
 };
 
-export function ScanWidget({ onScanComplete }: ScanWidgetProps) {
+export function ScanWidget({
+  onScanComplete,
+  onViewSampleReport,
+}: ScanWidgetProps) {
   const [file, setFile] = useState<File | null>(null);
   const currentStep = file ? 2 : 1;
 
@@ -656,10 +672,17 @@ export function ScanWidget({ onScanComplete }: ScanWidgetProps) {
         >
           <Stepper current={currentStep} />
           {currentStep === 1 ? (
-            <StepUpload onFile={(selectedFile) => setFile(selectedFile)} />
+            <StepUpload
+              onFile={(selectedFile) => setFile(selectedFile)}
+              onViewSampleReport={onViewSampleReport}
+            />
           ) : null}
           {currentStep === 2 ? (
-            <StepJob fileName={file?.name} onScan={onScanComplete} />
+            <StepJob
+              fileName={file?.name}
+              onScan={onScanComplete}
+              onViewSampleReport={onViewSampleReport}
+            />
           ) : null}
         </div>
       </div>
