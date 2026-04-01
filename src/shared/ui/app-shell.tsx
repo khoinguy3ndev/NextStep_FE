@@ -17,7 +17,7 @@ type NavItem = {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  to?: "/dashboard" | "/resume-optimizer";
+  to?: "/dashboard" | "/resume-optimizer" | "/jobs";
 };
 
 const navItems: NavItem[] = [
@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
   { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
   { id: "job-tracker", label: "Job Tracker", icon: Calendar },
-  { id: "find-jobs", label: "Find Jobs", icon: Search },
+  { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
   { id: "resume-builder", label: "Resume Builder", icon: FileText },
   { id: "resume-manager", label: "Resume Manager", icon: FileText },
   { id: "scan-history", label: "Scan History", icon: Search },
@@ -39,9 +39,10 @@ const navItems: NavItem[] = [
 
 type AppShellProps = {
   children: ReactNode;
+  fullWidth?: boolean;
 };
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, fullWidth = false }: AppShellProps) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
@@ -159,7 +160,9 @@ export function AppShell({ children }: AppShellProps) {
         </header>
 
         <div className="flex-1 overflow-y-auto p-5">
-          <div className="max-w-6xl mx-auto">{children}</div>
+          <div className={fullWidth ? "w-full" : "max-w-6xl mx-auto"}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
