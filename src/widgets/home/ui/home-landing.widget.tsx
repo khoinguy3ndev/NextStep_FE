@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
-  BarChart3,
   CheckCircle2,
   CircleAlert,
   FileText,
@@ -8,13 +7,13 @@ import {
   MousePointerClick,
   Search,
   Star,
-  Upload,
   WandSparkles,
   Zap,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState, type ComponentType } from "react";
 import { BRAND } from "@/shared/config/brand";
+import { ScanWidget } from "./scan-widget";
 
 type SectionNavItem = {
   id: "features" | "how-it-works" | "pricing";
@@ -29,13 +28,6 @@ type FeatureItem = {
   description: string;
 };
 
-type StepItem = {
-  id: string;
-  icon: ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-};
-
 type TestimonialItem = {
   id: string;
   quote: string;
@@ -43,30 +35,6 @@ type TestimonialItem = {
   role: string;
   avatar: string;
 };
-
-const steps: StepItem[] = [
-  {
-    id: "step-1",
-    icon: Upload,
-    title: "Upload CV",
-    description:
-      "Upload your current resume in PDF or Word. We instantly parse your experience and achievements.",
-  },
-  {
-    id: "step-2",
-    icon: FileText,
-    title: "Paste Job Description",
-    description:
-      "Copy the job post details. Our AI identifies the key skills and requirements recruiters are searching for.",
-  },
-  {
-    id: "step-3",
-    icon: BarChart3,
-    title: "Get Score & Steps",
-    description:
-      "Receive a detailed breakdown and actionable suggestions to improve your match score instantly.",
-  },
-];
 
 const features: FeatureItem[] = [
   {
@@ -157,6 +125,8 @@ export function HomeLandingWidget() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] =
     useState<SectionNavItem["id"]>("features");
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
 
   useEffect(() => {
     const updateActiveSectionFromHash = () => {
@@ -173,7 +143,33 @@ export function HomeLandingWidget() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isScanning) return;
+
+    const t1 = window.setTimeout(() => setScanProgress(42), 180);
+    const t2 = window.setTimeout(() => setScanProgress(68), 500);
+    const t3 = window.setTimeout(() => setScanProgress(86), 900);
+    const t4 = window.setTimeout(() => setScanProgress(100), 1200);
+    const navTimer = window.setTimeout(() => {
+      navigate({ to: "/match-report" });
+    }, 1350);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+      window.clearTimeout(t4);
+      window.clearTimeout(navTimer);
+    };
+  }, [isScanning, navigate]);
+
   const handleAnalyzeCV = () => {
+    const scanSection = document.getElementById("how-it-works");
+    if (scanSection) {
+      scanSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
     navigate({ to: "/" });
   };
 
@@ -344,48 +340,33 @@ export function HomeLandingWidget() {
         </div>
       </section>
 
-      <section
-        id="how-it-works"
-        className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6"
-      >
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Precision Job Matching in Minutes
-          </h2>
-          <p className="mx-auto max-w-2xl text-[#434656]">
-            Our streamlined three-step process ensures your resume speaks the
-            language of recruiters and ATS systems.
-          </p>
-        </div>
+      <ScanWidget
+        onScanComplete={() => {
+          if (isScanning) return;
+          setScanProgress(14);
+          setIsScanning(true);
+        }}
+      />
 
-        <div className="relative grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-12">
-          <div className="absolute left-0 top-12 hidden h-px w-full bg-[#c3c5d9]/40 md:block z-0" />
+      {isScanning ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#eef2f8]">
+          <div className="w-[360px] max-w-[90vw] text-center">
+            <h3 className="text-[32px] font-bold leading-tight text-[#0f172a]">
+              Scanning your resume
+            </h3>
+            <p className="mt-2 text-base text-[#64748b]">
+              Loading your result ...
+            </p>
 
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
+            <div className="mx-auto mt-6 h-1.5 w-[240px] overflow-hidden rounded-full bg-[#cfd8ea]">
               <div
-                key={step.id}
-                className="relative z-10 flex flex-col items-center text-center"
-              >
-                <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-[#c3c5d9] bg-white shadow-sm">
-                  <Icon className="h-9 w-9 text-[#0041c8]" />
-                </div>
-
-                <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#0041c8] text-xs font-bold text-white">
-                  {index + 1}
-                </div>
-
-                <h3 className="mb-3 text-xl font-bold">{step.title}</h3>
-
-                <p className="text-sm leading-relaxed text-[#434656]">
-                  {step.description}
-                </p>
-              </div>
-            );
-          })}
+                className="h-full rounded-full bg-[#0a67d9] transition-all duration-300 ease-out"
+                style={{ width: `${scanProgress}%` }}
+              />
+            </div>
+          </div>
         </div>
-      </section>
+      ) : null}
 
       <section id="features" className="bg-[#f0edec] py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
