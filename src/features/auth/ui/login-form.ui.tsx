@@ -183,8 +183,10 @@ export function LoginForm() {
             </form.Field>
 
             {error && (
-              <div className="text-sm text-red-500">
-                Login failed. Please try again.
+              <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+                {typeof error === 'string'
+                  ? error
+                  : error?.message || "An error occurred during login"}
               </div>
             )}
 
