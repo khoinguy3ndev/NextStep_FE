@@ -12,7 +12,8 @@ export function useRegister() {
   const navigate = useNavigate();
 
   const [registerMutation, { loading, error }] = useMutation(REGISTER_MUTATION, {
-    onCompleted: () => {
+    onCompleted: (data: any) => {
+      console.log(data.register); 
       navigate({ to: '/login' });
     }
   })
