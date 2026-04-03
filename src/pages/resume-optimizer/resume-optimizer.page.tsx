@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sparkles, Star } from "lucide-react";
 import { AppShell } from "@/shared/ui/app-shell";
-import { CloudUpload } from "lucide-react";
+import { UploadCvWidget } from "@/widgets/cv";
 
 export function ResumeOptimizerPage() {
   const [resumeText, setResumeText] = useState("");
@@ -71,11 +71,10 @@ export function ResumeOptimizerPage() {
           <h2 className="text-xl font-bold text-[#0f172a] mb-5">New scan</h2>
 
           <div className="grid grid-cols-2 gap-5 mb-6">
-            <div className="border border-[#e8eaf0] rounded-xl overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between p-4 bg-[#f8fafc] border-b border-[#e8eaf0]">
-                <label className="text-sm font-semibold text-[#0f172a]">
-                  Step 1: Upload a resume
-                </label>
+            <UploadCvWidget
+              value={resumeText}
+              onValueChange={setResumeText}
+              headerAction={
                 <a
                   href="#"
                   className="text-sm text-[#4a5068] flex items-center gap-1.5 hover:text-[#0041c8] transition-colors"
@@ -83,25 +82,8 @@ export function ResumeOptimizerPage() {
                   <Star className="w-4 h-4" />
                   Saved Resumes
                 </a>
-              </div>
-              <div className="p-4 flex-1 flex flex-col gap-4 bg-[#f8fafc]/50">
-                <textarea
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  placeholder="Copy and paste resume here."
-                  className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-[#4a5068] resize-none outline-none placeholder:text-[#94a3b8]"
-                />
-                <label className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-[#c0c8e0] rounded-lg text-sm font-medium text-[#4a5068] bg-white cursor-pointer hover:border-[#0041c8] hover:text-[#0041c8] transition-colors shadow-sm">
-                  <CloudUpload className="w-4 h-4" />
-                  Drag & Drop or Upload Your Resume
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.doc,.docx,.txt"
-                  />
-                </label>
-              </div>
-            </div>
+              }
+            />
 
             <div className="border border-[#e8eaf0] rounded-xl overflow-hidden flex flex-col">
               <div className="flex items-center p-4 bg-[#f8fafc] border-b border-[#e8eaf0]">

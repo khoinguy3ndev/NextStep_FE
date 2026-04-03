@@ -7,17 +7,33 @@ import {
   Search,
   MapPin,
   Star,
+  Loader2,
   CloudUpload,
   ArrowRight,
   X,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
 import { AppShell } from "@/shared/ui/app-shell";
+import { useUploadCv } from "@/features/cv/model/cv.model";
 
 export function DashboardPage() {
   const [showPromo, setShowPromo] = useState(true);
   const [resumeText, setResumeText] = useState("");
   const [jdText, setJdText] = useState("");
+
+  const { uploadCv, isUploading } = useUploadCv();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await uploadCv(file);
+      alert(`Upload successful: ${result.fileName}`);
+    } catch (err) {
+      alert("Upload failed, please try again.");
+    }
+  };
 
   const canScan = resumeText.trim() && jdText.trim();
 
@@ -89,12 +105,20 @@ export function DashboardPage() {
                   className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-[#4a5068] resize-none outline-none placeholder:text-[#94a3b8]"
                 />
                 <label className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-[#c0c8e0] rounded-lg text-sm font-medium text-[#4a5068] bg-white cursor-pointer hover:border-[#0041c8] hover:text-[#0041c8] transition-colors shadow-sm">
-                  <CloudUpload className="w-4 h-4" />
-                  Drag & Drop or Upload Your Resume
+                  {isUploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0041c8]" />
+                  ) : (
+                    <CloudUpload className="w-4 h-4" />
+                  )}
+                  {isUploading
+                    ? "Processing..."
+                    : "Drag & Drop or Upload Your Resume"}{" "}
                   <input
                     type="file"
                     className="hidden"
                     accept=".pdf,.doc,.docx,.txt"
+                    disabled={isUploading}
+                    onChange={handleFileChange}
                   />
                 </label>
               </div>
