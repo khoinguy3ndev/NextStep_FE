@@ -132,20 +132,12 @@ export function LoginForm() {
             <form.Field name="password">
               {(field) => (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor={field.name}
-                      className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
-                    >
-                      Password
-                    </label>
-                    <Link
-                      to="/forgot-password"
-                      className="text-xs font-semibold text-[#0041c8] hover:underline"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <label
+                    htmlFor={field.name}
+                    className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
+                  >
+                    Password
+                  </label>
 
                   <div className="relative">
                     <input
@@ -171,6 +163,15 @@ export function LoginForm() {
                         <Eye className="h-5 w-5" />
                       )}
                     </button>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs font-semibold text-[#0041c8] hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
                   </div>
 
                   {field.state.meta.errors?.[0] && (
