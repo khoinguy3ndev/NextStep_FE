@@ -65,8 +65,8 @@ export function LoginForm() {
             ))}
           </div>
           <p className="text-sm italic font-medium leading-relaxed text-white/90">
-            "{" + BRAND.name + "} transformed my application process. I secured
-            three interviews within the first week of using their AI-optimized
+            {BRAND.name} transformed my application process. I secured three
+            interviews within the first week of using their AI-optimized
             templates."
           </p>
           <p className="mt-3 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -184,7 +184,7 @@ export function LoginForm() {
 
             {error && (
               <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
-                {typeof error === 'string'
+                {typeof error === "string"
                   ? error
                   : error?.message || "An error occurred during login"}
               </div>
