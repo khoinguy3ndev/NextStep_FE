@@ -202,8 +202,10 @@ export function RegisterForm() {
             </form.Field>
 
             {error && (
-              <div className="text-sm text-red-500">
-                Registration failed. Please try again.
+              <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+                {typeof error === "string"
+                  ? error
+                  : error.message || "Registration failed. Please try again."}
               </div>
             )}
 
