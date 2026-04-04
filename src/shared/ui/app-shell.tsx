@@ -16,6 +16,7 @@ import {
   User,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
+import { storage } from "@/shared/lib/storage";
 
 type NavItem = {
   id: string;
@@ -30,6 +31,7 @@ const navItems: NavItem[] = [
     id: "ai-optimize",
     label: "AI Optimize",
     icon: Sparkles,
+    to: "/resume-optimizer",
   },
   { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
   { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
@@ -45,13 +47,21 @@ type AppShellProps = {
   fullWidth?: boolean;
 };
 
+const SIDEBAR_COLLAPSED_STORAGE_KEY = "nextstep.sidebar.collapsed";
+
 export function AppShell({ children, fullWidth = false }: AppShellProps) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return storage.get(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+  });
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    storage.set(SIDEBAR_COLLAPSED_STORAGE_KEY, String(isCollapsed));
+  }, [isCollapsed]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
