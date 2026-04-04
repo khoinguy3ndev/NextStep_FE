@@ -7,6 +7,7 @@ import {
   HelpCircle,
   Home,
   Linkedin,
+  History,
   Menu,
   Shield,
   Plus,
@@ -16,6 +17,7 @@ import {
   User,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
+import { storage } from "@/shared/lib/storage";
 
 type NavItem = {
   id: string;
@@ -38,7 +40,7 @@ const navItems: NavItem[] = [
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
   { id: "resume-builder", label: "Resume Builder", icon: FileText },
   { id: "resume-manager", label: "Resume Manager", icon: FileText },
-  { id: "scan-history", label: "Scan History", icon: Search },
+  { id: "scan-history", label: "Scan History", icon: History },
 ];
 
 type AppShellProps = {
@@ -46,13 +48,21 @@ type AppShellProps = {
   fullWidth?: boolean;
 };
 
+const SIDEBAR_COLLAPSED_STORAGE_KEY = "nextstep.sidebar.collapsed";
+
 export function AppShell({ children, fullWidth = false }: AppShellProps) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return storage.get(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+  });
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    storage.set(SIDEBAR_COLLAPSED_STORAGE_KEY, String(isCollapsed));
+  }, [isCollapsed]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
