@@ -7,6 +7,7 @@ import {
   HelpCircle,
   Home,
   Linkedin,
+  History,
   Menu,
   Shield,
   Plus,
@@ -39,7 +40,7 @@ const navItems: NavItem[] = [
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
   { id: "resume-builder", label: "Resume Builder", icon: FileText },
   { id: "resume-manager", label: "Resume Manager", icon: FileText },
-  { id: "scan-history", label: "Scan History", icon: Search },
+  { id: "scan-history", label: "Scan History", icon: History },
 ];
 
 type AppShellProps = {
