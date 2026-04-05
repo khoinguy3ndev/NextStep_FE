@@ -232,6 +232,12 @@ export function RegisterForm() {
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
+              onClick={() => {
+                const googleAuthUrl = import.meta.env.VITE_GOOGLE_AUTH_URL;
+                if (googleAuthUrl) {
+                  window.location.href = googleAuthUrl;
+                }
+              }}
               className="flex items-center justify-center gap-3 rounded-xl border border-[#e5e5e5] py-3.5 transition-colors duration-150 hover:bg-[#f6f3f2] active:scale-[0.98]"
             >
               <span className="text-sm font-bold text-[#1c1b1b]">Google</span>

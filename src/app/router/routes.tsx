@@ -10,6 +10,7 @@ import { ResumeOptimizerPage } from "@/pages/resume-optimizer/resume-optimizer.p
 import { JobsPage } from "@/pages/jobs/jobs.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
 import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
+import { GoogleCallbackPage } from "@/pages/google-callback/google-callback.page";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -27,6 +28,12 @@ export const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/forgot-password",
   component: ForgotPasswordPage,
+});
+
+export const googleCallbackRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/callback",
+  component: GoogleCallbackPage,
 });
 
 export const homeRoute = createRoute({

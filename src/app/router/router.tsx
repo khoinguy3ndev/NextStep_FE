@@ -4,6 +4,7 @@ import {
   loginRoute,
   registerRoute,
   forgotPasswordRoute,
+  googleCallbackRoute,
   homeRoute,
   dashboardRoute,
   resumeOptimizerRoute,
@@ -23,6 +24,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   registerRoute,
   forgotPasswordRoute,
+  googleCallbackRoute,
 ]);
 
 export const router = createRouter({
