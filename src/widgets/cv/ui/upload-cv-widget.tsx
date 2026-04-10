@@ -118,23 +118,23 @@ export function UploadCvWidget({
   return (
     <div
       className={cn(
-        "border border-[#e8eaf0] rounded-xl overflow-hidden flex flex-col",
+        "border border-border rounded-xl overflow-hidden flex flex-col",
         className,
       )}
     >
-      <div className="flex items-center justify-between p-4 bg-[#f8fafc] border-b border-[#e8eaf0]">
-        <label className="text-sm font-semibold text-[#0f172a]">{title}</label>
+      <div className="flex items-center justify-between p-4 bg-background border-b border-border">
+        <label className="text-sm font-semibold text-foreground">{title}</label>
         {headerAction}
       </div>
 
-      <div className="p-4 flex-1 flex flex-col gap-4 bg-[#f8fafc]/50">
+      <div className="p-4 flex-1 flex flex-col gap-4 bg-background/50">
         <textarea
           value={value}
           onChange={(event) => onValueChange(event.target.value)}
           placeholder={placeholder}
           disabled={isDisabled}
           className={cn(
-            "w-full flex-1 bg-transparent text-sm text-[#4a5068] resize-none outline-none placeholder:text-[#94a3b8] disabled:cursor-not-allowed disabled:opacity-70",
+            "w-full flex-1 bg-transparent text-sm text-muted-foreground resize-none outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-70",
             minHeightClassName,
           )}
         />
@@ -150,15 +150,15 @@ export function UploadCvWidget({
           className={cn(
             "flex items-center justify-center gap-2 w-full py-2.5 border border-dashed rounded-lg text-sm font-medium bg-white transition-colors shadow-sm",
             isDisabled
-              ? "cursor-not-allowed text-[#9ba4b5] border-[#d6dbe8]"
-              : "cursor-pointer text-[#4a5068] border-[#c0c8e0] hover:border-[#0041c8] hover:text-[#0041c8]",
+              ? "cursor-not-allowed text-muted-foreground/60 border-border"
+              : "cursor-pointer text-muted-foreground border-border hover:border-foreground hover:text-foreground",
             isDragging &&
               !isDisabled &&
-              "border-[#0041c8] text-[#0041c8] bg-[#f5f9ff]",
+              "border-foreground text-foreground bg-muted",
           )}
         >
           {isUploading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-[#0041c8]" />
+            <Loader2 className="w-4 h-4 animate-spin text-foreground" />
           ) : (
             <CloudUpload className="w-4 h-4" />
           )}
@@ -180,17 +180,17 @@ export function UploadCvWidget({
         </label>
 
         {helperText ? (
-          <p className="text-xs text-[#7f8796]">{helperText}</p>
+          <p className="text-xs text-muted-foreground">{helperText}</p>
         ) : null}
 
         {uploadedFileName ? (
-          <p className="text-xs text-emerald-700">
+          <p className="text-xs text-foreground">
             Uploaded: {uploadedFileName}
           </p>
         ) : null}
 
         {errorMessage ? (
-          <p className="text-xs text-red-600">{errorMessage}</p>
+          <p className="text-xs text-destructive">{errorMessage}</p>
         ) : null}
       </div>
     </div>

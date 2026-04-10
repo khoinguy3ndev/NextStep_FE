@@ -123,9 +123,9 @@ const softSkills = [
 ];
 
 function statusColor(status: Status) {
-  if (status === "ok") return "text-emerald-600";
-  if (status === "warn") return "text-amber-500";
-  return "text-rose-500";
+  if (status === "ok") return "text-foreground";
+  if (status === "warn") return "text-muted-foreground";
+  return "text-destructive";
 }
 
 export function SampleReportPage() {
@@ -134,25 +134,27 @@ export function SampleReportPage() {
   return (
     <AppShell fullWidth>
       <div className="space-y-4 pb-12">
-        <div className="rounded-lg border border-[#e8eaef] bg-white px-4 py-3">
-          <p className="text-[11px] text-[#6b7280]">Resume scan results</p>
-          <h1 className="text-[15px] font-semibold text-[#1a1d2e]">
+        <div className="rounded-lg border border-border bg-card px-4 py-3">
+          <p className="text-[11px] text-muted-foreground">
+            Resume scan results
+          </p>
+          <h1 className="text-[15px] font-semibold text-foreground">
             Amazon - Product Manager
           </h1>
         </div>
 
         <div className="grid grid-cols-[190px_1fr] gap-4">
-          <aside className="rounded-lg border border-[#e8eaef] bg-white p-3">
-            <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
+          <aside className="rounded-lg border border-border bg-card p-3">
+            <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Match Rate
             </p>
             <div className="mb-3 flex items-center justify-center">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full border-8 border-[#f59e0b] text-3xl font-bold text-[#1a1d2e]">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-8 border-foreground/60 text-3xl font-bold text-foreground">
                 72
-                <span className="ml-1 text-xs text-[#6b7280]">%</span>
+                <span className="ml-1 text-xs text-muted-foreground">%</span>
               </div>
             </div>
-            <button className="mb-3 w-full rounded-md bg-[#0066ff] py-2 text-xs font-semibold text-white">
+            <button className="mb-3 w-full rounded-md bg-primary py-2 text-xs font-semibold text-primary-foreground">
               Upload & rescan
             </button>
             <div className="space-y-2 text-[11px]">
@@ -165,12 +167,12 @@ export function SampleReportPage() {
               ].map(([label, width, fix]) => (
                 <div key={String(label)}>
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="text-[#1a1d2e]">{label}</span>
-                    <span className="text-[#0066ff]">{fix}</span>
+                    <span className="text-foreground">{label}</span>
+                    <span className="text-foreground">{fix}</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-[#e8eaef]">
+                  <div className="h-1.5 rounded-full bg-border">
                     <div
-                      className="h-1.5 rounded-full bg-[#22a6f2]"
+                      className="h-1.5 rounded-full bg-primary"
                       style={{ width: `${width}%` }}
                     />
                   </div>
@@ -180,16 +182,16 @@ export function SampleReportPage() {
           </aside>
 
           <main className="space-y-6">
-            <div className="flex border-b border-[#e8eaef]">
+            <div className="flex border-b border-border">
               <button
                 onClick={() => setTab("resume")}
-                className={`px-6 py-2 text-sm font-medium ${tab === "resume" ? "border-b-2 border-[#0066ff] text-[#0066ff]" : "text-[#6b7280]"}`}
+                className={`px-6 py-2 text-sm font-medium ${tab === "resume" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"}`}
               >
                 Resume Report
               </button>
               <button
                 onClick={() => setTab("jd")}
-                className={`px-6 py-2 text-sm font-medium ${tab === "jd" ? "border-b-2 border-[#0066ff] text-[#0066ff]" : "text-[#6b7280]"}`}
+                className={`px-6 py-2 text-sm font-medium ${tab === "jd" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"}`}
               >
                 Job Description
               </button>
@@ -197,34 +199,34 @@ export function SampleReportPage() {
 
             {tab === "resume" ? (
               <>
-                <div className="flex items-center justify-between rounded-lg border border-[#fde68a] bg-[#fffbeb] px-4 py-2">
-                  <p className="text-sm text-[#6b7280]">
+                <div className="flex items-center justify-between rounded-lg border border-border bg-muted px-4 py-2">
+                  <p className="text-sm text-muted-foreground">
                     ATS-Specific Tips: Adding company name and website can
                     improve ATS-specific recommendations.
                   </p>
-                  <span className="rounded bg-[#f59e0b] px-2 py-1 text-xs font-semibold text-white">
+                  <span className="rounded bg-foreground px-2 py-1 text-xs font-semibold text-background">
                     ATS tip
                   </span>
                 </div>
 
                 <section>
-                  <h2 className="mb-1 text-2xl font-bold text-[#1a1d2e]">
+                  <h2 className="mb-1 text-2xl font-bold text-foreground">
                     Searchability
                   </h2>
-                  <p className="mb-3 text-sm text-[#6b7280]">
+                  <p className="mb-3 text-sm text-muted-foreground">
                     Fix red items first to make your resume easier to parse and
                     discover in ATS.
                   </p>
-                  <div className="overflow-hidden rounded-lg border border-[#e8eaef] bg-white">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
                     {searchability.map((item, idx) => (
                       <div
                         key={item.label}
-                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < searchability.length - 1 ? "border-b border-[#e8eaef]" : ""}`}
+                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < searchability.length - 1 ? "border-b border-border" : ""}`}
                       >
-                        <p className="text-sm font-semibold text-[#1a1d2e]">
+                        <p className="text-sm font-semibold text-foreground">
                           {item.label}
                         </p>
-                        <p className="text-sm text-[#6b7280]">
+                        <p className="text-sm text-muted-foreground">
                           <span
                             className={`mr-2 font-semibold ${statusColor(item.status)}`}
                           >
@@ -236,7 +238,7 @@ export function SampleReportPage() {
                           </span>
                           {item.text}{" "}
                           {item.link ? (
-                            <button className="text-xs font-semibold text-[#0066ff] hover:underline">
+                            <button className="text-xs font-semibold text-foreground hover:underline">
                               {item.link}
                             </button>
                           ) : null}
@@ -247,11 +249,11 @@ export function SampleReportPage() {
                 </section>
 
                 <section>
-                  <h2 className="mb-1 text-2xl font-bold text-[#1a1d2e]">
+                  <h2 className="mb-1 text-2xl font-bold text-foreground">
                     Hard skills
                   </h2>
-                  <div className="overflow-hidden rounded-lg border border-[#e8eaef] bg-white">
-                    <div className="grid grid-cols-3 bg-[#f9fafb] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
+                    <div className="grid grid-cols-3 bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       <span>Skill</span>
                       <span>Resume</span>
                       <span>Job Description</span>
@@ -259,10 +261,12 @@ export function SampleReportPage() {
                     {hardSkills.map(([skill, resume, jd]) => (
                       <div
                         key={skill}
-                        className="grid grid-cols-3 border-t border-[#e8eaef] px-4 py-2 text-sm text-[#1a1d2e]"
+                        className="grid grid-cols-3 border-t border-border px-4 py-2 text-sm text-foreground"
                       >
                         <span>{skill}</span>
-                        <span className={resume === "x" ? "text-rose-500" : ""}>
+                        <span
+                          className={resume === "x" ? "text-destructive" : ""}
+                        >
                           {resume}
                         </span>
                         <span>{jd}</span>
@@ -272,11 +276,11 @@ export function SampleReportPage() {
                 </section>
 
                 <section>
-                  <h2 className="mb-1 text-2xl font-bold text-[#1a1d2e]">
+                  <h2 className="mb-1 text-2xl font-bold text-foreground">
                     Soft skills
                   </h2>
-                  <div className="overflow-hidden rounded-lg border border-[#e8eaef] bg-white">
-                    <div className="grid grid-cols-3 bg-[#f9fafb] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
+                    <div className="grid grid-cols-3 bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       <span>Skill</span>
                       <span>Resume</span>
                       <span>Job Description</span>
@@ -284,10 +288,12 @@ export function SampleReportPage() {
                     {softSkills.map(([skill, resume, jd]) => (
                       <div
                         key={skill}
-                        className="grid grid-cols-3 border-t border-[#e8eaef] px-4 py-2 text-sm text-[#1a1d2e]"
+                        className="grid grid-cols-3 border-t border-border px-4 py-2 text-sm text-foreground"
                       >
                         <span>{skill}</span>
-                        <span className={resume === "x" ? "text-rose-500" : ""}>
+                        <span
+                          className={resume === "x" ? "text-destructive" : ""}
+                        >
                           {resume}
                         </span>
                         <span>{jd}</span>
@@ -297,19 +303,19 @@ export function SampleReportPage() {
                 </section>
 
                 <section>
-                  <h2 className="mb-1 text-2xl font-bold text-[#1a1d2e]">
+                  <h2 className="mb-1 text-2xl font-bold text-foreground">
                     Recruiter tips
                   </h2>
-                  <div className="overflow-hidden rounded-lg border border-[#e8eaef] bg-white">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
                     {recruiterTips.map((item, idx) => (
                       <div
                         key={item.label}
-                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < recruiterTips.length - 1 ? "border-b border-[#e8eaef]" : ""}`}
+                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < recruiterTips.length - 1 ? "border-b border-border" : ""}`}
                       >
-                        <p className="text-sm font-semibold text-[#1a1d2e]">
+                        <p className="text-sm font-semibold text-foreground">
                           {item.label}
                         </p>
-                        <p className="text-sm text-[#6b7280]">
+                        <p className="text-sm text-muted-foreground">
                           <span
                             className={`mr-2 font-semibold ${statusColor(item.status)}`}
                           >
@@ -321,7 +327,7 @@ export function SampleReportPage() {
                           </span>
                           {item.text}{" "}
                           {item.link ? (
-                            <button className="text-xs font-semibold text-[#0066ff] hover:underline">
+                            <button className="text-xs font-semibold text-foreground hover:underline">
                               {item.link}
                             </button>
                           ) : null}
@@ -332,20 +338,20 @@ export function SampleReportPage() {
                 </section>
 
                 <section>
-                  <h2 className="mb-1 text-2xl font-bold text-[#1a1d2e]">
+                  <h2 className="mb-1 text-2xl font-bold text-foreground">
                     Formatting
                   </h2>
-                  <div className="overflow-hidden rounded-lg border border-[#e8eaef] bg-white">
+                  <div className="overflow-hidden rounded-lg border border-border bg-card">
                     {formatting.map((item, idx) => (
                       <div
                         key={item.label}
-                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < formatting.length - 1 ? "border-b border-[#e8eaef]" : ""}`}
+                        className={`grid grid-cols-[180px_1fr] gap-3 px-4 py-3 ${idx < formatting.length - 1 ? "border-b border-border" : ""}`}
                       >
-                        <p className="text-sm font-semibold text-[#1a1d2e]">
+                        <p className="text-sm font-semibold text-foreground">
                           {item.label}
                         </p>
-                        <p className="text-sm text-[#6b7280]">
-                          <span className="mr-2 font-semibold text-emerald-600">
+                        <p className="text-sm text-muted-foreground">
+                          <span className="mr-2 font-semibold text-foreground">
                             ✓
                           </span>
                           {item.text}
@@ -356,11 +362,11 @@ export function SampleReportPage() {
                 </section>
               </>
             ) : (
-              <section className="rounded-lg border border-[#e8eaef] bg-white p-8">
-                <h2 className="mb-4 text-2xl font-bold text-[#1a1d2e]">
+              <section className="rounded-lg border border-border bg-card p-8">
+                <h2 className="mb-4 text-2xl font-bold text-foreground">
                   Product Manager
                 </h2>
-                <p className="leading-7 text-[#374151]">
+                <p className="leading-7 text-foreground">
                   Mobile Shopping is one of Amazon’s fastest growing new
                   businesses.The Mobile team builds world-class customer
                   experiences in all Amazon countries.Focused on mobile
@@ -407,7 +413,7 @@ export function SampleReportPage() {
                   experience in consumer-facing mobile commerce and/or wireless
                   content or mobile services
                 </p>
-                <p className="mt-4 leading-7 text-[#374151]">
+                <p className="mt-4 leading-7 text-foreground">
                   Basic Qualifications: 5-7+ years of product management
                   experience in a technology company, 3+ years of
                   consumer-facing mobile commerce experience, and strong

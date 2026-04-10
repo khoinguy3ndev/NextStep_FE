@@ -15,6 +15,8 @@ import {
   Settings,
   Sparkles,
   User,
+  Folder,
+  Pencil,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
 import { storage } from "@/shared/lib/storage";
@@ -38,8 +40,8 @@ const navItems: NavItem[] = [
   { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
   { id: "job-tracker", label: "Job Tracker", icon: Calendar },
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
-  { id: "resume-builder", label: "Resume Builder", icon: FileText },
-  { id: "resume-manager", label: "Resume Manager", icon: FileText },
+  { id: "resume-builder", label: "Resume Builder", icon: Pencil },
+  { id: "resume-manager", label: "Resume Manager", icon: Folder },
   { id: "scan-history", label: "Scan History", icon: History },
 ];
 
@@ -86,18 +88,18 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
     "mx-2 w-[calc(100%-16px)] h-10 px-3 rounded-lg flex items-center gap-3 text-left";
 
   return (
-    <div className="flex h-screen bg-[#f5f6fa] text-[#1a1a2e] font-[Instrument_Sans,sans-serif]">
+    <div className="flex h-screen bg-background text-foreground font-[Instrument_Sans,sans-serif]">
       <aside
         className={`${
           isCollapsed ? "w-[72px]" : "w-[220px]"
-        } bg-white border-r border-[#e8eaf0] flex flex-col overflow-hidden flex-shrink-0 transition-all duration-300 z-10`}
+        } bg-card border-r border-border flex flex-col overflow-hidden flex-shrink-0 transition-all duration-300 z-10`}
       >
         <div
-          className={`h-16 flex items-center border-b border-[#f0f1f5] ${isCollapsed ? "justify-center" : "px-3 gap-2"}`}
+          className={`h-16 flex items-center border-b border-border ${isCollapsed ? "justify-center" : "px-3 gap-2"}`}
         >
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="w-10 h-10 flex items-center justify-center text-[#4a5068] hover:bg-[#f0f3ff] hover:text-[#0041c8] rounded-md transition-colors flex-shrink-0"
+            className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors flex-shrink-0"
             title="Toggle sidebar"
           >
             <Menu className="w-5 h-5" />
@@ -108,7 +110,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
               to="/"
               className="block flex-1 overflow-hidden whitespace-nowrap"
             >
-              <div className="text-lg font-bold text-[#0041c8] tracking-tight truncate">
+              <div className="text-lg font-bold text-foreground tracking-tight truncate">
                 {BRAND.name}
               </div>
             </Link>
@@ -119,7 +121,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           <button
             className={`${
               isCollapsed ? collapsedBtnClass : expandedBtnClass
-            } bg-[#0041c8] text-white font-semibold hover:bg-[#002d8a] transition-all`}
+            } bg-primary text-primary-foreground font-semibold hover:bg-foreground hover:text-background transition-all`}
             title={isCollapsed ? "New Scan" : undefined}
           >
             <Plus className="w-5 h-5 flex-shrink-0" />
@@ -151,8 +153,8 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                   isCollapsed ? collapsedBtnClass : expandedBtnClass
                 } transition-colors ${
                   isActive
-                    ? "bg-[#f0f3ff] text-[#0041c8] font-semibold"
-                    : "text-[#4a5068] hover:bg-[#f0f3ff] hover:text-[#0041c8]"
+                    ? "bg-muted text-foreground font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
                 title={isCollapsed ? item.label : undefined}
               >
@@ -165,11 +167,11 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           })}
         </nav>
 
-        <div className="border-t border-[#f0f1f5] py-4">
+        <div className="border-t border-border py-4">
           <button
             className={`${
               isCollapsed ? collapsedBtnClass : expandedBtnClass
-            } text-[#4a5068] hover:bg-[#f0f3ff] hover:text-[#0041c8] transition-colors`}
+            } text-muted-foreground hover:bg-muted hover:text-foreground transition-colors`}
             title={isCollapsed ? "Help" : undefined}
           >
             <HelpCircle className="w-5 h-5 flex-shrink-0" />
@@ -179,32 +181,32 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 bg-white border-b border-[#e8eaf0] flex items-center justify-between px-6 flex-shrink-0">
-          <h1 className="text-2xl font-bold text-[#0f172a]">Welcome, Alex!</h1>
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 flex-shrink-0">
+          <h1 className="text-2xl font-bold text-foreground">Welcome, Alex!</h1>
           <div className="flex items-center gap-3">
-            <button className="bg-yellow-50 text-amber-700 border border-yellow-300 rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-yellow-100 transition-colors">
+            <button className="bg-muted text-muted-foreground border border-border rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-background transition-colors">
               ⭐ Get 7 days free
             </button>
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
-                className="w-8 h-8 bg-[#e8eaf0] rounded-full flex items-center justify-center text-xs font-semibold text-[#4a5068] cursor-pointer hover:bg-[#dfe4ec] transition-colors"
+                className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-xs font-semibold text-muted-foreground cursor-pointer hover:bg-background transition-colors"
               >
                 A
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 top-10 w-72 bg-white border border-[#e8eaf0] rounded-xl shadow-xl overflow-hidden z-30">
-                  <div className="px-4 py-3 border-b border-[#eef1f6] flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#e8eaf0] text-[#64748b] flex items-center justify-center">
+                <div className="absolute right-0 top-10 w-72 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-30">
+                  <div className="px-4 py-3 border-b border-border flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
                       <User className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#0f172a]">
+                      <p className="text-sm font-semibold text-foreground">
                         Alex
                       </p>
-                      <p className="text-xs text-[#64748b]">
+                      <p className="text-xs text-muted-foreground">
                         alex@nextstepai.com
                       </p>
                     </div>
@@ -213,31 +215,31 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                   <div className="py-2">
                     <button
                       type="button"
-                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-foreground hover:bg-background"
                     >
                       <Settings className="w-4 h-4" />
                       Account Settings
                     </button>
                     <button
                       type="button"
-                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-foreground hover:bg-background"
                     >
                       <Shield className="w-4 h-4" />
                       Privacy Policy
                     </button>
                     <button
                       type="button"
-                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-[#334155] hover:bg-[#f8fafc]"
+                      className="w-full px-4 py-2.5 flex items-center gap-2 text-left text-sm text-foreground hover:bg-background"
                     >
                       <FileText className="w-4 h-4" />
                       Terms
                     </button>
                   </div>
 
-                  <div className="border-t border-[#eef1f6] p-2">
+                  <div className="border-t border-border p-2">
                     <button
                       type="button"
-                      className="w-full px-3 py-2 rounded-lg flex items-center gap-2 text-left text-sm text-[#b42318] hover:bg-[#fff5f5]"
+                      className="w-full px-3 py-2 rounded-lg flex items-center gap-2 text-left text-sm text-destructive hover:bg-destructive/10"
                     >
                       <LogOut className="w-4 h-4" />
                       Log out

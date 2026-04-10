@@ -27,15 +27,15 @@ export function Navigation() {
             className={[
               "relative inline-flex items-center pb-2 text-sm transition-colors",
               isActive
-                ? "text-zinc-900 font-bold"
-                : "text-zinc-500 hover:text-zinc-700",
+                ? "text-foreground font-bold"
+                : "text-muted-foreground hover:text-foreground",
             ].join(" ")}
           >
             {item.label}
             {isActive ? (
               <motion.div
                 layoutId="navbar-underline"
-                className="absolute bottom-0 left-0 h-0.5 w-full bg-[#0041c8]"
+                className="absolute bottom-0 left-0 h-0.5 w-full bg-primary"
               />
             ) : null}
           </Link>
