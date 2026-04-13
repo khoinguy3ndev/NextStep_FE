@@ -121,7 +121,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           <button
             className={`${
               isCollapsed ? collapsedBtnClass : expandedBtnClass
-            } bg-cta text-cta-foreground font-semibold hover:bg-cta-hover transition-colors`}
+            } bg-cta text-cta-foreground font-semibold bg-primary hover:bg-primary/90 transition-colors`}
             title={isCollapsed ? "New Scan" : undefined}
           >
             <Plus className="w-5 h-5 flex-shrink-0" />
