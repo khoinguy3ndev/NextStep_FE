@@ -37,10 +37,7 @@ export function ForgotPasswordForm() {
         <div className="max-w-sm">
           <div className="mb-3 flex gap-1">
             {[1, 2, 3, 4, 5].map((item) => (
-              <Star
-                key={item}
-                className="h-4 w-4 fill-current text-foreground"
-              />
+              <Star key={item} className="h-4 w-4 fill-current text-primary" />
             ))}
           </div>
           <p className="text-sm italic font-medium leading-relaxed text-background/90">
@@ -91,7 +88,7 @@ export function ForgotPasswordForm() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-primary py-4 text-sm font-bold tracking-wide text-primary-foreground transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]"
+                className="w-full rounded-xl bg-cta py-4 text-sm font-bold tracking-wide text-cta-foreground transition-colors duration-150 hover:bg-cta-hover active:scale-[0.98]"
               >
                 Send reset link
               </button>

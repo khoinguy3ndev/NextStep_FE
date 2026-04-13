@@ -123,8 +123,8 @@ const softSkills = [
 ];
 
 function statusColor(status: Status) {
-  if (status === "ok") return "text-foreground";
-  if (status === "warn") return "text-muted-foreground";
+  if (status === "ok") return "text-primary";
+  if (status === "warn") return "text-amber-500";
   return "text-destructive";
 }
 
@@ -149,7 +149,7 @@ export function SampleReportPage() {
               Match Rate
             </p>
             <div className="mb-3 flex items-center justify-center">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full border-8 border-foreground/60 text-3xl font-bold text-foreground">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-8 border-primary/70 text-3xl font-bold text-primary">
                 72
                 <span className="ml-1 text-xs text-muted-foreground">%</span>
               </div>
@@ -164,7 +164,7 @@ export function SampleReportPage() {
                 ["Soft Skills", 55, "3 issues to fix"],
                 ["Recruiter Tips", 35, "4 issues to fix"],
                 ["Formatting", 90, ""],
-              ].map(([label, width, fix]) => (
+              ].map(([label, score, fix]) => (
                 <div key={String(label)}>
                   <div className="mb-1 flex items-center justify-between">
                     <span className="text-foreground">{label}</span>
@@ -172,8 +172,14 @@ export function SampleReportPage() {
                   </div>
                   <div className="h-1.5 rounded-full bg-border">
                     <div
-                      className="h-1.5 rounded-full bg-primary"
-                      style={{ width: `${width}%` }}
+                      className={`h-1.5 rounded-full ${
+                        Number(score) >= 70
+                          ? "bg-primary"
+                          : Number(score) >= 50
+                            ? "bg-amber-500"
+                            : "bg-destructive"
+                      }`}
+                      style={{ width: `${score}%` }}
                     />
                   </div>
                 </div>
@@ -185,13 +191,13 @@ export function SampleReportPage() {
             <div className="flex border-b border-border">
               <button
                 onClick={() => setTab("resume")}
-                className={`px-6 py-2 text-sm font-medium ${tab === "resume" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"}`}
+                className={`px-6 py-2 text-sm font-medium ${tab === "resume" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
               >
                 Resume Report
               </button>
               <button
                 onClick={() => setTab("jd")}
-                className={`px-6 py-2 text-sm font-medium ${tab === "jd" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"}`}
+                className={`px-6 py-2 text-sm font-medium ${tab === "jd" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
               >
                 Job Description
               </button>
@@ -204,7 +210,7 @@ export function SampleReportPage() {
                     ATS-Specific Tips: Adding company name and website can
                     improve ATS-specific recommendations.
                   </p>
-                  <span className="rounded bg-foreground px-2 py-1 text-xs font-semibold text-background">
+                  <span className="rounded bg-accent px-2 py-1 text-xs font-semibold text-accent-foreground">
                     ATS tip
                   </span>
                 </div>
@@ -238,7 +244,7 @@ export function SampleReportPage() {
                           </span>
                           {item.text}{" "}
                           {item.link ? (
-                            <button className="text-xs font-semibold text-foreground hover:underline">
+                            <button className="text-xs font-semibold text-primary hover:underline">
                               {item.link}
                             </button>
                           ) : null}
@@ -327,7 +333,7 @@ export function SampleReportPage() {
                           </span>
                           {item.text}{" "}
                           {item.link ? (
-                            <button className="text-xs font-semibold text-foreground hover:underline">
+                            <button className="text-xs font-semibold text-primary hover:underline">
                               {item.link}
                             </button>
                           ) : null}

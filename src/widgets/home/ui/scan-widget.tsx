@@ -1,8 +1,11 @@
 import { useRef, useState, type DragEvent } from "react";
 
 const C = {
-  brand: "var(--foreground)",
-  brandHover: "var(--foreground)",
+  brand: "var(--primary)",
+  brandHover: "var(--primary)",
+  cta: "var(--cta)",
+  ctaHover: "var(--cta-hover)",
+  ctaForeground: "var(--cta-foreground)",
   brandLight: "var(--muted)",
   brandBorder: "var(--border)",
   bg: "var(--muted)",
@@ -82,7 +85,7 @@ function CheckIcon({ size = 18, color = C.brand }) {
   );
 }
 
-function UploadIcon({ size = 52, color = "var(--foreground)" }) {
+function UploadIcon({ size = 52, color = "var(--primary)" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
       <rect x="8" y="10" width="36" height="46" rx="4" fill={C.brandLight} />
@@ -278,10 +281,8 @@ function StepUpload({
               onFile(new File([blob], "resume.txt", { type: "text/plain" }));
             }}
             style={{
-              background: pasteText.trim() ? C.brand : C.scanDisabled,
-              color: pasteText.trim()
-                ? "var(--primary-foreground)"
-                : C.scanDisabledText,
+              background: pasteText.trim() ? C.cta : C.scanDisabled,
+              color: pasteText.trim() ? C.ctaForeground : C.scanDisabledText,
               border: "none",
               borderRadius: 8,
               padding: "9px 24px",
@@ -599,8 +600,8 @@ function StepJob({
           if (canScan) onScan();
         }}
         style={{
-          background: canScan ? C.brand : C.scanDisabled,
-          color: canScan ? "var(--primary-foreground)" : C.scanDisabledText,
+          background: canScan ? C.cta : C.scanDisabled,
+          color: canScan ? C.ctaForeground : C.scanDisabledText,
           border: "none",
           borderRadius: 9,
           padding: "11px 52px",
@@ -612,12 +613,12 @@ function StepJob({
         }}
         onMouseEnter={(event) => {
           if (canScan) {
-            event.currentTarget.style.background = C.brandHover;
+            event.currentTarget.style.background = C.ctaHover;
           }
         }}
         onMouseLeave={(event) => {
           if (canScan) {
-            event.currentTarget.style.background = C.brand;
+            event.currentTarget.style.background = C.cta;
           }
         }}
       >

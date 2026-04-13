@@ -110,7 +110,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
               to="/"
               className="block flex-1 overflow-hidden whitespace-nowrap"
             >
-              <div className="text-lg font-bold text-foreground tracking-tight truncate">
+              <div className="text-lg font-bold text-primary tracking-tight truncate">
                 {BRAND.name}
               </div>
             </Link>
@@ -121,7 +121,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           <button
             className={`${
               isCollapsed ? collapsedBtnClass : expandedBtnClass
-            } bg-primary text-primary-foreground font-semibold hover:bg-foreground hover:text-background transition-all`}
+            } bg-cta text-cta-foreground font-semibold hover:bg-cta-hover transition-colors`}
             title={isCollapsed ? "New Scan" : undefined}
           >
             <Plus className="w-5 h-5 flex-shrink-0" />
@@ -153,12 +153,14 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                   isCollapsed ? collapsedBtnClass : expandedBtnClass
                 } transition-colors ${
                   isActive
-                    ? "bg-muted text-foreground font-semibold"
+                    ? "bg-accent text-accent-foreground font-semibold"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
                 title={isCollapsed ? item.label : undefined}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon
+                  className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-primary" : ""}`}
+                />
                 {!isCollapsed && (
                   <span className="whitespace-nowrap">{item.label}</span>
                 )}
@@ -184,14 +186,14 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 flex-shrink-0">
           <h1 className="text-2xl font-bold text-foreground">Welcome, Alex!</h1>
           <div className="flex items-center gap-3">
-            <button className="bg-muted text-muted-foreground border border-border rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-background transition-colors">
+            <button className="bg-accent text-accent-foreground border border-primary/20 rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-background transition-colors">
               ⭐ Get 7 days free
             </button>
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
-                className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-xs font-semibold text-muted-foreground cursor-pointer hover:bg-background transition-colors"
+                className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-xs font-bold text-primary cursor-pointer hover:bg-background transition-colors"
               >
                 A
               </button>
@@ -199,7 +201,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
               {isUserMenuOpen && (
                 <div className="absolute right-0 top-10 w-72 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-30">
                   <div className="px-4 py-3 border-b border-border flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                       <User className="w-5 h-5" />
                     </div>
                     <div>

@@ -180,7 +180,7 @@ export function HomeLandingWidget() {
           <div className="flex items-center gap-8">
             <Link
               to="/"
-              className="text-xl font-bold tracking-tight text-foreground"
+              className="text-lg font-bold text-primary tracking-tight truncate"
             >
               {BRAND.name}
             </Link>
@@ -244,12 +244,12 @@ export function HomeLandingWidget() {
           <div className="flex items-center gap-4">
             <button
               onClick={handleAnalyzeCV}
-              className="rounded-lg bg-primary px-7 py-3.5 text-left text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90 sm:text-lg"
+              className="rounded-lg bg-cta px-7 py-3.5 text-left text-base font-semibold text-cta-foreground transition-colors hover:bg-cta-hover sm:text-lg"
             >
               Analyze My CV - It&apos;s Free
             </button>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle2 className="h-4 w-4 text-foreground" />
+              <CheckCircle2 className="h-4 w-4 text-primary" />
               <span>No credit card required</span>
             </div>
           </div>
@@ -261,7 +261,7 @@ export function HomeLandingWidget() {
               <div className="mb-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <FileText className="h-5 w-5 text-foreground" />
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h4 className="font-bold text-foreground">
@@ -373,10 +373,10 @@ export function HomeLandingWidget() {
       <section id="features" className="bg-muted py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-12">
-            <h2 className="mb-2 text-3xl font-bold tracking-tight">
+            <h2 className="mb-4 text-center text-3xl font-bold tracking-tight">
               Built for Performance
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-center">
               The most powerful toolset for modern job applications.
             </p>
           </div>
@@ -389,7 +389,7 @@ export function HomeLandingWidget() {
                   key={feature.id}
                   className="rounded-xl border border-border bg-card p-8 transition-colors hover:border-foreground"
                 >
-                  <Icon className="mb-6 h-8 w-8 text-foreground" />
+                  <Icon className="mb-6 h-8 w-8 text-primary" />
                   <h4 className="mb-3 text-lg font-bold">{feature.title}</h4>
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     {feature.description}
@@ -461,16 +461,15 @@ export function HomeLandingWidget() {
               </p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> 5 Resume
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> 5 Resume
                   Scans / Mo
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Basic
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Basic
                   Keyword Analysis
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> ATS
-                  Checker
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> ATS Checker
                 </li>
                 <li className="flex items-center gap-3 text-muted-foreground/60 line-through">
                   <CircleAlert className="h-4 w-4" /> AI Bullet Rewriting
@@ -498,19 +497,19 @@ export function HomeLandingWidget() {
               </p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Unlimited
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Unlimited
                   Scans
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> AI
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> AI
                   Optimization Suite
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Cover
-                  Letter Generator
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Cover Letter
+                  Generator
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Interview
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Interview
                   Prep Insights
                 </li>
               </ul>
@@ -527,19 +526,18 @@ export function HomeLandingWidget() {
               <p className="mb-8 text-3xl font-bold">Custom</p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> 50+ Seats
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> 50+ Seats
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Admin
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Admin
                   Dashboard
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> Bulk CV
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Bulk CV
                   Processing
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-foreground" /> API
-                  Access
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> API Access
                 </li>
               </ul>
               <button className="rounded-lg border border-border py-3 text-sm font-bold transition-colors hover:bg-muted">
@@ -560,7 +558,7 @@ export function HomeLandingWidget() {
         </p>
         <button
           onClick={handleAnalyzeCV}
-          className="rounded-lg bg-primary px-10 py-4 text-xl font-bold text-primary-foreground shadow-lg transition-all hover:shadow-xl"
+          className="rounded-lg bg-cta px-10 py-4 text-xl font-bold text-cta-foreground shadow-lg transition-all hover:bg-cta-hover hover:shadow-xl"
         >
           Analyze My Resume Now
         </button>

@@ -429,7 +429,7 @@ export function JobsPage() {
 
             <button
               type="button"
-              className="h-10 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-foreground"
+              className="h-10 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Search
             </button>
@@ -536,7 +536,7 @@ export function JobsPage() {
 
         <section className="bg-background p-5">
           <div className="mb-4 flex items-start gap-2 text-sm leading-relaxed text-foreground">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <p>
               Your ATS match rate may be different. NextStepAI uses AI for
               smarter matching. Use Scan to spot missing keywords and improve
@@ -576,7 +576,9 @@ export function JobsPage() {
                         closeDropdown();
                       }}
                       className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                        sortBy === "relevance" ? "bg-muted" : "bg-card"
+                        sortBy === "relevance"
+                          ? "bg-accent text-accent-foreground"
+                          : "bg-card"
                       }`}
                     >
                       Relevance
@@ -611,13 +613,13 @@ export function JobsPage() {
                       onClick={() => setSelectedJobId(jobId)}
                       className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
                         isActive
-                          ? "border-border bg-muted"
+                          ? "border-primary/40 bg-accent"
                           : "border-border bg-card hover:bg-background"
                       }`}
                     >
                       {job.goodMatch && (
-                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-[11px] font-semibold text-foreground">
-                          <Check className="h-3 w-3" /> Good Match
+                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-[11px] font-semibold text-accent-foreground">
+                          <Check className="h-3 w-3 text-primary" /> Good Match
                         </span>
                       )}
 
@@ -669,7 +671,7 @@ export function JobsPage() {
                 <div className="mt-4 flex items-center gap-2">
                   <button
                     type="button"
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-foreground"
+                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                   >
                     Scan
                   </button>
@@ -714,7 +716,7 @@ export function JobsPage() {
                 <ul className="space-y-1.5">
                   {selectedJob.requirements.map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 text-foreground">•</span>
+                      <span className="mt-1 text-primary">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
