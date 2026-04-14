@@ -16,6 +16,7 @@ import {
   Star,
   X,
 } from "lucide-react";
+import { FilterSelect } from "@/shared/ui/filter-select";
 import { BRAND } from "@/shared/config/brand";
 import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
@@ -41,13 +42,13 @@ const DATE_RANGE_OPTIONS: Array<{ value: DateRangeFilter; label: string }> = [
   { value: "any", label: "Any time" },
 ];
 
-const JOB_TYPE_OPTIONS: JobTypeFilter[] = [
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "Internship",
-  "Temporary",
-  "Volunteer",
+const JOB_TYPE_OPTIONS: Array<{ value: JobTypeFilter; label: string }> = [
+  { value: "Full-time", label: "Full-time" },
+  { value: "Part-time", label: "Part-time" },
+  { value: "Contract", label: "Contract" },
+  { value: "Internship", label: "Internship" },
+  { value: "Temporary", label: "Temporary" },
+  { value: "Volunteer", label: "Volunteer" },
 ];
 
 const REMOTE_OPTIONS: Array<{ value: RemoteFilter; label: string }> = [
@@ -108,7 +109,7 @@ function readAiJobFiltersFromUrl(): AiJobUrlFilters {
     searchMode: mode === "keyword" ? "keyword" : "resume",
     sortBy: sort === "date" ? "date" : "relevance",
     dateRange: date === "3d" || date === "7d" || date === "30d" ? date : "any",
-    jobTypeFilter: (JOB_TYPE_OPTIONS.includes(type as JobTypeFilter)
+    jobTypeFilter: (JOB_TYPE_OPTIONS.some((item) => item.value === type)
       ? type
       : "all") as JobTypeFilter,
     remoteFilter: (REMOTE_OPTIONS.some((item) => item.value === remote)
@@ -423,82 +424,44 @@ export function AiJobMatchSection({
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("date")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              {DATE_RANGE_OPTIONS.find((item) => item.value === dateRange)
-                ?.label ?? "Date range"}{" "}
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "date" && (
-              <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {DATE_RANGE_OPTIONS.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => handleDateRangeChange(item.value)}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={
+              DATE_RANGE_OPTIONS.find((item) => item.value === dateRange)
+                ?.label ?? "Date range"
+            }
+            isOpen={openDropdown === "date"}
+            onToggle={() => toggleDropdown("date")}
+            onClose={closeDropdown}
+            options={DATE_RANGE_OPTIONS}
+            onSelect={handleDateRangeChange}
+            selectedValue={dateRange}
+            menuWidthClass="w-36"
+          />
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("type")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              {jobTypeFilter === "all" ? "Job type" : jobTypeFilter}{" "}
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "type" && (
-              <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {JOB_TYPE_OPTIONS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => handleJobTypeChange(item)}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={jobTypeFilter === "all" ? "Job type" : jobTypeFilter}
+            isOpen={openDropdown === "type"}
+            onToggle={() => toggleDropdown("type")}
+            onClose={closeDropdown}
+            options={JOB_TYPE_OPTIONS}
+            onSelect={handleJobTypeChange}
+            selectedValue={jobTypeFilter === "all" ? undefined : jobTypeFilter}
+            menuWidthClass="w-36"
+          />
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("remote")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              {REMOTE_OPTIONS.find((item) => item.value === remoteFilter)
-                ?.label ?? "Remote option"}{" "}
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "remote" && (
-              <div className="absolute left-0 top-[34px] z-20 w-32 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {REMOTE_OPTIONS.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => handleRemoteChange(item.value)}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={
+              REMOTE_OPTIONS.find((item) => item.value === remoteFilter)
+                ?.label ?? "Remote option"
+            }
+            isOpen={openDropdown === "remote"}
+            onToggle={() => toggleDropdown("remote")}
+            onClose={closeDropdown}
+            options={REMOTE_OPTIONS}
+            onSelect={handleRemoteChange}
+            selectedValue={remoteFilter === "all" ? undefined : remoteFilter}
+            menuWidthClass="w-32"
+          />
 
           <button
             type="button"
