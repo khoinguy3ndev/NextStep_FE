@@ -97,12 +97,13 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <button
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            type="button"
             onClick={() => navigate({ to: "/sample-report" })}
+            className="cursor-pointer items-center rounded-md gap-2 rounded-md border px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted"
           >
-            View sample Scan
+            View sample report
           </button>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-1.5">
