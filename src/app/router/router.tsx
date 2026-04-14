@@ -9,6 +9,7 @@ import {
   dashboardRoute,
   resumeOptimizerRoute,
   jobsRoute,
+  scanHistoryRoute,
   matchReportRoute,
   sampleReportRoute,
 } from "./routes";
@@ -19,6 +20,7 @@ const routeTree = rootRoute.addChildren([
   dashboardRoute,
   resumeOptimizerRoute,
   jobsRoute,
+  scanHistoryRoute,
   matchReportRoute,
   sampleReportRoute,
   loginRoute,

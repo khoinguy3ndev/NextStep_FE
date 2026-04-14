@@ -1,144 +1,197 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Bookmark,
   BriefcaseBusiness,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronsUpDown,
   ExternalLink,
   FileText,
   Info,
+  Lock,
   MapPin,
   Search,
+  Star,
+  X,
 } from "lucide-react";
+import { FilterSelect } from "@/shared/ui/filter-select";
 import { BRAND } from "@/shared/config/brand";
+import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
-type Job = {
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  postedAt: string;
-  goodMatch?: boolean;
-  description: string;
-  responsibilities: string[];
-  requirements: string[];
-};
-
-const getJobId = (job: Job) => `${job.title}-${job.company}`;
-const getPostedDays = (postedAt: string) => {
-  const days = Number.parseInt(postedAt, 10);
-  return Number.isNaN(days) ? Number.MAX_SAFE_INTEGER : days;
-};
-
-const jobs: Job[] = [
-  {
-    title: "Backend Engineer",
-    company: "International Business Consulting",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "5 days ago",
-    goodMatch: true,
-    description:
-      "We are seeking a Backend Engineer to join our team and build scalable APIs that power our applications and services.",
-    responsibilities: [
-      "Design, develop, and maintain scalable APIs.",
-      "Collaborate with front-end developers to integrate user-facing elements with server-side logic.",
-      "Optimize applications for speed and scalability.",
-      "Troubleshoot and debug applications to ensure stable performance.",
-      "Write clean, maintainable, and efficient code.",
-    ],
-    requirements: [
-      "3+ years of experience with Node.js or Python.",
-      "Strong understanding of API design and development.",
-      "Experience with database management and integration.",
-      "Familiarity with version control systems such as Git.",
-      "Excellent problem-solving and communication skills.",
-    ],
-  },
-  {
-    title: "Senior Software Engineer | Hybrid (2 Office / 3 WFH)",
-    company: "SPOTTED",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "Join a fast-growing tech company building next-generation enterprise software. You will lead feature development across the full stack.",
-    responsibilities: [
-      "Lead implementation of new software features.",
-      "Mentor junior developers and conduct code reviews.",
-      "Collaborate with product managers to define requirements.",
-      "Participate in architecture decisions and roadmap planning.",
-      "Ensure code quality with testing and documentation.",
-    ],
-    requirements: [
-      "5+ years of software engineering experience.",
-      "Proficiency in TypeScript, React, and Node.js.",
-      "Experience with cloud platforms.",
-      "Strong communication in cross-functional teams.",
-      "Experience with agile development methodologies.",
-    ],
-  },
-  {
-    title: "Frontend Developer",
-    company: "LongWave",
-    location: "Greater Tokyo Area",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "LongWave is looking for a Frontend Developer to build exceptional user experiences for SaaS products.",
-    responsibilities: [
-      "Build and maintain web apps using React.",
-      "Translate UI designs into clean implementations.",
-      "Optimize apps for speed and compatibility.",
-      "Collaborate with backend engineers on API integration.",
-      "Write unit and integration tests.",
-    ],
-    requirements: [
-      "3+ years of experience with React or Vue.",
-      "Strong knowledge of HTML, CSS, and JavaScript.",
-      "Experience in responsive design.",
-      "Familiarity with Git workflows.",
-      "Attention to detail and strong UI instincts.",
-    ],
-  },
-];
+const jobs: MockJob[] = mockJobs;
 
 type DropdownName = "mode" | "date" | "type" | "remote" | "sort" | null;
 type SortBy = "relevance" | "date";
+type DateRangeFilter = "any" | "3d" | "7d" | "30d";
+type JobTypeFilter =
+  | "all"
+  | "Full-time"
+  | "Part-time"
+  | "Contract"
+  | "Internship"
+  | "Temporary"
+  | "Volunteer";
+type RemoteFilter = "all" | "on-site" | "hybrid" | "remote";
+
+const DATE_RANGE_OPTIONS: Array<{ value: DateRangeFilter; label: string }> = [
+  { value: "3d", label: "Last 3 days" },
+  { value: "7d", label: "Last week" },
+  { value: "30d", label: "Last month" },
+  { value: "any", label: "Any time" },
+];
+
+const JOB_TYPE_OPTIONS: Array<{ value: JobTypeFilter; label: string }> = [
+  { value: "Full-time", label: "Full-time" },
+  { value: "Part-time", label: "Part-time" },
+  { value: "Contract", label: "Contract" },
+  { value: "Internship", label: "Internship" },
+  { value: "Temporary", label: "Temporary" },
+  { value: "Volunteer", label: "Volunteer" },
+];
+
+const REMOTE_OPTIONS: Array<{ value: RemoteFilter; label: string }> = [
+  { value: "on-site", label: "On-site" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "remote", label: "Remote" },
+];
 
 type AiJobMatchSectionProps = {
   hasScan: boolean;
   onCreateScan?: () => void;
 };
 
+function getPostedDays(postedAt: string) {
+  const posted = new Date(postedAt).getTime();
+  if (Number.isNaN(posted)) return Number.MAX_SAFE_INTEGER;
+  const diffMs = Date.now() - posted;
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function formatPosted(postedAt: string) {
+  const postedDays = getPostedDays(postedAt);
+  if (postedDays <= 1) return "1 day ago";
+  return `${postedDays} days ago`;
+}
+
+type AiJobUrlFilters = {
+  searchMode: "resume" | "keyword";
+  sortBy: SortBy;
+  dateRange: DateRangeFilter;
+  jobTypeFilter: JobTypeFilter;
+  remoteFilter: RemoteFilter;
+  keyword: string;
+  location: string;
+};
+
+function readAiJobFiltersFromUrl(): AiJobUrlFilters {
+  if (typeof window === "undefined") {
+    return {
+      searchMode: "resume" as const,
+      sortBy: "relevance" as SortBy,
+      dateRange: "any" as DateRangeFilter,
+      jobTypeFilter: "all" as JobTypeFilter,
+      remoteFilter: "all" as RemoteFilter,
+      keyword: "",
+      location: "",
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+  const sort = params.get("sort");
+  const date = params.get("date");
+  const type = params.get("type");
+  const remote = params.get("remote");
+
+  return {
+    searchMode: mode === "keyword" ? "keyword" : "resume",
+    sortBy: sort === "date" ? "date" : "relevance",
+    dateRange: date === "3d" || date === "7d" || date === "30d" ? date : "any",
+    jobTypeFilter: (JOB_TYPE_OPTIONS.some((item) => item.value === type)
+      ? type
+      : "all") as JobTypeFilter,
+    remoteFilter: (REMOTE_OPTIONS.some((item) => item.value === remote)
+      ? remote
+      : "all") as RemoteFilter,
+    keyword: params.get("q") ?? "",
+    location: params.get("loc") ?? "",
+  };
+}
+
 export function AiJobMatchSection({
   hasScan,
   onCreateScan,
 }: AiJobMatchSectionProps) {
-  const [selectedJobId, setSelectedJobId] = useState(getJobId(jobs[0]));
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
-  const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
-  const [sortBy, setSortBy] = useState<SortBy>("relevance");
-  const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("");
-  const [leftPanelHeight, setLeftPanelHeight] = useState<number | null>(null);
-  const rightPanelRef = useRef<HTMLElement | null>(null);
+  const [searchMode, setSearchMode] = useState<"resume" | "keyword">(
+    () => readAiJobFiltersFromUrl().searchMode,
+  );
+  const [sortBy, setSortBy] = useState<SortBy>(
+    () => readAiJobFiltersFromUrl().sortBy,
+  );
+  const [dateRange, setDateRange] = useState<DateRangeFilter>(
+    () => readAiJobFiltersFromUrl().dateRange,
+  );
+  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>(
+    () => readAiJobFiltersFromUrl().jobTypeFilter,
+  );
+  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>(
+    () => readAiJobFiltersFromUrl().remoteFilter,
+  );
+  const [keyword, setKeyword] = useState(
+    () => readAiJobFiltersFromUrl().keyword,
+  );
+  const [location, setLocation] = useState(
+    () => readAiJobFiltersFromUrl().location,
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [previewJobId, setPreviewJobId] = useState<string | null>(null);
 
-  const visibleJobs = useMemo(() => {
-    if (sortBy === "date") {
-      return [...jobs].sort(
-        (a, b) => getPostedDays(a.postedAt) - getPostedDays(b.postedAt),
-      );
-    }
+  const handleKeywordChange = (value: string) => {
+    setKeyword(value);
+    setCurrentPage(1);
+  };
 
-    return jobs;
-  }, [sortBy]);
+  const handleLocationChange = (value: string) => {
+    setLocation(value);
+    setCurrentPage(1);
+  };
 
-  const selectedJob =
-    visibleJobs.find((job) => getJobId(job) === selectedJobId) ??
-    visibleJobs[0];
+  const handleSortChange = (value: SortBy) => {
+    setSortBy(value);
+    setCurrentPage(1);
+    closeDropdown();
+  };
+
+  const handleDateRangeChange = (value: DateRangeFilter) => {
+    setDateRange(value);
+    setCurrentPage(1);
+    closeDropdown();
+  };
+
+  const handleJobTypeChange = (value: JobTypeFilter) => {
+    setJobTypeFilter(value);
+    setCurrentPage(1);
+    closeDropdown();
+  };
+
+  const handleRemoteChange = (value: RemoteFilter) => {
+    setRemoteFilter(value);
+    setCurrentPage(1);
+    closeDropdown();
+  };
+
+  const resetFilters = () => {
+    setKeyword("");
+    setLocation("");
+    setDateRange("any");
+    setJobTypeFilter("all");
+    setRemoteFilter("all");
+    setCurrentPage(1);
+    closeDropdown();
+  };
 
   const keywordPlaceholder =
     searchMode === "resume"
@@ -152,24 +205,155 @@ export function AiJobMatchSection({
   const closeDropdown = () => setOpenDropdown(null);
 
   useEffect(() => {
-    if (!hasScan) return;
+    if (typeof window === "undefined") return;
 
-    const syncPanelHeight = () => {
-      if (!rightPanelRef.current) return;
-      setLeftPanelHeight(Math.ceil(rightPanelRef.current.offsetHeight));
-    };
+    const params = new URLSearchParams(window.location.search);
 
-    syncPanelHeight();
+    if (searchMode !== "resume") params.set("mode", searchMode);
+    else params.delete("mode");
 
-    const observer = new ResizeObserver(syncPanelHeight);
-    if (rightPanelRef.current) observer.observe(rightPanelRef.current);
-    window.addEventListener("resize", syncPanelHeight);
+    if (sortBy !== "relevance") params.set("sort", sortBy);
+    else params.delete("sort");
+
+    if (dateRange !== "any") params.set("date", dateRange);
+    else params.delete("date");
+
+    if (jobTypeFilter !== "all") params.set("type", jobTypeFilter);
+    else params.delete("type");
+
+    if (remoteFilter !== "all") params.set("remote", remoteFilter);
+    else params.delete("remote");
+
+    const normalizedKeyword = keyword.trim();
+    if (normalizedKeyword) params.set("q", normalizedKeyword);
+    else params.delete("q");
+
+    const normalizedLocation = location.trim();
+    if (normalizedLocation) params.set("loc", normalizedLocation);
+    else params.delete("loc");
+
+    const nextSearch = params.toString();
+    const currentSearch = window.location.search.startsWith("?")
+      ? window.location.search.slice(1)
+      : window.location.search;
+
+    if (nextSearch === currentSearch) return;
+
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", nextUrl);
+  }, [
+    searchMode,
+    sortBy,
+    dateRange,
+    jobTypeFilter,
+    remoteFilter,
+    keyword,
+    location,
+  ]);
+
+  const visibleJobs = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedLocation = location.trim().toLowerCase();
+
+    let filtered = jobs.filter((job) => {
+      const postedDays = getPostedDays(job.postedAt);
+
+      const matchesKeyword =
+        !normalizedKeyword ||
+        job.title.toLowerCase().includes(normalizedKeyword) ||
+        job.company.toLowerCase().includes(normalizedKeyword);
+
+      const matchesLocation =
+        !normalizedLocation ||
+        job.location.toLowerCase().includes(normalizedLocation);
+
+      const matchesDateRange =
+        dateRange === "any" ||
+        (dateRange === "3d" && postedDays <= 3) ||
+        (dateRange === "7d" && postedDays <= 7) ||
+        (dateRange === "30d" && postedDays <= 30);
+
+      const matchesJobType =
+        jobTypeFilter === "all" || job.jobType === jobTypeFilter;
+
+      const matchesRemote =
+        remoteFilter === "all" || job.remoteOption === remoteFilter;
+
+      return (
+        matchesKeyword &&
+        matchesLocation &&
+        matchesDateRange &&
+        matchesJobType &&
+        matchesRemote
+      );
+    });
+
+    if (sortBy === "date") {
+      filtered = [...filtered].sort(
+        (a, b) => getPostedDays(a.postedAt) - getPostedDays(b.postedAt),
+      );
+    }
+
+    return filtered;
+  }, [keyword, location, sortBy, dateRange, jobTypeFilter, remoteFilter]);
+
+  const pageSize = 8;
+  const totalPages = Math.max(1, Math.ceil(visibleJobs.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  const pagedJobs = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return visibleJobs.slice(start, start + pageSize);
+  }, [safeCurrentPage, visibleJobs]);
+
+  const pageNumbers = useMemo(
+    () => Array.from({ length: totalPages }, (_, idx) => idx + 1),
+    [totalPages],
+  );
+
+  const previewJob = useMemo(
+    () => jobs.find((job) => job.id === previewJobId) ?? null,
+    [previewJobId],
+  );
+
+  const openJobPreview = (job: MockJob) => {
+    if (job.locked) return;
+    closeDropdown();
+    setPreviewJobId(job.id);
+  };
+
+  const closeJobPreview = () => setPreviewJobId(null);
+
+  useEffect(() => {
+    if (!previewJob) return;
+
+    const shellScrollContainer = document.getElementById(
+      "app-shell-scroll-container",
+    );
+    const previousShellOverflowY = shellScrollContainer?.style.overflowY;
+    const previousShellPaddingRight = shellScrollContainer?.style.paddingRight;
+
+    if (shellScrollContainer) {
+      const scrollbarWidth =
+        shellScrollContainer.offsetWidth - shellScrollContainer.clientWidth;
+      const computedPaddingRight = Number.parseFloat(
+        window.getComputedStyle(shellScrollContainer).paddingRight,
+      );
+
+      shellScrollContainer.style.overflowY = "hidden";
+      if (scrollbarWidth > 0) {
+        shellScrollContainer.style.paddingRight = `${computedPaddingRight + scrollbarWidth}px`;
+      }
+    }
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", syncPanelHeight);
+      if (shellScrollContainer) {
+        shellScrollContainer.style.overflowY = previousShellOverflowY ?? "";
+        shellScrollContainer.style.paddingRight =
+          previousShellPaddingRight ?? "";
+      }
     };
-  }, [selectedJobId, hasScan]);
+  }, [previewJob]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -197,7 +381,7 @@ export function AiJobMatchSection({
             </button>
             <input
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={(e) => handleKeywordChange(e.target.value)}
               placeholder={keywordPlaceholder}
               readOnly={searchMode === "resume"}
               className="h-10 flex-1 rounded-r-lg border border-border px-3 text-xs text-muted-foreground outline-none focus:border-foreground"
@@ -235,7 +419,7 @@ export function AiJobMatchSection({
             <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <input
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => handleLocationChange(e.target.value)}
               placeholder="Your current location"
               className="h-10 w-full rounded-lg border border-border py-2 pl-9 pr-3 text-xs outline-none focus:border-foreground"
             />
@@ -250,98 +434,82 @@ export function AiJobMatchSection({
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("date")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              Date range <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "date" && (
-              <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {["Last 3 days", "Last week", "Last month", "Any time"].map(
-                  (item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={closeDropdown}
-                      className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                    >
-                      {item}
-                    </button>
-                  ),
-                )}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={
+              DATE_RANGE_OPTIONS.find((item) => item.value === dateRange)
+                ?.label ?? "Date range"
+            }
+            isOpen={openDropdown === "date"}
+            onToggle={() => toggleDropdown("date")}
+            onClose={closeDropdown}
+            options={DATE_RANGE_OPTIONS}
+            onSelect={handleDateRangeChange}
+            selectedValue={dateRange}
+            menuWidthClass="w-36"
+          />
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("type")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              Job type <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "type" && (
-              <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {[
-                  "Full-time",
-                  "Part-time",
-                  "Contract",
-                  "Internship",
-                  "Temporary",
-                  "Volunteer",
-                ].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={closeDropdown}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={jobTypeFilter === "all" ? "Job type" : jobTypeFilter}
+            isOpen={openDropdown === "type"}
+            onToggle={() => toggleDropdown("type")}
+            onClose={closeDropdown}
+            options={JOB_TYPE_OPTIONS}
+            onSelect={handleJobTypeChange}
+            selectedValue={jobTypeFilter === "all" ? undefined : jobTypeFilter}
+            menuWidthClass="w-36"
+          />
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => toggleDropdown("remote")}
-              className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-            >
-              Remote option <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {openDropdown === "remote" && (
-              <div className="absolute left-0 top-[34px] z-20 w-32 rounded-lg border border-border bg-card py-1 shadow-lg">
-                {["On-site", "Hybrid", "Remote"].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={closeDropdown}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FilterSelect
+            label={
+              REMOTE_OPTIONS.find((item) => item.value === remoteFilter)
+                ?.label ?? "Remote option"
+            }
+            isOpen={openDropdown === "remote"}
+            onToggle={() => toggleDropdown("remote")}
+            onClose={closeDropdown}
+            options={REMOTE_OPTIONS}
+            onSelect={handleRemoteChange}
+            selectedValue={remoteFilter === "all" ? undefined : remoteFilter}
+            menuWidthClass="w-32"
+          />
 
           <button
             type="button"
-            onClick={() => {
-              setKeyword("");
-              setLocation("");
-              closeDropdown();
-            }}
+            onClick={resetFilters}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
             Clear all
           </button>
+
+          <div className="ml-auto relative">
+            <button
+              type="button"
+              onClick={() => toggleDropdown("sort")}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <ChevronsUpDown className="h-3.5 w-3.5" />
+              {sortBy === "relevance" ? "Relevance" : "Date"}
+            </button>
+            {openDropdown === "sort" && (
+              <div className="absolute right-0 top-[24px] z-20 w-[160px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
+                {(["relevance", "date"] as const).map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => handleSortChange(val)}
+                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-muted ${
+                      sortBy === val
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-card"
+                    }`}
+                  >
+                    {val === "relevance" ? "Relevance" : "Date"}
+                    {sortBy === val && <Check className="h-4 w-4" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -392,161 +560,164 @@ export function AiJobMatchSection({
             </p>
           </div>
 
-          <div
-            className="grid items-start gap-4"
-            style={{ gridTemplateColumns: "340px minmax(0, 1fr)" }}
-          >
-            <aside
-              className="flex flex-col overflow-hidden rounded-xl border border-border bg-card"
-              style={
-                leftPanelHeight ? { height: `${leftPanelHeight}px` } : undefined
-              }
-            >
-              <div className="relative border-b border-border px-4 py-3">
-                <button
-                  type="button"
-                  onClick={() => toggleDropdown("sort")}
-                  className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
-                >
-                  <ChevronsUpDown className="h-3.5 w-3.5" />
-                  {sortBy === "relevance" ? "Relevance" : "Date"}
-                </button>
-
-                {openDropdown === "sort" && (
-                  <div className="absolute left-4 top-12 z-20 w-[200px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
-                    <div className="border-b border-border px-4 py-2.5 text-sm text-muted-foreground">
-                      Sort by
-                    </div>
-                    {(["relevance", "date"] as const).map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => {
-                          setSortBy(val);
-                          closeDropdown();
-                        }}
-                        className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                          sortBy === val
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-card"
-                        }`}
-                      >
-                        {val === "relevance" ? "Relevance" : "Date"}
-                        {sortBy === val && <Check className="h-4 w-4" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
+          {visibleJobs.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
+              <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                <Search className="h-5 w-5" />
               </div>
+              <h3 className="text-lg font-semibold text-foreground">
+                No jobs found
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Try adjusting your filters to see more matching jobs.
+              </p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-foreground"
+              >
+                Reset filters
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {pagedJobs.map((job) => {
+                  const badgeClass =
+                    job.badge === "top"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-green-100 text-green-700";
 
-              <div className="min-h-0 flex-1 overflow-y-auto p-3">
-                {visibleJobs.map((job) => {
-                  const jobId = getJobId(job);
-                  const isActive = selectedJobId === jobId;
+                  const badgeLabel =
+                    job.badge === "top" ? "Top Match" : "Good Match";
+
                   return (
-                    <button
-                      key={jobId}
-                      type="button"
-                      onClick={() => setSelectedJobId(jobId)}
-                      className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
-                        isActive
-                          ? "border-primary/40 bg-accent"
-                          : "border-border bg-card hover:bg-background"
+                    <article
+                      key={job.id}
+                      onClick={() => openJobPreview(job)}
+                      className={`group relative rounded-xl border border-border bg-card p-4 ${
+                        job.locked ? "cursor-default" : "cursor-pointer"
                       }`}
                     >
-                      {job.goodMatch && (
-                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-[11px] font-semibold text-accent-foreground">
-                          <Check className="h-3 w-3 text-primary" /> Good Match
-                        </span>
-                      )}
-                      <div className="text-sm font-semibold text-foreground">
-                        {job.title}
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
+                      >
+                        {job.badge === "top" ? (
+                          <Star className="mr-1 h-3 w-3" />
+                        ) : (
+                          <CheckCircle2 className="mr-1 h-3 w-3" />
+                        )}
+                        {badgeLabel}
+                      </span>
+
+                      <div
+                        className={
+                          job.locked
+                            ? "mt-2 flex-1 blur-[6px] opacity-70 pointer-events-none select-none"
+                            : "mt-2 flex-1"
+                        }
+                      >
+                        <h3
+                          title={job.title}
+                          className="line-clamp-1 text-base font-bold text-primary"
+                        >
+                          {job.title}
+                        </h3>
+                        <p
+                          title={job.company}
+                          className="mt-1 line-clamp-1 text-sm font-semibold text-foreground"
+                        >
+                          {job.company}
+                        </p>
+                        <p
+                          title={job.location}
+                          className="mt-1 line-clamp-1 text-sm text-muted-foreground"
+                        >
+                          {job.location}
+                        </p>
+                        <p className="mt-4 text-sm text-muted-foreground">
+                          {formatPosted(job.postedAt)}
+                        </p>
+
+                        <div className="mt-4 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            className="rounded-md border border-border px-4 py-1.5 text-sm font-semibold text-foreground hover:border-foreground"
+                          >
+                            Scan
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="Save job"
+                          >
+                            <Bookmark className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="mt-0.5 text-xs font-medium text-foreground">
-                        {job.company}
-                      </div>
-                      <div className="mt-0.5 text-xs text-muted-foreground">
-                        {job.location}
-                      </div>
-                      <div className="mt-1 text-[11px] text-muted-foreground/60">
-                        {job.postedAt}
-                      </div>
-                    </button>
+
+                      {job.locked ? (
+                        <>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+                            <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
+                              <Lock className="h-4 w-4" />
+                            </div>
+                          </div>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                            <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                              <Lock className="h-3.5 w-3.5" />
+                              Unlock to view
+                            </div>
+                          </div>
+                        </>
+                      ) : null}
+                    </article>
                   );
                 })}
               </div>
-            </aside>
 
-            <article
-              ref={rightPanelRef}
-              className="rounded-xl border border-border bg-card"
-            >
-              <div className="border-b border-border px-6 pb-4 pt-5">
-                <h3 className="text-2xl font-bold text-foreground">
-                  {selectedJob.title}
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-foreground">
-                  {selectedJob.company}
-                </p>
+              <div className="mt-5 flex items-center justify-center gap-2 text-sm">
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                  className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
+                >
+                  {"<"}
+                </button>
 
-                <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5" /> {selectedJob.location}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BriefcaseBusiness className="h-3.5 w-3.5" />
-                    {selectedJob.type}
-                  </div>
-                </div>
+                {pageNumbers.map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    className={`min-w-8 rounded-md px-2 py-1 ${
+                      safeCurrentPage === page
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
 
-                <div className="mt-4 flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-                  >
-                    Scan
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                  >
-                    <Bookmark className="h-3.5 w-3.5" /> Save Job
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" /> Apply
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
+                >
+                  {">"}
+                </button>
               </div>
-
-              <div className="px-6 py-5 text-sm leading-relaxed text-foreground">
-                <p className="mb-3 font-medium">Job Description</p>
-                <p className="mb-4">{selectedJob.description}</p>
-
-                <h4 className="mb-2 font-semibold">Responsibilities</h4>
-                <ul className="mb-4 space-y-1.5">
-                  {selectedJob.responsibilities.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <h4 className="mb-2 font-semibold">Requirements</h4>
-                <ul className="space-y-1.5">
-                  {selectedJob.requirements.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 text-primary">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          </div>
+            </>
+          )}
         </section>
       )}
 
@@ -557,6 +728,102 @@ export function AiJobMatchSection({
           onClick={closeDropdown}
           className="fixed inset-0 z-10 cursor-default"
         />
+      )}
+
+      {previewJob && (
+        <div className="fixed inset-0 z-40">
+          <button
+            type="button"
+            aria-label="Close quick JD preview"
+            onClick={closeJobPreview}
+            className="absolute inset-0 bg-black/30"
+          />
+
+          <aside className="absolute inset-y-4 right-0 flex w-[min(620px,calc(100%-2rem))] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
+            <header className="border-b border-border px-6 pb-4 pt-5">
+              <div className="mb-2 flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-2xl font-bold leading-tight text-foreground">
+                    {previewJob.title}
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold text-foreground">
+                    {previewJob.company}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeJobPreview}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {previewJob.location}
+                </div>
+                <div className="flex items-center gap-2">
+                  <BriefcaseBusiness className="h-4 w-4" />
+                  {previewJob.jobType}
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  Scan
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                >
+                  <Bookmark className="h-3.5 w-3.5" /> Save Job
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Apply
+                </button>
+              </div>
+            </header>
+
+            <div
+              className="min-h-0 flex-1 overflow-y-scroll px-6 py-5 text-sm leading-relaxed text-foreground"
+              style={{ scrollbarGutter: "stable" }}
+            >
+              <h4 className="mb-2 font-semibold uppercase tracking-wide text-foreground/90">
+                Job Description
+              </h4>
+              <p className="mb-5">{previewJob.description}</p>
+
+              <h4 className="mb-2 font-semibold">Responsibilities</h4>
+              <ul className="mb-5 space-y-1.5">
+                {previewJob.responsibilities.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <h4 className="mb-2 font-semibold">Requirements</h4>
+              <ul className="space-y-1.5">
+                {previewJob.requirements.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        </div>
       )}
     </div>
   );

@@ -1,30 +1,5 @@
 import { useRef, useState, type DragEvent } from "react";
-
-const C = {
-  brand: "var(--primary)",
-  brandHover: "var(--primary)",
-  cta: "var(--cta)",
-  ctaHover: "var(--cta-hover)",
-  ctaForeground: "var(--cta-foreground)",
-  brandLight: "var(--muted)",
-  brandBorder: "var(--border)",
-  bg: "var(--muted)",
-  card: "var(--card)",
-  stepDone: "var(--muted)",
-  stepInactive: "transparent",
-  lineActive: "var(--foreground)",
-  lineInactive: "var(--border)",
-  textMain: "var(--foreground)",
-  textMid: "var(--muted-foreground)",
-  textMuted: "var(--muted-foreground)",
-  textLight: "var(--muted-foreground)",
-  border: "var(--border)",
-  scanDisabled: "var(--muted)",
-  scanDisabledText: "var(--muted-foreground)",
-  selectedBg: "var(--muted)",
-  selectedText: "var(--foreground)",
-  hoverBg: "var(--background)",
-};
+import { Check, CloudUpload, FileText } from "lucide-react";
 
 const JD_SAMPLES = [
   "Full Stack Developer",
@@ -68,156 +43,44 @@ const STEPS = [
   { label: "View Results" },
 ];
 
-function CheckIcon({ size = 18, color = C.brand }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function UploadIcon({ size = 52, color = "var(--primary)" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <rect x="8" y="10" width="36" height="46" rx="4" fill={C.brandLight} />
-      <rect
-        x="14"
-        y="18"
-        width="24"
-        height="3"
-        rx="1.5"
-        fill={C.lineInactive}
-      />
-      <rect
-        x="14"
-        y="25"
-        width="18"
-        height="3"
-        rx="1.5"
-        fill={C.lineInactive}
-      />
-      <rect
-        x="14"
-        y="32"
-        width="20"
-        height="3"
-        rx="1.5"
-        fill={C.lineInactive}
-      />
-      <circle cx="46" cy="46" r="13" fill={color} />
-      <path
-        d="M46 52V40M41 45l5-5 5 5"
-        stroke={C.card}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function FileIcon({ size = 16 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={C.textMuted}
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-    </svg>
-  );
-}
-
 function Stepper({ current }: { current: number }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        marginBottom: 32,
-      }}
-    >
+    <div className="mb-8 flex items-start justify-center">
       {STEPS.map((step, index) => {
         const num = index + 1;
         const isDone = num < current;
         const isActive = num === current;
 
         return (
-          <div
-            key={step.label}
-            style={{ display: "flex", alignItems: "flex-start" }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
+          <div key={step.label} className="flex items-start">
+            <div className="flex flex-col items-center gap-2">
               <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  background: isDone
-                    ? C.stepDone
+                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-[15px] font-bold transition-colors ${
+                  isDone
+                    ? "border-primary bg-muted text-primary"
                     : isActive
-                      ? C.brand
-                      : C.stepInactive,
-                  border: `2px solid ${isDone || isActive ? C.brand : C.lineInactive}`,
-                  color: isDone
-                    ? C.brand
-                    : isActive
-                      ? "var(--primary-foreground)"
-                      : C.textLight,
-                  transition: "all .25s",
-                }}
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-transparent text-muted-foreground"
+                }`}
               >
-                {isDone ? <CheckIcon size={18} color={C.brand} /> : num}
+                {isDone ? <Check className="h-4 w-4" /> : num}
               </div>
               <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  color: isDone || isActive ? C.textMain : C.textLight,
-                }}
+                className={`whitespace-nowrap text-[13px] font-semibold ${
+                  isDone || isActive
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
               >
                 {step.label}
               </span>
             </div>
+
             {index < STEPS.length - 1 ? (
               <div
-                style={{
-                  width: 96,
-                  height: 2,
-                  marginTop: 19,
-                  flexShrink: 0,
-                  background: num < current ? C.lineActive : C.lineInactive,
-                  transition: "background .25s",
-                }}
+                className={`mt-[19px] h-[2px] w-24 flex-shrink-0 transition-colors ${
+                  num < current ? "bg-foreground" : "bg-border"
+                }`}
               />
             ) : null}
           </div>
@@ -253,43 +116,22 @@ function StepUpload({
 
   if (pasting) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="flex flex-col gap-3">
         <textarea
           autoFocus
           value={pasteText}
           onChange={(event) => setPasteText(event.target.value)}
           placeholder="Paste your resume text here..."
-          style={{
-            width: "100%",
-            minHeight: 220,
-            padding: "14px 16px",
-            fontSize: 14,
-            lineHeight: 1.7,
-            color: C.textMain,
-            border: `1.5px solid ${C.brandBorder}`,
-            borderRadius: 10,
-            outline: "none",
-            resize: "vertical",
-            fontFamily: "inherit",
-          }}
+          className="min-h-[220px] w-full resize-y rounded-[10px] border border-border px-4 py-3.5 text-sm leading-7 text-foreground outline-none"
         />
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex gap-2.5">
           <button
             disabled={!pasteText.trim()}
             onClick={() => {
               const blob = new Blob([pasteText], { type: "text/plain" });
               onFile(new File([blob], "resume.txt", { type: "text/plain" }));
             }}
-            style={{
-              background: pasteText.trim() ? C.cta : C.scanDisabled,
-              color: pasteText.trim() ? C.ctaForeground : C.scanDisabledText,
-              border: "none",
-              borderRadius: 8,
-              padding: "9px 24px",
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: pasteText.trim() ? "pointer" : "default",
-            }}
+            className="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
           >
             Continue
           </button>
@@ -298,15 +140,7 @@ function StepUpload({
               setPasting(false);
               setPasteText("");
             }}
-            style={{
-              background: "none",
-              border: `1px solid ${C.border}`,
-              borderRadius: 8,
-              padding: "9px 20px",
-              fontSize: 14,
-              color: C.textMid,
-              cursor: "pointer",
-            }}
+            className="rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
           >
             Cancel
           </button>
@@ -316,14 +150,7 @@ function StepUpload({
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 18,
-        alignItems: "center",
-      }}
-    >
+    <div className="flex flex-col items-center gap-[18px]">
       <label
         htmlFor="scan-resume-input"
         onDragOver={(event) => {
@@ -335,38 +162,18 @@ function StepUpload({
           setDragging(false);
         }}
         onDrop={handleDrop}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          minHeight: 280,
-          border: `2px dashed ${dragging ? C.brand : C.brandBorder}`,
-          borderRadius: 12,
-          background: dragging ? C.brandLight : C.card,
-          cursor: "pointer",
-          transition: "all .18s",
-          padding: "32px 20px",
-          textAlign: "center",
-        }}
+        className={`flex min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-5 py-8 text-center transition-all ${
+          dragging ? "border-primary bg-muted" : "border-border bg-card"
+        }`}
       >
-        <UploadIcon />
-        <p
-          style={{
-            marginTop: 18,
-            fontSize: 18,
-            fontWeight: 600,
-            color: C.textMain,
-          }}
-        >
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <CloudUpload className="h-7 w-7" />
+        </div>
+        <p className="mt-4 text-lg font-semibold text-foreground">
           Drag & Drop or{" "}
-          <span style={{ color: C.brand, textDecoration: "underline" }}>
-            Choose file
-          </span>{" "}
-          to upload
+          <span className="text-primary underline">Choose file</span> to upload
         </p>
-        <p style={{ marginTop: 6, fontSize: 13, color: C.textLight }}>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           as .pdf or .docx file
         </p>
         <input
@@ -374,23 +181,14 @@ function StepUpload({
           ref={inputRef}
           type="file"
           accept=".pdf,.doc,.docx"
-          style={{ display: "none" }}
+          className="hidden"
           onChange={(event) => handleFile(event.target.files?.[0] ?? undefined)}
         />
       </label>
 
       <button
         onClick={() => setPasting(true)}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          color: C.brand,
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: "pointer",
-          textDecoration: "none",
-        }}
+        className="cursor-pointer text-sm font-semibold text-primary"
       >
         Or paste resume text
       </button>
@@ -398,21 +196,9 @@ function StepUpload({
       <button
         type="button"
         onClick={onViewSampleReport}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          background: C.card,
-          border: `1px solid ${C.border}`,
-          borderRadius: 8,
-          padding: "9px 22px",
-          fontSize: 14,
-          fontWeight: 600,
-          color: C.textMid,
-          cursor: "pointer",
-        }}
+        className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
       >
-        <FileIcon /> View sample report
+        View sample report
       </button>
     </div>
   );
@@ -438,55 +224,17 @@ function StepJob({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        alignItems: "center",
-      }}
-    >
+    <div className="flex flex-col items-center gap-4">
       {fileName ? (
-        <div
-          style={{
-            width: "100%",
-            background: C.brandLight,
-            border: `1px solid ${C.brandBorder}`,
-            borderRadius: 8,
-            padding: "7px 14px",
-            fontSize: 13,
-            color: C.textMain,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <FileIcon size={14} /> Uploaded: {fileName}
+        <div className="flex w-full items-center gap-2 rounded-lg border border-border bg-muted px-3.5 py-2 text-sm text-foreground">
+          <FileText className="h-4 w-4 text-muted-foreground" /> Uploaded:{" "}
+          {fileName}
         </div>
       ) : null}
 
-      <div
-        style={{
-          width: "100%",
-          border: `1px solid ${C.border}`,
-          borderRadius: 12,
-          overflow: "hidden",
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          minHeight: 320,
-          background: C.card,
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              padding: "12px 16px",
-              borderBottom: `1px solid ${C.border}`,
-              fontSize: 15,
-              fontWeight: 600,
-              color: C.textMid,
-            }}
-          >
+      <div className="grid min-h-[320px] w-full grid-cols-[1fr_auto_1fr] overflow-hidden rounded-xl border border-border bg-card">
+        <div className="flex flex-col">
+          <div className="border-b border-border px-4 py-3 text-sm font-semibold text-muted-foreground">
             Paste a Job Description below
           </div>
           <textarea
@@ -496,97 +244,35 @@ function StepJob({
               setSelected(null);
             }}
             placeholder="Copy and paste a job description here"
-            style={{
-              flex: 1,
-              padding: "14px 16px",
-              fontSize: 14,
-              lineHeight: 1.75,
-              color: C.textMain,
-              border: "none",
-              outline: "none",
-              resize: "none",
-              fontFamily: "inherit",
-              minHeight: 260,
-            }}
+            className="min-h-[260px] flex-1 resize-none border-none px-4 py-3.5 text-sm leading-7 text-foreground outline-none"
           />
         </div>
 
-        <div
-          style={{
-            width: 1,
-            background: C.border,
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              background: C.card,
-              padding: "4px 0",
-              color: C.textMuted,
-              fontSize: 12,
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              writingMode: "vertical-rl",
-              transform: "rotate(180deg)",
-            }}
-          >
+        <div className="relative w-px bg-border">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-card px-2 py-1 text-xs font-semibold tracking-wide text-muted-foreground">
             OR
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              padding: "12px 16px",
-              borderBottom: `1px solid ${C.border}`,
-              fontSize: 15,
-              fontWeight: 600,
-              color: C.textMid,
-            }}
-          >
+        <div className="flex flex-col">
+          <div className="border-b border-border px-4 py-3 text-sm font-semibold text-muted-foreground">
             Use a Job Description Sample
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div className="flex-1 overflow-y-auto">
             {JD_SAMPLES.map((name) => {
               const active = selected === name;
               return (
                 <button
                   key={name}
                   onClick={() => pickSample(name)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                    padding: "11px 16px",
-                    textAlign: "left",
-                    background: active ? C.selectedBg : "transparent",
-                    color: active ? C.selectedText : C.textMain,
-                    border: "none",
-                    borderBottom: `1px solid ${C.border}`,
-                    fontSize: 14,
-                    cursor: "pointer",
-                    transition: "background .12s",
-                  }}
-                  onMouseEnter={(event) => {
-                    if (!active) {
-                      event.currentTarget.style.background = C.hoverBg;
-                    }
-                  }}
-                  onMouseLeave={(event) => {
-                    if (!active) {
-                      event.currentTarget.style.background = "transparent";
-                    }
-                  }}
+                  className={`flex w-full items-center justify-between border-b border-border px-4 py-2.5 text-left text-sm transition-colors ${
+                    active
+                      ? "bg-muted text-foreground"
+                      : "bg-transparent text-foreground hover:bg-background"
+                  }`}
                 >
                   <span>{name}</span>
-                  {active ? (
-                    <CheckIcon size={15} color={C.selectedText} />
-                  ) : null}
+                  {active ? <Check className="h-4 w-4" /> : null}
                 </button>
               );
             })}
@@ -599,28 +285,7 @@ function StepJob({
         onClick={() => {
           if (canScan) onScan();
         }}
-        style={{
-          background: canScan ? C.cta : C.scanDisabled,
-          color: canScan ? C.ctaForeground : C.scanDisabledText,
-          border: "none",
-          borderRadius: 9,
-          padding: "11px 52px",
-          fontSize: 20,
-          fontWeight: 700,
-          cursor: canScan ? "pointer" : "default",
-          transition: "background .15s",
-          letterSpacing: "-0.01em",
-        }}
-        onMouseEnter={(event) => {
-          if (canScan) {
-            event.currentTarget.style.background = C.ctaHover;
-          }
-        }}
-        onMouseLeave={(event) => {
-          if (canScan) {
-            event.currentTarget.style.background = C.cta;
-          }
-        }}
+        className="rounded-md bg-primary px-8 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
       >
         Scan
       </button>
@@ -628,21 +293,9 @@ function StepJob({
       <button
         type="button"
         onClick={onViewSampleReport}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          background: C.card,
-          border: `1px solid ${C.border}`,
-          borderRadius: 8,
-          padding: "9px 22px",
-          fontSize: 14,
-          fontWeight: 600,
-          color: C.textMid,
-          cursor: "pointer",
-        }}
+        className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
       >
-        <FileIcon /> View sample report
+        <FileText className="h-4 w-4" /> View sample report
       </button>
     </div>
   );
@@ -661,49 +314,28 @@ export function ScanWidget({
   const currentStep = file ? 2 : 1;
 
   return (
-    <section id="how-it-works" style={{ width: "100%", padding: "72px 0" }}>
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px" }}>
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <h2
-            style={{
-              fontSize: "clamp(24px, 4vw, 32px)",
-              fontWeight: 800,
-              color: C.textMain,
-              letterSpacing: "-0.02em",
-              marginBottom: 10,
-            }}
-          >
+    <section id="how-it-works" className="w-full py-[72px]">
+      <div className="mx-auto max-w-[860px] px-6">
+        <div className="mb-10 text-center">
+          <h2 className="mb-2.5 text-[clamp(24px,4vw,32px)] font-extrabold tracking-[-0.02em] text-foreground">
             Precision Job Matching in Minutes
           </h2>
-          <p
-            style={{
-              fontSize: 16,
-              color: C.textMuted,
-              maxWidth: 520,
-              margin: "0 auto",
-              lineHeight: 1.6,
-            }}
-          >
+          <p className="mx-auto max-w-[520px] text-base leading-relaxed text-muted-foreground">
             Our streamlined three-step process ensures your resume speaks the
             language of recruiters and ATS systems.
           </p>
         </div>
 
-        <div
-          style={{
-            background: C.bg,
-            borderRadius: 20,
-            padding: "36px 40px",
-            border: `1px solid ${C.border}`,
-          }}
-        >
+        <div className="rounded-[20px] border border-border bg-muted px-10 py-9">
           <Stepper current={currentStep} />
+
           {currentStep === 1 ? (
             <StepUpload
               onFile={(selectedFile) => setFile(selectedFile)}
               onViewSampleReport={onViewSampleReport}
             />
           ) : null}
+
           {currentStep === 2 ? (
             <StepJob
               fileName={file?.name}

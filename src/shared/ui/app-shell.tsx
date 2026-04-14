@@ -24,7 +24,7 @@ type NavItem = {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  to?: "/dashboard" | "/resume-optimizer" | "/jobs";
+  to?: "/dashboard" | "/resume-optimizer" | "/jobs" | "/scan-history";
 };
 
 const navItems: NavItem[] = [
@@ -41,7 +41,12 @@ const navItems: NavItem[] = [
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
   // { id: "resume-builder", label: "Resume Builder", icon: Pencil },
   // { id: "resume-manager", label: "Resume Manager", icon: Folder },
-  { id: "scan-history", label: "Scan History", icon: History },
+  {
+    id: "scan-history",
+    label: "Scan History",
+    icon: History,
+    to: "/scan-history",
+  },
 ];
 
 type AppShellProps = {
@@ -273,7 +278,10 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div
+          id="app-shell-scroll-container"
+          className="flex-1 overflow-y-auto p-5"
+        >
           <div className={fullWidth ? "w-full" : "max-w-6xl mx-auto"}>
             {children}
           </div>

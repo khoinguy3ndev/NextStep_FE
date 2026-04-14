@@ -8,10 +8,11 @@ import { ForgotPasswordPage } from "@/pages/forgot-password/forgot-password.page
 import { DashboardPage } from "@/pages/dashboard/dashboard.page";
 import { ResumeOptimizerPage } from "@/pages/resume-optimizer/resume-optimizer.page";
 import { JobsPage } from "@/pages/jobs/jobs.page";
+import { ScanHistoryPage } from "@/pages/scan-history/scan-history.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
 import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
 import { GoogleCallbackPage } from "@/pages/google-callback/google-callback.page";
-import { Proteched } from "./protected";
+import { Protected } from "./protected";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -47,9 +48,9 @@ export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: () => (
-    <Proteched>
+    <Protected>
       <DashboardPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -57,9 +58,9 @@ export const resumeOptimizerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/resume-optimizer",
   component: () => (
-    <Proteched>
+    <Protected>
       <ResumeOptimizerPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -67,9 +68,19 @@ export const jobsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/jobs",
   component: () => (
-    <Proteched>
+    <Protected>
       <JobsPage />
-    </Proteched>
+    </Protected>
+  ),
+});
+
+export const scanHistoryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/scan-history",
+  component: () => (
+    <Protected>
+      <ScanHistoryPage />
+    </Protected>
   ),
 });
 
@@ -77,9 +88,9 @@ export const matchReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/match-report",
   component: () => (
-    <Proteched>
+    <Protected>
       <MatchReportPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -87,8 +98,8 @@ export const sampleReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sample-report",
   component: () => (
-    <Proteched>
+    <Protected>
       <SampleReportPage />
-    </Proteched>
+    </Protected>
   ),
 });
