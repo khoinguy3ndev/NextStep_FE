@@ -1,109 +1,25 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Bookmark,
   BriefcaseBusiness,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronsUpDown,
   ExternalLink,
   FileText,
   Info,
+  Lock,
   MapPin,
   Search,
+  Star,
+  X,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
+import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
-type Job = {
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  postedAt: string;
-  goodMatch?: boolean;
-  description: string;
-  responsibilities: string[];
-  requirements: string[];
-};
-
-const getJobId = (job: Job) => `${job.title}-${job.company}`;
-const getPostedDays = (postedAt: string) => {
-  const days = Number.parseInt(postedAt, 10);
-  return Number.isNaN(days) ? Number.MAX_SAFE_INTEGER : days;
-};
-
-const jobs: Job[] = [
-  {
-    title: "Backend Engineer",
-    company: "International Business Consulting",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "5 days ago",
-    goodMatch: true,
-    description:
-      "We are seeking a Backend Engineer to join our team and build scalable APIs that power our applications and services.",
-    responsibilities: [
-      "Design, develop, and maintain scalable APIs.",
-      "Collaborate with front-end developers to integrate user-facing elements with server-side logic.",
-      "Optimize applications for speed and scalability.",
-      "Troubleshoot and debug applications to ensure stable performance.",
-      "Write clean, maintainable, and efficient code.",
-    ],
-    requirements: [
-      "3+ years of experience with Node.js or Python.",
-      "Strong understanding of API design and development.",
-      "Experience with database management and integration.",
-      "Familiarity with version control systems such as Git.",
-      "Excellent problem-solving and communication skills.",
-    ],
-  },
-  {
-    title: "Senior Software Engineer | Hybrid (2 Office / 3 WFH)",
-    company: "SPOTTED",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "Join a fast-growing tech company building next-generation enterprise software. You will lead feature development across the full stack.",
-    responsibilities: [
-      "Lead implementation of new software features.",
-      "Mentor junior developers and conduct code reviews.",
-      "Collaborate with product managers to define requirements.",
-      "Participate in architecture decisions and roadmap planning.",
-      "Ensure code quality with testing and documentation.",
-    ],
-    requirements: [
-      "5+ years of software engineering experience.",
-      "Proficiency in TypeScript, React, and Node.js.",
-      "Experience with cloud platforms.",
-      "Strong communication in cross-functional teams.",
-      "Experience with agile development methodologies.",
-    ],
-  },
-  {
-    title: "Frontend Developer",
-    company: "LongWave",
-    location: "Greater Tokyo Area",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "LongWave is looking for a Frontend Developer to build exceptional user experiences for SaaS products.",
-    responsibilities: [
-      "Build and maintain web apps using React.",
-      "Translate UI designs into clean implementations.",
-      "Optimize apps for speed and compatibility.",
-      "Collaborate with backend engineers on API integration.",
-      "Write unit and integration tests.",
-    ],
-    requirements: [
-      "3+ years of experience with React or Vue.",
-      "Strong knowledge of HTML, CSS, and JavaScript.",
-      "Experience in responsive design.",
-      "Familiarity with Git workflows.",
-      "Attention to detail and strong UI instincts.",
-    ],
-  },
-];
+const jobs: MockJob[] = mockJobs;
 
 type DropdownName = "mode" | "date" | "type" | "remote" | "sort" | null;
 type SortBy = "relevance" | "date";
@@ -113,32 +29,46 @@ type AiJobMatchSectionProps = {
   onCreateScan?: () => void;
 };
 
+function getPostedDays(postedAt: string) {
+  const posted = new Date(postedAt).getTime();
+  if (Number.isNaN(posted)) return Number.MAX_SAFE_INTEGER;
+  const diffMs = Date.now() - posted;
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function formatPosted(postedAt: string) {
+  const postedDays = getPostedDays(postedAt);
+  if (postedDays <= 1) return "1 day ago";
+  return `${postedDays} days ago`;
+}
+
 export function AiJobMatchSection({
   hasScan,
   onCreateScan,
 }: AiJobMatchSectionProps) {
-  const [selectedJobId, setSelectedJobId] = useState(getJobId(jobs[0]));
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
   const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
   const [sortBy, setSortBy] = useState<SortBy>("relevance");
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
-  const [leftPanelHeight, setLeftPanelHeight] = useState<number | null>(null);
-  const rightPanelRef = useRef<HTMLElement | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [previewJobId, setPreviewJobId] = useState<string | null>(null);
 
-  const visibleJobs = useMemo(() => {
-    if (sortBy === "date") {
-      return [...jobs].sort(
-        (a, b) => getPostedDays(a.postedAt) - getPostedDays(b.postedAt),
-      );
-    }
+  const handleKeywordChange = (value: string) => {
+    setKeyword(value);
+    setCurrentPage(1);
+  };
 
-    return jobs;
-  }, [sortBy]);
+  const handleLocationChange = (value: string) => {
+    setLocation(value);
+    setCurrentPage(1);
+  };
 
-  const selectedJob =
-    visibleJobs.find((job) => getJobId(job) === selectedJobId) ??
-    visibleJobs[0];
+  const handleSortChange = (value: SortBy) => {
+    setSortBy(value);
+    setCurrentPage(1);
+    closeDropdown();
+  };
 
   const keywordPlaceholder =
     searchMode === "resume"
@@ -151,25 +81,89 @@ export function AiJobMatchSection({
 
   const closeDropdown = () => setOpenDropdown(null);
 
+  const visibleJobs = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedLocation = location.trim().toLowerCase();
+
+    let filtered = jobs.filter((job) => {
+      const matchesKeyword =
+        !normalizedKeyword ||
+        job.title.toLowerCase().includes(normalizedKeyword) ||
+        job.company.toLowerCase().includes(normalizedKeyword);
+
+      const matchesLocation =
+        !normalizedLocation ||
+        job.location.toLowerCase().includes(normalizedLocation);
+
+      return matchesKeyword && matchesLocation;
+    });
+
+    if (sortBy === "date") {
+      filtered = [...filtered].sort(
+        (a, b) => getPostedDays(a.postedAt) - getPostedDays(b.postedAt),
+      );
+    }
+
+    return filtered;
+  }, [keyword, location, sortBy]);
+
+  const pageSize = 8;
+  const totalPages = Math.max(1, Math.ceil(visibleJobs.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  const pagedJobs = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return visibleJobs.slice(start, start + pageSize);
+  }, [safeCurrentPage, visibleJobs]);
+
+  const pageNumbers = useMemo(
+    () => Array.from({ length: totalPages }, (_, idx) => idx + 1),
+    [totalPages],
+  );
+
+  const previewJob = useMemo(
+    () => jobs.find((job) => job.id === previewJobId) ?? null,
+    [previewJobId],
+  );
+
+  const openJobPreview = (job: MockJob) => {
+    if (job.locked) return;
+    closeDropdown();
+    setPreviewJobId(job.id);
+  };
+
+  const closeJobPreview = () => setPreviewJobId(null);
+
   useEffect(() => {
-    if (!hasScan) return;
+    if (!previewJob) return;
 
-    const syncPanelHeight = () => {
-      if (!rightPanelRef.current) return;
-      setLeftPanelHeight(Math.ceil(rightPanelRef.current.offsetHeight));
-    };
+    const shellScrollContainer = document.getElementById(
+      "app-shell-scroll-container",
+    );
+    const previousShellOverflowY = shellScrollContainer?.style.overflowY;
+    const previousShellPaddingRight = shellScrollContainer?.style.paddingRight;
 
-    syncPanelHeight();
+    if (shellScrollContainer) {
+      const scrollbarWidth =
+        shellScrollContainer.offsetWidth - shellScrollContainer.clientWidth;
+      const computedPaddingRight = Number.parseFloat(
+        window.getComputedStyle(shellScrollContainer).paddingRight,
+      );
 
-    const observer = new ResizeObserver(syncPanelHeight);
-    if (rightPanelRef.current) observer.observe(rightPanelRef.current);
-    window.addEventListener("resize", syncPanelHeight);
+      shellScrollContainer.style.overflowY = "hidden";
+      if (scrollbarWidth > 0) {
+        shellScrollContainer.style.paddingRight = `${computedPaddingRight + scrollbarWidth}px`;
+      }
+    }
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", syncPanelHeight);
+      if (shellScrollContainer) {
+        shellScrollContainer.style.overflowY = previousShellOverflowY ?? "";
+        shellScrollContainer.style.paddingRight =
+          previousShellPaddingRight ?? "";
+      }
     };
-  }, [selectedJobId, hasScan]);
+  }, [previewJob]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -197,7 +191,7 @@ export function AiJobMatchSection({
             </button>
             <input
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={(e) => handleKeywordChange(e.target.value)}
               placeholder={keywordPlaceholder}
               readOnly={searchMode === "resume"}
               className="h-10 flex-1 rounded-r-lg border border-border px-3 text-xs text-muted-foreground outline-none focus:border-foreground"
@@ -235,7 +229,7 @@ export function AiJobMatchSection({
             <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <input
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => handleLocationChange(e.target.value)}
               placeholder="Your current location"
               className="h-10 w-full rounded-lg border border-border py-2 pl-9 pr-3 text-xs outline-none focus:border-foreground"
             />
@@ -334,14 +328,45 @@ export function AiJobMatchSection({
           <button
             type="button"
             onClick={() => {
-              setKeyword("");
+              handleKeywordChange("");
               setLocation("");
+              setCurrentPage(1);
               closeDropdown();
             }}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
             Clear all
           </button>
+
+          <div className="ml-auto relative">
+            <button
+              type="button"
+              onClick={() => toggleDropdown("sort")}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <ChevronsUpDown className="h-3.5 w-3.5" />
+              {sortBy === "relevance" ? "Relevance" : "Date"}
+            </button>
+            {openDropdown === "sort" && (
+              <div className="absolute right-0 top-[24px] z-20 w-[160px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
+                {(["relevance", "date"] as const).map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => handleSortChange(val)}
+                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-muted ${
+                      sortBy === val
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-card"
+                    }`}
+                  >
+                    {val === "relevance" ? "Relevance" : "Date"}
+                    {sortBy === val && <Check className="h-4 w-4" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -392,160 +417,138 @@ export function AiJobMatchSection({
             </p>
           </div>
 
-          <div
-            className="grid items-start gap-4"
-            style={{ gridTemplateColumns: "340px minmax(0, 1fr)" }}
-          >
-            <aside
-              className="flex flex-col overflow-hidden rounded-xl border border-border bg-card"
-              style={
-                leftPanelHeight ? { height: `${leftPanelHeight}px` } : undefined
-              }
-            >
-              <div className="relative border-b border-border px-4 py-3">
-                <button
-                  type="button"
-                  onClick={() => toggleDropdown("sort")}
-                  className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {pagedJobs.map((job) => {
+              const badgeClass =
+                job.badge === "top"
+                  ? "bg-primary/10 text-primary"
+                  : "bg-green-100 text-green-700";
+
+              const badgeLabel =
+                job.badge === "top" ? "Top Match" : "Good Match";
+
+              return (
+                <article
+                  key={job.id}
+                  onClick={() => openJobPreview(job)}
+                  className={`group relative rounded-xl border border-border bg-card p-4 ${
+                    job.locked ? "cursor-default" : "cursor-pointer"
+                  }`}
                 >
-                  <ChevronsUpDown className="h-3.5 w-3.5" />
-                  {sortBy === "relevance" ? "Relevance" : "Date"}
-                </button>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
+                  >
+                    {job.badge === "top" ? (
+                      <Star className="mr-1 h-3 w-3" />
+                    ) : (
+                      <CheckCircle2 className="mr-1 h-3 w-3" />
+                    )}
+                    {badgeLabel}
+                  </span>
 
-                {openDropdown === "sort" && (
-                  <div className="absolute left-4 top-12 z-20 w-[200px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
-                    <div className="border-b border-border px-4 py-2.5 text-sm text-muted-foreground">
-                      Sort by
-                    </div>
-                    {(["relevance", "date"] as const).map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => {
-                          setSortBy(val);
-                          closeDropdown();
-                        }}
-                        className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                          sortBy === val
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-card"
-                        }`}
-                      >
-                        {val === "relevance" ? "Relevance" : "Date"}
-                        {sortBy === val && <Check className="h-4 w-4" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="min-h-0 flex-1 overflow-y-auto p-3">
-                {visibleJobs.map((job) => {
-                  const jobId = getJobId(job);
-                  const isActive = selectedJobId === jobId;
-                  return (
-                    <button
-                      key={jobId}
-                      type="button"
-                      onClick={() => setSelectedJobId(jobId)}
-                      className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
-                        isActive
-                          ? "border-primary/40 bg-accent"
-                          : "border-border bg-card hover:bg-background"
-                      }`}
+                  <div
+                    className={
+                      job.locked
+                        ? "mt-2 flex-1 blur-[6px] opacity-70 pointer-events-none select-none"
+                        : "mt-2 flex-1"
+                    }
+                  >
+                    <h3
+                      title={job.title}
+                      className="line-clamp-1 text-base font-bold text-primary"
                     >
-                      {job.goodMatch && (
-                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-[11px] font-semibold text-accent-foreground">
-                          <Check className="h-3 w-3 text-primary" /> Good Match
-                        </span>
-                      )}
-                      <div className="text-sm font-semibold text-foreground">
-                        {job.title}
-                      </div>
-                      <div className="mt-0.5 text-xs font-medium text-foreground">
-                        {job.company}
-                      </div>
-                      <div className="mt-0.5 text-xs text-muted-foreground">
-                        {job.location}
-                      </div>
-                      <div className="mt-1 text-[11px] text-muted-foreground/60">
-                        {job.postedAt}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </aside>
+                      {job.title}
+                    </h3>
+                    <p
+                      title={job.company}
+                      className="mt-1 line-clamp-1 text-sm font-semibold text-foreground"
+                    >
+                      {job.company}
+                    </p>
+                    <p
+                      title={job.location}
+                      className="mt-1 line-clamp-1 text-sm text-muted-foreground"
+                    >
+                      {job.location}
+                    </p>
+                    <p className="mt-4 text-sm text-muted-foreground">
+                      {formatPosted(job.postedAt)}
+                    </p>
 
-            <article
-              ref={rightPanelRef}
-              className="rounded-xl border border-border bg-card"
+                    <div className="mt-4 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                        className="rounded-md border border-border px-4 py-1.5 text-sm font-semibold text-foreground hover:border-foreground"
+                      >
+                        Scan
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-muted-foreground hover:text-foreground"
+                        aria-label="Save job"
+                      >
+                        <Bookmark className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {job.locked ? (
+                    <>
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+                        <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      </div>
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                          <Lock className="h-3.5 w-3.5" />
+                          Unlock to view
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="mt-5 flex items-center justify-center gap-2 text-sm">
+            <button
+              type="button"
+              disabled={safeCurrentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
             >
-              <div className="border-b border-border px-6 pb-4 pt-5">
-                <h3 className="text-2xl font-bold text-foreground">
-                  {selectedJob.title}
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-foreground">
-                  {selectedJob.company}
-                </p>
+              {"<"}
+            </button>
 
-                <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5" /> {selectedJob.location}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BriefcaseBusiness className="h-3.5 w-3.5" />
-                    {selectedJob.type}
-                  </div>
-                </div>
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => setCurrentPage(page)}
+                className={`min-w-8 rounded-md px-2 py-1 ${
+                  safeCurrentPage === page
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
-                <div className="mt-4 flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-                  >
-                    Scan
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                  >
-                    <Bookmark className="h-3.5 w-3.5" /> Save Job
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" /> Apply
-                  </button>
-                </div>
-              </div>
-
-              <div className="px-6 py-5 text-sm leading-relaxed text-foreground">
-                <p className="mb-3 font-medium">Job Description</p>
-                <p className="mb-4">{selectedJob.description}</p>
-
-                <h4 className="mb-2 font-semibold">Responsibilities</h4>
-                <ul className="mb-4 space-y-1.5">
-                  {selectedJob.responsibilities.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <h4 className="mb-2 font-semibold">Requirements</h4>
-                <ul className="space-y-1.5">
-                  {selectedJob.requirements.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 text-primary">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
+            <button
+              type="button"
+              disabled={safeCurrentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+              }
+              className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
+            >
+              {">"}
+            </button>
           </div>
         </section>
       )}
@@ -557,6 +560,102 @@ export function AiJobMatchSection({
           onClick={closeDropdown}
           className="fixed inset-0 z-10 cursor-default"
         />
+      )}
+
+      {previewJob && (
+        <div className="fixed inset-0 z-40">
+          <button
+            type="button"
+            aria-label="Close quick JD preview"
+            onClick={closeJobPreview}
+            className="absolute inset-0 bg-black/30"
+          />
+
+          <aside className="absolute inset-y-4 right-0 flex w-[min(620px,calc(100%-2rem))] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
+            <header className="border-b border-border px-6 pb-4 pt-5">
+              <div className="mb-2 flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-2xl font-bold leading-tight text-foreground">
+                    {previewJob.title}
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold text-foreground">
+                    {previewJob.company}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeJobPreview}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {previewJob.location}
+                </div>
+                <div className="flex items-center gap-2">
+                  <BriefcaseBusiness className="h-4 w-4" />
+                  {previewJob.jobType}
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  Scan
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                >
+                  <Bookmark className="h-3.5 w-3.5" /> Save Job
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Apply
+                </button>
+              </div>
+            </header>
+
+            <div
+              className="min-h-0 flex-1 overflow-y-scroll px-6 py-5 text-sm leading-relaxed text-foreground"
+              style={{ scrollbarGutter: "stable" }}
+            >
+              <h4 className="mb-2 font-semibold uppercase tracking-wide text-foreground/90">
+                Job Description
+              </h4>
+              <p className="mb-5">{previewJob.description}</p>
+
+              <h4 className="mb-2 font-semibold">Responsibilities</h4>
+              <ul className="mb-5 space-y-1.5">
+                {previewJob.responsibilities.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <h4 className="mb-2 font-semibold">Requirements</h4>
+              <ul className="space-y-1.5">
+                {previewJob.requirements.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        </div>
       )}
     </div>
   );

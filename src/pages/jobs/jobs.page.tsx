@@ -3,297 +3,44 @@ import {
   Bookmark,
   BriefcaseBusiness,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronsUpDown,
   ExternalLink,
   FileText,
   Info,
+  Lock,
   MapPin,
   Search,
+  Star,
 } from "lucide-react";
 import { AppShell } from "@/shared/ui/app-shell";
 import { BRAND } from "@/shared/config/brand";
-
-type Job = {
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  postedAt: string;
-  goodMatch?: boolean;
-  description: string;
-  responsibilities: string[];
-  requirements: string[];
-};
-
-const getJobId = (job: Job) => `${job.title}-${job.company}`;
-const getPostedDays = (postedAt: string) => {
-  const days = Number.parseInt(postedAt, 10);
-  return Number.isNaN(days) ? Number.MAX_SAFE_INTEGER : days;
-};
-
-const jobs: Job[] = [
-  {
-    title: "Backend Engineer",
-    company: "International Business Consulting",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "5 days ago",
-    goodMatch: true,
-    description:
-      "We are seeking a Backend Engineer to join our team and build scalable APIs that power our applications and services.",
-    responsibilities: [
-      "Design, develop, and maintain scalable APIs.",
-      "Collaborate with front-end developers to integrate user-facing elements with server-side logic.",
-      "Optimize applications for speed and scalability.",
-      "Troubleshoot and debug applications to ensure stable performance.",
-      "Write clean, maintainable, and efficient code.",
-    ],
-    requirements: [
-      "3+ years of experience with Node.js or Python.",
-      "Strong understanding of API design and development.",
-      "Experience with database management and integration.",
-      "Familiarity with version control systems such as Git.",
-      "Excellent problem-solving and communication skills.",
-    ],
-  },
-  {
-    title: "Senior Software Engineer | Hybrid (2 Office / 3 WFH)",
-    company: "SPOTTED",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "Join a fast-growing tech company building next-generation enterprise software. You will lead feature development across the full stack.",
-    responsibilities: [
-      "Lead implementation of new software features.",
-      "Mentor junior developers and conduct code reviews.",
-      "Collaborate with product managers to define requirements.",
-      "Participate in architecture decisions and roadmap planning.",
-      "Ensure code quality with testing and documentation.",
-    ],
-    requirements: [
-      "5+ years of software engineering experience.",
-      "Proficiency in TypeScript, React, and Node.js.",
-      "Experience with cloud platforms.",
-      "Strong communication in cross-functional teams.",
-      "Experience with agile development methodologies.",
-    ],
-  },
-  {
-    title: "Frontend Developer",
-    company: "LongWave",
-    location: "Greater Tokyo Area",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "LongWave is looking for a Frontend Developer to build exceptional user experiences for SaaS products.",
-    responsibilities: [
-      "Build and maintain web apps using React.",
-      "Translate UI designs into clean implementations.",
-      "Optimize apps for speed and compatibility.",
-      "Collaborate with backend engineers on API integration.",
-      "Write unit and integration tests.",
-    ],
-    requirements: [
-      "3+ years of experience with React or Vue.",
-      "Strong knowledge of HTML, CSS, and JavaScript.",
-      "Experience in responsive design.",
-      "Familiarity with Git workflows.",
-      "Attention to detail and strong UI instincts.",
-    ],
-  },
-  {
-    title: "Backend Engineer (TypeScript/Node.js)",
-    company: "Huxley",
-    location: "Tokyo, Japan",
-    type: "Contract",
-    postedAt: "21 days ago",
-    description:
-      "Huxley is sourcing an experienced Backend Engineer with deep TypeScript and Node.js expertise for a finance client.",
-    responsibilities: [
-      "Develop and maintain microservices.",
-      "Integrate with external data providers.",
-      "Ensure security and compliance standards.",
-      "Write comprehensive API documentation.",
-      "Support production incidents and on-call.",
-    ],
-    requirements: [
-      "4+ years of Node.js development experience.",
-      "Strong TypeScript proficiency.",
-      "Experience with message queues.",
-      "Knowledge of financial systems is a plus.",
-      "Ability to work in fast-paced environments.",
-    ],
-  },
-  {
-    title: "Senior Python Developer (Equity Derivatives)",
-    company: "Optimum Solutions Pte Ltd",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "21 days ago",
-    description:
-      "We are looking for a Senior Python Developer with experience in equity derivatives to support trading desk systems.",
-    responsibilities: [
-      "Build and maintain Python-based analytics systems.",
-      "Build data pipelines for derivatives pricing models.",
-      "Collaborate with quantitative analysts.",
-      "Optimize performance for real-time market data.",
-      "Participate in design and architecture reviews.",
-    ],
-    requirements: [
-      "5+ years of Python development experience.",
-      "Background in equity derivatives or financial markets.",
-      "Experience with pandas and NumPy.",
-      "Knowledge of SQL and time-series databases.",
-      "Strong analytical and problem-solving skills.",
-    ],
-  },
-  {
-    title: "Backend Engineer (Chinese-speaker)",
-    company: "Huxley",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "21 days ago",
-    description:
-      "Huxley is seeking a bilingual Backend Engineer (English and Mandarin) to join a multinational product team.",
-    responsibilities: [
-      "Design and build RESTful APIs.",
-      "Coordinate with Mandarin-speaking stakeholders.",
-      "Improve existing backend architecture.",
-      "Contribute to database schema and query optimization.",
-      "Support QA teams with issue resolution.",
-    ],
-    requirements: [
-      "3+ years of backend development experience.",
-      "Fluency in English and Mandarin Chinese.",
-      "Proficiency in Java, Go, or Python.",
-      "Experience with MySQL or PostgreSQL.",
-      "Strong communication and collaboration skills.",
-    ],
-  },
-  {
-    title: "Senior Software Engineer | Hybrid (2 Office / 3 WFH)",
-    company: "SPOTTED",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "Join a fast-growing tech company building next-generation enterprise software. You will lead feature development across the full stack.",
-    responsibilities: [
-      "Lead implementation of new software features.",
-      "Mentor junior developers and conduct code reviews.",
-      "Collaborate with product managers to define requirements.",
-      "Participate in architecture decisions and roadmap planning.",
-      "Ensure code quality with testing and documentation.",
-    ],
-    requirements: [
-      "5+ years of software engineering experience.",
-      "Proficiency in TypeScript, React, and Node.js.",
-      "Experience with cloud platforms.",
-      "Strong communication in cross-functional teams.",
-      "Experience with agile development methodologies.",
-    ],
-  },
-  {
-    title: "Frontend Developer",
-    company: "LongWave",
-    location: "Greater Tokyo Area",
-    type: "Full-time",
-    postedAt: "11 days ago",
-    description:
-      "LongWave is looking for a Frontend Developer to build exceptional user experiences for SaaS products.",
-    responsibilities: [
-      "Build and maintain web apps using React.",
-      "Translate UI designs into clean implementations.",
-      "Optimize apps for speed and compatibility.",
-      "Collaborate with backend engineers on API integration.",
-      "Write unit and integration tests.",
-    ],
-    requirements: [
-      "3+ years of experience with React or Vue.",
-      "Strong knowledge of HTML, CSS, and JavaScript.",
-      "Experience in responsive design.",
-      "Familiarity with Git workflows.",
-      "Attention to detail and strong UI instincts.",
-    ],
-  },
-  {
-    title: "Backend Engineer (TypeScript/Node.js)",
-    company: "Huxley",
-    location: "Tokyo, Japan",
-    type: "Contract",
-    postedAt: "21 days ago",
-    description:
-      "Huxley is sourcing an experienced Backend Engineer with deep TypeScript and Node.js expertise for a finance client.",
-    responsibilities: [
-      "Develop and maintain microservices.",
-      "Integrate with external data providers.",
-      "Ensure security and compliance standards.",
-      "Write comprehensive API documentation.",
-      "Support production incidents and on-call.",
-    ],
-    requirements: [
-      "4+ years of Node.js development experience.",
-      "Strong TypeScript proficiency.",
-      "Experience with message queues.",
-      "Knowledge of financial systems is a plus.",
-      "Ability to work in fast-paced environments.",
-    ],
-  },
-  {
-    title: "Senior Python Developer (Equity Derivatives)",
-    company: "Optimum Solutions Pte Ltd",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "21 days ago",
-    description:
-      "We are looking for a Senior Python Developer with experience in equity derivatives to support trading desk systems.",
-    responsibilities: [
-      "Build and maintain Python-based analytics systems.",
-      "Build data pipelines for derivatives pricing models.",
-      "Collaborate with quantitative analysts.",
-      "Optimize performance for real-time market data.",
-      "Participate in design and architecture reviews.",
-    ],
-    requirements: [
-      "5+ years of Python development experience.",
-      "Background in equity derivatives or financial markets.",
-      "Experience with pandas and NumPy.",
-      "Knowledge of SQL and time-series databases.",
-      "Strong analytical and problem-solving skills.",
-    ],
-  },
-  {
-    title: "Backend Engineer (Chinese-speaker)",
-    company: "Huxley",
-    location: "Tokyo, Japan",
-    type: "Full-time",
-    postedAt: "21 days ago",
-    description:
-      "Huxley is seeking a bilingual Backend Engineer (English and Mandarin) to join a multinational product team.",
-    responsibilities: [
-      "Design and build RESTful APIs.",
-      "Coordinate with Mandarin-speaking stakeholders.",
-      "Improve existing backend architecture.",
-      "Contribute to database schema and query optimization.",
-      "Support QA teams with issue resolution.",
-    ],
-    requirements: [
-      "3+ years of backend development experience.",
-      "Fluency in English and Mandarin Chinese.",
-      "Proficiency in Java, Go, or Python.",
-      "Experience with MySQL or PostgreSQL.",
-      "Strong communication and collaboration skills.",
-    ],
-  },
-];
+import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
 type DropdownName = "mode" | "date" | "type" | "remote" | "sort" | null;
 type SortBy = "relevance" | "date";
 
+const jobs: MockJob[] = mockJobs;
+const getJobId = (job: MockJob) => job.id;
+const getDefaultJobId = (jobList: MockJob[]) =>
+  jobList.find((job) => !job.locked)?.id ?? jobList[0]?.id ?? "";
+
+const getPostedDays = (postedAt: string) => {
+  const posted = new Date(postedAt).getTime();
+  if (Number.isNaN(posted)) return Number.MAX_SAFE_INTEGER;
+  const diffMs = Date.now() - posted;
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+};
+
+const formatPosted = (postedAt: string) => {
+  const days = getPostedDays(postedAt);
+  if (days <= 1) return "1 day ago";
+  return `${days} days ago`;
+};
+
 export function JobsPage() {
-  const [selectedJobId, setSelectedJobId] = useState(getJobId(jobs[0]));
+  const [selectedJobId, setSelectedJobId] = useState(getDefaultJobId(jobs));
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
   const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
   const [sortBy, setSortBy] = useState<SortBy>("relevance");
@@ -303,18 +50,47 @@ export function JobsPage() {
   const rightPanelRef = useRef<HTMLElement | null>(null);
 
   const visibleJobs = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedLocation = location.trim().toLowerCase();
+
+    let filtered = jobs.filter((job) => {
+      const matchesKeyword =
+        !normalizedKeyword ||
+        job.title.toLowerCase().includes(normalizedKeyword) ||
+        job.company.toLowerCase().includes(normalizedKeyword);
+
+      const matchesLocation =
+        !normalizedLocation ||
+        job.location.toLowerCase().includes(normalizedLocation);
+
+      return matchesKeyword && matchesLocation;
+    });
+
     if (sortBy === "date") {
-      return [...jobs].sort(
+      filtered = [...filtered].sort(
         (a, b) => getPostedDays(a.postedAt) - getPostedDays(b.postedAt),
       );
     }
 
-    return jobs;
-  }, [sortBy]);
+    return filtered;
+  }, [keyword, location, sortBy]);
 
-  const selectedJob =
-    visibleJobs.find((job) => getJobId(job) === selectedJobId) ??
-    visibleJobs[0];
+  const selectedJob = useMemo(() => {
+    const selectedVisible = visibleJobs.find(
+      (job) => getJobId(job) === selectedJobId,
+    );
+
+    if (selectedVisible && !selectedVisible.locked) {
+      return selectedVisible;
+    }
+
+    return (
+      visibleJobs.find((job) => !job.locked) ??
+      visibleJobs[0] ??
+      jobs.find((job) => !job.locked) ??
+      jobs[0]
+    );
+  }, [selectedJobId, visibleJobs]);
 
   const keywordPlaceholder = useMemo(() => {
     if (searchMode === "resume") {
@@ -338,10 +114,7 @@ export function JobsPage() {
 
     syncPanelHeight();
 
-    const observer = new ResizeObserver(() => {
-      syncPanelHeight();
-    });
-
+    const observer = new ResizeObserver(syncPanelHeight);
     if (rightPanelRef.current) {
       observer.observe(rightPanelRef.current);
     }
@@ -442,25 +215,8 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("date")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Date range
-                <ChevronDown className="h-3.5 w-3.5" />
+                Date range <ChevronDown className="h-3.5 w-3.5" />
               </button>
-              {openDropdown === "date" && (
-                <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                  {["Last 3 days", "Last week", "Last month", "Any time"].map(
-                    (item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={closeDropdown}
-                        className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                      >
-                        {item}
-                      </button>
-                    ),
-                  )}
-                </div>
-              )}
             </div>
 
             <div className="relative">
@@ -469,30 +225,8 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("type")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Job type
-                <ChevronDown className="h-3.5 w-3.5" />
+                Job type <ChevronDown className="h-3.5 w-3.5" />
               </button>
-              {openDropdown === "type" && (
-                <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
-                  {[
-                    "Full-time",
-                    "Part-time",
-                    "Contract",
-                    "Internship",
-                    "Temporary",
-                    "Volunteer",
-                  ].map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={closeDropdown}
-                      className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             <div className="relative">
@@ -501,23 +235,8 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("remote")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Remote option
-                <ChevronDown className="h-3.5 w-3.5" />
+                Remote option <ChevronDown className="h-3.5 w-3.5" />
               </button>
-              {openDropdown === "remote" && (
-                <div className="absolute left-0 top-[34px] z-20 w-32 rounded-lg border border-border bg-card py-1 shadow-lg">
-                  {["On-site", "Hybrid", "Remote"].map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={closeDropdown}
-                      className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             <button
@@ -538,7 +257,7 @@ export function JobsPage() {
           <div className="mb-4 flex items-start gap-2 text-sm leading-relaxed text-foreground">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <p>
-              Your ATS match rate may be different. NextStepAI uses AI for
+              Your ATS match rate may be different. {BRAND.name} uses AI for
               smarter matching. Use Scan to spot missing keywords and improve
               your ATS match rate.
             </p>
@@ -569,34 +288,24 @@ export function JobsPage() {
                     <div className="border-b border-border px-4 py-2.5 text-sm text-muted-foreground">
                       Sort by
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSortBy("relevance");
-                        closeDropdown();
-                      }}
-                      className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                        sortBy === "relevance"
-                          ? "bg-accent text-accent-foreground"
-                          : "bg-card"
-                      }`}
-                    >
-                      Relevance
-                      {sortBy === "relevance" && <Check className="h-4 w-4" />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSortBy("date");
-                        closeDropdown();
-                      }}
-                      className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                        sortBy === "date" ? "bg-muted" : "bg-card"
-                      }`}
-                    >
-                      Date
-                      {sortBy === "date" && <Check className="h-4 w-4" />}
-                    </button>
+                    {(["relevance", "date"] as const).map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          setSortBy(value);
+                          closeDropdown();
+                        }}
+                        className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
+                          sortBy === value
+                            ? "bg-accent text-accent-foreground"
+                            : "bg-card"
+                        }`}
+                      >
+                        {value === "relevance" ? "Relevance" : "Date"}
+                        {sortBy === value && <Check className="h-4 w-4" />}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
@@ -604,41 +313,75 @@ export function JobsPage() {
               <div className="min-h-0 flex-1 overflow-y-auto p-3">
                 {visibleJobs.map((job) => {
                   const jobId = getJobId(job);
-                  const isActive = selectedJobId === jobId;
+                  const isActive = getJobId(selectedJob) === jobId;
 
                   return (
                     <button
                       key={jobId}
                       type="button"
-                      onClick={() => setSelectedJobId(jobId)}
-                      className={`mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
+                      onClick={() => {
+                        if (job.locked) return;
+                        setSelectedJobId(jobId);
+                      }}
+                      className={`group relative mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
                         isActive
                           ? "border-primary/40 bg-accent"
                           : "border-border bg-card hover:bg-background"
                       }`}
                     >
-                      {job.goodMatch && (
-                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-[11px] font-semibold text-accent-foreground">
-                          <Check className="h-3 w-3 text-primary" /> Good Match
+                      {(job.badge === "top" || job.badge === "good") && (
+                        <span
+                          className={`mb-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${
+                            job.badge === "top"
+                              ? "border border-primary/30 bg-primary/15 text-primary"
+                              : "border border-green-200 bg-green-100 text-green-700"
+                          }`}
+                        >
+                          {job.badge === "top" ? (
+                            <Star className="h-3 w-3" />
+                          ) : (
+                            <CheckCircle2 className="h-3 w-3" />
+                          )}
+                          {job.badge === "top" ? "Top Match" : "Good Match"}
                         </span>
                       )}
 
                       <div
-                        className={`text-sm font-semibold ${
-                          isActive ? "text-foreground" : "text-foreground"
-                        }`}
+                        className={
+                          job.locked
+                            ? "blur-[4px] opacity-70 select-none"
+                            : undefined
+                        }
                       >
-                        {job.title}
+                        <div className="line-clamp-1 text-base font-bold text-primary">
+                          {job.title}
+                        </div>
+                        <div className="mt-1 line-clamp-1 text-sm font-semibold text-foreground">
+                          {job.company}
+                        </div>
+                        <div className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+                          {job.location}
+                        </div>
+                        <div className="mt-1 text-sm text-muted-foreground">
+                          {formatPosted(job.postedAt)}
+                        </div>
                       </div>
-                      <div className="mt-0.5 text-xs font-medium text-foreground">
-                        {job.company}
-                      </div>
-                      <div className="mt-0.5 text-xs text-muted-foreground">
-                        {job.location}
-                      </div>
-                      <div className="mt-1 text-[11px] text-muted-foreground/60">
-                        {job.postedAt}
-                      </div>
+
+                      {job.locked ? (
+                        <>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+                            <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
+                              <Lock className="h-4 w-4" />
+                            </div>
+                          </div>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                            <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                              <Lock className="h-3.5 w-3.5" />
+                              Unlock to view
+                            </div>
+                          </div>
+                        </>
+                      ) : null}
                     </button>
                   );
                 })}
@@ -664,7 +407,7 @@ export function JobsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <BriefcaseBusiness className="h-3.5 w-3.5 text-muted-foreground" />
-                    {selectedJob.type}
+                    {selectedJob.jobType}
                   </div>
                 </div>
 
@@ -679,15 +422,13 @@ export function JobsPage() {
                     type="button"
                     className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
                   >
-                    <Bookmark className="h-3.5 w-3.5" />
-                    Save Job
+                    <Bookmark className="h-3.5 w-3.5" /> Save Job
                   </button>
                   <button
                     type="button"
                     className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
                   >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Apply
+                    <ExternalLink className="h-3.5 w-3.5" /> Apply
                   </button>
                 </div>
               </div>

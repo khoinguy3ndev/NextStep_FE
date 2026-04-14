@@ -273,7 +273,10 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div
+          id="app-shell-scroll-container"
+          className="flex-1 overflow-y-auto p-5"
+        >
           <div className={fullWidth ? "w-full" : "max-w-6xl mx-auto"}>
             {children}
           </div>
