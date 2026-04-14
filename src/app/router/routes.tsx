@@ -11,7 +11,7 @@ import { JobsPage } from "@/pages/jobs/jobs.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
 import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
 import { GoogleCallbackPage } from "@/pages/google-callback/google-callback.page";
-import { Proteched } from "./protected";
+import { Protected } from "./protected";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -47,9 +47,9 @@ export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: () => (
-    <Proteched>
+    <Protected>
       <DashboardPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -57,9 +57,9 @@ export const resumeOptimizerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/resume-optimizer",
   component: () => (
-    <Proteched>
+    <Protected>
       <ResumeOptimizerPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -67,9 +67,9 @@ export const jobsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/jobs",
   component: () => (
-    <Proteched>
+    <Protected>
       <JobsPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -77,9 +77,9 @@ export const matchReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/match-report",
   component: () => (
-    <Proteched>
+    <Protected>
       <MatchReportPage />
-    </Proteched>
+    </Protected>
   ),
 });
 
@@ -87,8 +87,8 @@ export const sampleReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sample-report",
   component: () => (
-    <Proteched>
+    <Protected>
       <SampleReportPage />
-    </Proteched>
+    </Protected>
   ),
 });
