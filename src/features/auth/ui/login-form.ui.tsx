@@ -59,19 +59,22 @@ export function LoginForm() {
   });
 
   return (
-    <main className="flex h-screen w-full bg-[#fcf9f8] [font-family:'Instrument_Sans',sans-serif] text-[#1c1b1b]">
-      <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-[#0d0d0d] p-12 lg:flex">
+    <main className="flex h-screen w-full bg-background [font-family:'Instrument_Sans',sans-serif] text-foreground">
+      <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-foreground p-12 lg:flex">
         <div>
-          <Link to="/" className="text-2xl font-bold tracking-tight text-white">
+          <Link
+            to="/"
+            className="text-2xl font-bold tracking-tight text-background"
+          >
             {BRAND.name}
           </Link>
         </div>
 
         <div className="max-w-md">
-          <h1 className="mb-4 text-5xl font-bold leading-[1.1] tracking-tight text-white xl:text-6xl">
+          <h1 className="mb-4 text-5xl font-bold leading-[1.1] tracking-tight text-background xl:text-6xl">
             Land your next job faster
           </h1>
-          <p className="text-lg font-medium text-slate-400">
+          <p className="text-lg font-medium text-muted-foreground">
             The precision-engineered resume builder for modern professionals.
           </p>
         </div>
@@ -79,36 +82,33 @@ export function LoginForm() {
         <div className="max-w-sm">
           <div className="mb-3 flex gap-1">
             {[1, 2, 3, 4, 5].map((item) => (
-              <Star
-                key={item}
-                className="h-4 w-4 fill-[#0055ff] text-[#0055ff]"
-              />
+              <Star key={item} className="h-4 w-4 fill-current text-primary" />
             ))}
           </div>
-          <p className="text-sm italic font-medium leading-relaxed text-white/90">
+          <p className="text-sm italic font-medium leading-relaxed text-background/90">
             {BRAND.name} transformed my application process. I secured three
             interviews within the first week of using their AI-optimized
             templates."
           </p>
-          <p className="mt-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+          <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Marcus Chen - Senior Product Designer
           </p>
         </div>
 
-        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full border border-white/5" />
+        <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full border border-border/40" />
       </section>
 
-      <section className="flex w-full flex-col items-center justify-center bg-white px-6 py-12 lg:w-1/2 lg:px-24">
+      <section className="flex w-full flex-col items-center justify-center bg-card px-6 py-12 lg:w-1/2 lg:px-24">
         <div className="w-full max-w-[400px]">
           <header className="mb-10 text-center lg:text-left">
-            <h2 className="mb-2 text-3xl font-bold tracking-tight text-[#0d0d0d]">
+            <h2 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
               Welcome back
             </h2>
-            <p className="text-sm text-[#434656]">
+            <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
                 to="/register"
-                className="font-semibold text-[#0041c8] underline-offset-4 hover:underline"
+                className="font-semibold text-foreground underline-offset-4 hover:underline"
               >
                 Sign up free
               </Link>
@@ -128,7 +128,7 @@ export function LoginForm() {
                 <div className="space-y-2">
                   <label
                     htmlFor={field.name}
-                    className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
+                    className="block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Email Address
                   </label>
@@ -139,10 +139,10 @@ export function LoginForm() {
                     required
                     value={field.state.value}
                     onChange={(e) => field.setValue(e.target.value)}
-                    className="w-full rounded-xl border border-[#e5e5e5] bg-white px-4 py-3.5 text-sm transition-all placeholder:text-[#737688] focus:border-[#0d0d0d] focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-sm transition-all placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
                   />
                   {field.state.meta.errors?.[0] && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {field.state.meta.errors[0]}
                     </p>
                   )}
@@ -155,7 +155,7 @@ export function LoginForm() {
                 <div className="space-y-2">
                   <label
                     htmlFor={field.name}
-                    className="block text-xs font-bold uppercase tracking-widest text-[#434656]"
+                    className="block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Password
                   </label>
@@ -168,12 +168,12 @@ export function LoginForm() {
                       required
                       value={field.state.value}
                       onChange={(e) => field.setValue(e.target.value)}
-                      className="w-full rounded-xl border border-[#e5e5e5] bg-white px-4 py-3.5 pr-12 text-sm transition-all placeholder:text-[#737688] focus:border-[#0d0d0d] focus:outline-none"
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3.5 pr-12 text-sm transition-all placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#737688] transition-colors hover:text-[#1c1b1b]"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
@@ -189,14 +189,14 @@ export function LoginForm() {
                   <div className="flex justify-end">
                     <Link
                       to="/forgot-password"
-                      className="text-xs font-semibold text-[#0041c8] hover:underline"
+                      className="text-xs font-semibold text-foreground hover:underline"
                     >
                       Forgot password?
                     </Link>
                   </div>
 
                   {field.state.meta.errors?.[0] && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       {field.state.meta.errors[0]}
                     </p>
                   )}
@@ -205,7 +205,7 @@ export function LoginForm() {
             </form.Field>
 
             {error && (
-              <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+              <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 {typeof error === "string"
                   ? error
                   : error?.message || "An error occurred during login"}
@@ -215,7 +215,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#0041c8] py-4 text-sm font-bold tracking-wide text-white transition-opacity duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-xl bg-cta py-4 text-sm font-bold tracking-wide text-cta-foreground transition-colors duration-150 hover:bg-cta-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Logging in..." : "Log In"}
             </button>
@@ -223,10 +223,10 @@ export function LoginForm() {
 
           <div className="relative my-10">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#e5e5e5]" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs font-bold uppercase tracking-widest">
-              <span className="bg-white px-4 text-[#737688]">
+              <span className="bg-card px-4 text-muted-foreground">
                 or continue with
               </span>
             </div>
@@ -241,18 +241,20 @@ export function LoginForm() {
                   window.location.href = googleAuthUrl;
                 }
               }}
-              className="flex items-center justify-center gap-3 rounded-xl border border-[#e5e5e5] py-3 transition-all duration-150 hover:bg-[#f6f3f2] hover:border-[#d1d1d1] active:scale-[0.98]"
+              className="flex items-center justify-center gap-3 rounded-xl border border-border py-3 transition-all duration-150 hover:bg-muted hover:border-border active:scale-[0.98]"
             >
               <GoogleIcon />
-              <span className="text-sm font-bold text-[#1c1b1b]">Google</span>
+              <span className="text-sm font-bold text-foreground">Google</span>
             </button>
 
             <button
               type="button"
-              className="flex items-center justify-center gap-3 rounded-xl border border-[#e5e5e5] py-3 transition-all duration-150 hover:bg-[#f6f3f2] hover:border-[#d1d1d1] active:scale-[0.98]"
+              className="flex items-center justify-center gap-3 rounded-xl border border-border py-3 transition-all duration-150 hover:bg-muted hover:border-border active:scale-[0.98]"
             >
               <Linkedin className="h-5 w-5 text-[#0077b5] fill-[#0077b5]" />
-              <span className="text-sm font-bold text-[#1c1b1b]">LinkedIn</span>
+              <span className="text-sm font-bold text-foreground">
+                LinkedIn
+              </span>
             </button>
           </div>
         </div>

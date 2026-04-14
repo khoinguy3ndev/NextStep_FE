@@ -20,7 +20,7 @@ export function GoogleCallbackPage() {
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white text-[#1c1b1b] [font-family:'Instrument_Sans',sans-serif]">
+    <div className="flex min-h-screen items-center justify-center bg-background text-foreground [font-family:'Instrument_Sans',sans-serif]">
       <p className="text-base font-medium">Dang dang nhap...</p>
     </div>
   );

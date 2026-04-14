@@ -174,14 +174,13 @@ export function HomeLandingWidget() {
   };
 
   return (
-    <div className="bg-[#fcf9f8] text-[#1c1b1b] [font-family:'Instrument_Sans',sans-serif]">
-      <nav className="sticky top-0 z-50 h-16 border-b border-zinc-200/70 bg-white/85 backdrop-blur-md">
+    <div className="bg-background text-foreground [font-family:'Instrument_Sans',sans-serif]">
+      <nav className="sticky top-0 z-50 h-16 border-b border-border bg-card/90 backdrop-blur-md">
         <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-8">
             <Link
               to="/"
-              className="text-xl font-bold tracking-tight"
-              style={{ color: BRAND.primaryColor }}
+              className="text-lg font-bold text-primary tracking-tight truncate"
             >
               {BRAND.name}
             </Link>
@@ -197,15 +196,15 @@ export function HomeLandingWidget() {
                     className={[
                       "relative pb-1 text-sm transition-colors",
                       isActive
-                        ? "font-semibold text-zinc-900"
-                        : "text-zinc-500 hover:text-zinc-900",
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
                     ].join(" ")}
                   >
                     {item.label}
                     {isActive ? (
                       <motion.div
                         layoutId="navbar-underline"
-                        className="absolute bottom-0 left-0 h-0.5 w-full bg-[#0041c8]"
+                        className="absolute bottom-0 left-0 h-0.5 w-full bg-primary"
                       />
                     ) : null}
                   </a>
@@ -217,13 +216,13 @@ export function HomeLandingWidget() {
           <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 sm:inline-flex"
+              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
             >
               Log In
             </Link>
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#0041c8] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#0038ab]"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-foreground"
             >
               <span>Try for Free</span>
             </Link>
@@ -233,10 +232,10 @@ export function HomeLandingWidget() {
 
       <section className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-16 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2">
         <div>
-          <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-[#1c1b1b] sm:text-5xl lg:text-6xl">
+          <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Know Exactly Why You&apos;re Getting Rejected
           </h1>
-          <p className="mb-10 max-w-xl text-lg leading-relaxed text-[#434656] sm:text-xl">
+          <p className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
             {BRAND.name} uses advanced AI to analyze your resume against
             specific job descriptions. Get a precise match score and instant
             optimization steps to land more interviews.
@@ -245,69 +244,71 @@ export function HomeLandingWidget() {
           <div className="flex items-center gap-4">
             <button
               onClick={handleAnalyzeCV}
-              className="rounded-lg bg-[#0041c8] px-7 py-3.5 text-left text-base font-semibold text-white transition-opacity hover:opacity-90 sm:text-lg"
+              className="rounded-lg bg-cta px-7 py-3.5 text-left text-base font-semibold text-cta-foreground transition-colors hover:bg-cta-hover sm:text-lg"
             >
               Analyze My CV - It&apos;s Free
             </button>
-            <div className="flex items-center gap-2 text-sm text-[#434656]">
-              <CheckCircle2 className="h-4 w-4 text-[#0041c8]" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
               <span>No credit card required</span>
             </div>
           </div>
         </div>
 
         <div className="relative">
-          <div className="overflow-hidden rounded-xl border border-[#c3c5d9] bg-white p-2 shadow-2xl">
-            <div className="rounded-lg border border-[#c3c5d9]/70 bg-[#fcf9f8] p-6">
+          <div className="overflow-hidden rounded-xl border border-border bg-card p-2 shadow-2xl">
+            <div className="rounded-lg border border-border/70 bg-background p-6">
               <div className="mb-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0041c8]/10">
-                    <FileText className="h-5 w-5 text-[#0041c8]" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#1c1b1b]">
+                    <h4 className="font-bold text-foreground">
                       Senior Product Designer
                     </h4>
-                    <p className="text-xs text-[#434656]">
+                    <p className="text-xs text-muted-foreground">
                       Resume_V4_Final.pdf
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-bold text-[#0041c8]">72%</span>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#434656]">
+                  <span className="text-3xl font-bold text-foreground">
+                    72%
+                  </span>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Match Score
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="h-2 overflow-hidden rounded-full bg-[#ebe7e7]">
-                  <div className="h-full w-[72%] bg-[#0041c8]" />
+                <div className="h-2 overflow-hidden rounded-full bg-border">
+                  <div className="h-full w-[72%] bg-primary" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg border border-[#c3c5d9]/40 bg-white p-4">
-                    <p className="mb-1 text-[10px] font-bold uppercase text-[#434656]">
+                  <div className="rounded-lg border border-border/40 bg-card p-4">
+                    <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">
                       Keywords
                     </p>
                     <p className="text-sm font-semibold">12/15 Found</p>
                   </div>
-                  <div className="rounded-lg border border-[#c3c5d9]/40 bg-white p-4">
-                    <p className="mb-1 text-[10px] font-bold uppercase text-[#434656]">
+                  <div className="rounded-lg border border-border/40 bg-card p-4">
+                    <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">
                       ATS Check
                     </p>
-                    <p className="text-sm font-semibold text-emerald-600">
+                    <p className="text-sm font-semibold text-foreground">
                       Passed
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-red-200 bg-red-50/70 p-4">
-                  <p className="mb-1 text-xs font-semibold text-red-700">
+                <div className="rounded-lg border border-border bg-muted p-4">
+                  <p className="mb-1 text-xs font-semibold text-destructive">
                     Missing Critical Skills:
                   </p>
-                  <p className="text-xs leading-relaxed text-[#434656]">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
                     System Design, Figma Auto-layout, User Research Synthesis.
                   </p>
                 </div>
@@ -315,24 +316,24 @@ export function HomeLandingWidget() {
             </div>
           </div>
 
-          <div className="absolute -right-12 -top-12 -z-10 h-32 w-32 rounded-full bg-[#0041c8]/10 blur-2xl" />
+          <div className="absolute -right-12 -top-12 -z-10 h-32 w-32 rounded-full bg-primary/10 blur-2xl" />
         </div>
       </section>
 
-      <section className="border-y border-[#c3c5d9]/40 py-10">
+      <section className="border-y border-border/40 py-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-8 px-4 sm:px-6 md:flex-row">
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-0.5 text-amber-400">
+            <div className="flex items-center gap-0.5 text-muted-foreground">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-4 w-4 fill-current" />
               ))}
             </div>
-            <p className="text-sm font-medium text-[#434656]">
+            <p className="text-sm font-medium text-muted-foreground">
               Trusted by 50,000+ job seekers
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8 text-lg font-bold tracking-tight text-zinc-500 sm:gap-12">
+          <div className="flex flex-wrap justify-center gap-8 text-lg font-bold tracking-tight text-muted-foreground sm:gap-12">
             {logos.map((logo) => (
               <span key={logo}>{logo}</span>
             ))}
@@ -350,18 +351,18 @@ export function HomeLandingWidget() {
       />
 
       {isScanning ? (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#eef2f8]">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-background">
           <div className="w-[360px] max-w-[90vw] text-center">
-            <h3 className="text-[32px] font-bold leading-tight text-[#0f172a]">
+            <h3 className="text-[32px] font-bold leading-tight text-foreground">
               Scanning your resume
             </h3>
-            <p className="mt-2 text-base text-[#64748b]">
+            <p className="mt-2 text-base text-muted-foreground">
               Loading your result ...
             </p>
 
-            <div className="mx-auto mt-6 h-1.5 w-[240px] overflow-hidden rounded-full bg-[#cfd8ea]">
+            <div className="mx-auto mt-6 h-1.5 w-[240px] overflow-hidden rounded-full bg-border">
               <div
-                className="h-full rounded-full bg-[#0a67d9] transition-all duration-300 ease-out"
+                className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
                 style={{ width: `${scanProgress}%` }}
               />
             </div>
@@ -369,13 +370,13 @@ export function HomeLandingWidget() {
         </div>
       ) : null}
 
-      <section id="features" className="bg-[#f0edec] py-20">
+      <section id="features" className="bg-muted py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-12">
-            <h2 className="mb-2 text-3xl font-bold tracking-tight">
+            <h2 className="mb-4 text-center text-3xl font-bold tracking-tight">
               Built for Performance
             </h2>
-            <p className="text-[#434656]">
+            <p className="text-muted-foreground text-center">
               The most powerful toolset for modern job applications.
             </p>
           </div>
@@ -386,11 +387,11 @@ export function HomeLandingWidget() {
               return (
                 <article
                   key={feature.id}
-                  className="rounded-xl border border-[#c3c5d9] bg-white p-8 transition-colors hover:border-[#0041c8]"
+                  className="rounded-xl border border-border bg-card p-8 transition-colors hover:border-foreground"
                 >
-                  <Icon className="mb-6 h-8 w-8 text-[#0041c8]" />
+                  <Icon className="mb-6 h-8 w-8 text-primary" />
                   <h4 className="mb-3 text-lg font-bold">{feature.title}</h4>
-                  <p className="text-sm leading-relaxed text-[#434656]">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {feature.description}
                   </p>
                 </article>
@@ -408,12 +409,12 @@ export function HomeLandingWidget() {
           {testimonials.map((testimonial) => (
             <article
               key={testimonial.id}
-              className="relative rounded-xl border border-[#c3c5d9] bg-white p-8"
+              className="relative rounded-xl border border-border bg-card p-8"
             >
-              <span className="absolute right-8 top-4 text-6xl font-serif leading-none text-[#c3c5d9]">
+              <span className="absolute right-8 top-4 text-6xl font-serif leading-none text-muted-foreground/60">
                 &quot;
               </span>
-              <p className="relative z-10 mb-8 text-sm italic leading-relaxed text-[#434656]">
+              <p className="relative z-10 mb-8 text-sm italic leading-relaxed text-muted-foreground">
                 {testimonial.quote}
               </p>
               <div className="flex items-center gap-4">
@@ -424,7 +425,9 @@ export function HomeLandingWidget() {
                 />
                 <div>
                   <p className="text-sm font-bold">{testimonial.name}</p>
-                  <p className="text-xs text-[#434656]">{testimonial.role}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {testimonial.role}
+                  </p>
                 </div>
               </div>
             </article>
@@ -432,109 +435,112 @@ export function HomeLandingWidget() {
         </div>
       </section>
 
-      <section id="pricing" className="bg-zinc-900 py-20 text-zinc-50">
+      <section id="pricing" className="bg-foreground py-20 text-background">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-14 text-center">
-            <h2 className="mb-4 text-3xl font-bold tracking-tight text-white">
+            <h2 className="mb-4 text-3xl font-bold tracking-tight text-background">
               Simple, Professional Pricing
             </h2>
-            <p className="text-zinc-400">
+            <p className="text-muted-foreground">
               Invest in your career. Get more offers.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <article className="flex flex-col rounded-xl border border-zinc-700 bg-zinc-800 p-8">
+            <article className="flex flex-col rounded-xl border border-border bg-card p-8 text-foreground">
               <h3 className="mb-2 text-lg font-bold">Free</h3>
-              <p className="mb-6 text-sm text-zinc-400">
+              <p className="mb-6 text-sm text-muted-foreground">
                 For the occasional seeker.
               </p>
               <p className="mb-8 text-3xl font-bold">
                 $0
-                <span className="text-sm font-normal text-zinc-500"> /mo</span>
+                <span className="text-sm font-normal text-muted-foreground">
+                  {" "}
+                  /mo
+                </span>
               </p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> 5 Resume
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> 5 Resume
                   Scans / Mo
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Basic
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Basic
                   Keyword Analysis
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> ATS
-                  Checker
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> ATS Checker
                 </li>
-                <li className="flex items-center gap-3 text-zinc-600 line-through">
+                <li className="flex items-center gap-3 text-muted-foreground/60 line-through">
                   <CircleAlert className="h-4 w-4" /> AI Bullet Rewriting
                 </li>
               </ul>
-              <button className="rounded-lg border border-zinc-600 py-3 text-sm font-bold transition-colors hover:bg-zinc-700">
+              <button className="rounded-lg border border-border py-3 text-sm font-bold transition-colors hover:bg-muted">
                 Get Started
               </button>
             </article>
 
-            <article className="relative flex scale-[1.01] flex-col rounded-xl border-2 border-[#0041c8] bg-zinc-800 p-8 shadow-2xl">
-              <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-[#0041c8] px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white">
+            <article className="relative flex scale-[1.01] flex-col rounded-xl border-2 border-foreground bg-card p-8 shadow-2xl text-foreground">
+              <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
                 Most Popular
               </span>
               <h3 className="mb-2 text-lg font-bold">Pro</h3>
-              <p className="mb-6 text-sm text-zinc-400">
+              <p className="mb-6 text-sm text-muted-foreground">
                 For the serious candidate.
               </p>
               <p className="mb-8 text-3xl font-bold">
                 $19
-                <span className="text-sm font-normal text-zinc-500"> /mo</span>
+                <span className="text-sm font-normal text-muted-foreground">
+                  {" "}
+                  /mo
+                </span>
               </p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />{" "}
-                  Unlimited Scans
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Unlimited
+                  Scans
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> AI
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> AI
                   Optimization Suite
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Cover
-                  Letter Generator
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Cover Letter
+                  Generator
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />{" "}
-                  Interview Prep Insights
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Interview
+                  Prep Insights
                 </li>
               </ul>
-              <button className="rounded-lg bg-[#0041c8] py-3 text-sm font-bold text-white transition-opacity hover:opacity-90">
+              <button className="rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90">
                 Go Pro
               </button>
             </article>
 
-            <article className="flex flex-col rounded-xl border border-zinc-700 bg-zinc-800 p-8">
+            <article className="flex flex-col rounded-xl border border-border bg-card p-8 text-foreground">
               <h3 className="mb-2 text-lg font-bold">Teams</h3>
-              <p className="mb-6 text-sm text-zinc-400">
+              <p className="mb-6 text-sm text-muted-foreground">
                 For agencies and bootcamps.
               </p>
               <p className="mb-8 text-3xl font-bold">Custom</p>
               <ul className="mb-10 flex-grow space-y-4 text-sm">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> 50+
-                  Seats
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> 50+ Seats
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Admin
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Admin
                   Dashboard
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Bulk CV
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> Bulk CV
                   Processing
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> API
-                  Access
+                  <CheckCircle2 className="h-4 w-4 text-primary" /> API Access
                 </li>
               </ul>
-              <button className="rounded-lg border border-zinc-600 py-3 text-sm font-bold transition-colors hover:bg-zinc-700">
+              <button className="rounded-lg border border-border py-3 text-sm font-bold transition-colors hover:bg-muted">
                 Contact Sales
               </button>
             </article>
@@ -542,44 +548,44 @@ export function HomeLandingWidget() {
         </div>
       </section>
 
-      <section className="bg-white px-4 py-24 text-center sm:px-6 md:py-28">
+      <section className="bg-background px-4 py-24 text-center sm:px-6 md:py-28">
         <h2 className="mb-8 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
           Stop guessing. Start getting interviews.
         </h2>
-        <p className="mx-auto mb-12 max-w-xl text-lg text-[#434656]">
+        <p className="mx-auto mb-12 max-w-xl text-lg text-muted-foreground">
           Join 50,000+ professionals who have optimized their career paths with
           {BRAND.name}.
         </p>
         <button
           onClick={handleAnalyzeCV}
-          className="rounded-lg bg-[#0041c8] px-10 py-4 text-xl font-bold text-white shadow-lg shadow-[#0041c8]/20 transition-all hover:shadow-xl"
+          className="rounded-lg bg-cta px-10 py-4 text-xl font-bold text-cta-foreground shadow-lg transition-all hover:bg-cta-hover hover:shadow-xl"
         >
           Analyze My Resume Now
         </button>
       </section>
 
-      <footer className="border-t border-zinc-200 bg-zinc-50 px-4 py-16 sm:px-6">
+      <footer className="border-t border-border bg-background px-4 py-16 sm:px-6">
         <div className="mx-auto w-full max-w-7xl">
           <div className="mb-14 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
-              <span className="mb-4 block text-xl font-bold text-zinc-900">
+              <span className="mb-4 block text-xl font-bold text-foreground">
                 {BRAND.name}
               </span>
-              <p className="max-w-xs text-sm leading-relaxed text-zinc-500">
+              <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
                 AI-powered resume and job application platform. Precision
                 engineered to help you land your dream role.
               </p>
             </div>
 
             <div>
-              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Product
               </h5>
-              <ul className="space-y-4 text-sm text-zinc-500">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a
                     href="#features"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Features
                   </a>
@@ -587,7 +593,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#how-it-works"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     How It Works
                   </a>
@@ -595,7 +601,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#pricing"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Pricing
                   </a>
@@ -603,7 +609,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     API
                   </a>
@@ -612,14 +618,14 @@ export function HomeLandingWidget() {
             </div>
 
             <div>
-              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Company
               </h5>
-              <ul className="space-y-4 text-sm text-zinc-500">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     About Us
                   </a>
@@ -627,7 +633,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Careers
                   </a>
@@ -635,7 +641,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Blog
                   </a>
@@ -643,7 +649,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Contact
                   </a>
@@ -652,14 +658,14 @@ export function HomeLandingWidget() {
             </div>
 
             <div>
-              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+              <h5 className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Social
               </h5>
-              <ul className="space-y-4 text-sm text-zinc-500">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     Twitter
                   </a>
@@ -667,7 +673,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     LinkedIn
                   </a>
@@ -675,7 +681,7 @@ export function HomeLandingWidget() {
                 <li>
                   <a
                     href="#"
-                    className="transition-colors hover:text-[#0041c8]"
+                    className="transition-colors hover:text-foreground"
                   >
                     GitHub
                   </a>
@@ -684,19 +690,19 @@ export function HomeLandingWidget() {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-4 border-t border-zinc-200 pt-8 md:flex-row">
-            <span className="text-xs text-zinc-500">
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
+            <span className="text-xs text-muted-foreground">
               © 2026 {BRAND.name}. All rights reserved.
             </span>
             <div className="flex gap-6">
               <a
-                className="text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                 href="#"
               >
                 Privacy Policy
               </a>
               <a
-                className="text-xs text-zinc-500 transition-colors hover:text-zinc-900"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                 href="#"
               >
                 Terms of Service

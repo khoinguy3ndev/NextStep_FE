@@ -1,26 +1,29 @@
 import { useRef, useState, type DragEvent } from "react";
 
 const C = {
-  brand: "#0041c8",
-  brandHover: "#0038ab",
-  brandLight: "#f1f5ff",
-  brandBorder: "#c3c5d9",
-  bg: "#f0edec",
-  card: "#ffffff",
-  stepDone: "#f1f5ff",
+  brand: "var(--primary)",
+  brandHover: "var(--primary)",
+  cta: "var(--cta)",
+  ctaHover: "var(--cta-hover)",
+  ctaForeground: "var(--cta-foreground)",
+  brandLight: "var(--muted)",
+  brandBorder: "var(--border)",
+  bg: "var(--muted)",
+  card: "var(--card)",
+  stepDone: "var(--muted)",
   stepInactive: "transparent",
-  lineActive: "#0041c8",
-  lineInactive: "#c3c5d9",
-  textMain: "#1c1b1b",
-  textMid: "#434656",
-  textMuted: "#434656",
-  textLight: "#8c8fa3",
-  border: "#c3c5d9",
-  scanDisabled: "#e6e8f0",
-  scanDisabledText: "#9ca3b5",
-  selectedBg: "#edf3ff",
-  selectedText: "#0041c8",
-  hoverBg: "#f5f8ff",
+  lineActive: "var(--foreground)",
+  lineInactive: "var(--border)",
+  textMain: "var(--foreground)",
+  textMid: "var(--muted-foreground)",
+  textMuted: "var(--muted-foreground)",
+  textLight: "var(--muted-foreground)",
+  border: "var(--border)",
+  scanDisabled: "var(--muted)",
+  scanDisabledText: "var(--muted-foreground)",
+  selectedBg: "var(--muted)",
+  selectedText: "var(--foreground)",
+  hoverBg: "var(--background)",
 };
 
 const JD_SAMPLES = [
@@ -82,17 +85,38 @@ function CheckIcon({ size = 18, color = C.brand }) {
   );
 }
 
-function UploadIcon({ size = 52, color = "#7da7ea" }) {
+function UploadIcon({ size = 52, color = "var(--primary)" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <rect x="8" y="10" width="36" height="46" rx="4" fill="#edf3ff" />
-      <rect x="14" y="18" width="24" height="3" rx="1.5" fill="#9bb7e8" />
-      <rect x="14" y="25" width="18" height="3" rx="1.5" fill="#9bb7e8" />
-      <rect x="14" y="32" width="20" height="3" rx="1.5" fill="#9bb7e8" />
+      <rect x="8" y="10" width="36" height="46" rx="4" fill={C.brandLight} />
+      <rect
+        x="14"
+        y="18"
+        width="24"
+        height="3"
+        rx="1.5"
+        fill={C.lineInactive}
+      />
+      <rect
+        x="14"
+        y="25"
+        width="18"
+        height="3"
+        rx="1.5"
+        fill={C.lineInactive}
+      />
+      <rect
+        x="14"
+        y="32"
+        width="20"
+        height="3"
+        rx="1.5"
+        fill={C.lineInactive}
+      />
       <circle cx="46" cy="46" r="13" fill={color} />
       <path
         d="M46 52V40M41 45l5-5 5 5"
-        stroke="#fff"
+        stroke={C.card}
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -163,7 +187,11 @@ function Stepper({ current }: { current: number }) {
                       ? C.brand
                       : C.stepInactive,
                   border: `2px solid ${isDone || isActive ? C.brand : C.lineInactive}`,
-                  color: isDone ? C.brand : isActive ? "#fff" : C.textLight,
+                  color: isDone
+                    ? C.brand
+                    : isActive
+                      ? "var(--primary-foreground)"
+                      : C.textLight,
                   transition: "all .25s",
                 }}
               >
@@ -253,8 +281,8 @@ function StepUpload({
               onFile(new File([blob], "resume.txt", { type: "text/plain" }));
             }}
             style={{
-              background: pasteText.trim() ? C.brand : C.scanDisabled,
-              color: pasteText.trim() ? "#fff" : C.scanDisabledText,
+              background: pasteText.trim() ? C.cta : C.scanDisabled,
+              color: pasteText.trim() ? C.ctaForeground : C.scanDisabledText,
               border: "none",
               borderRadius: 8,
               padding: "9px 24px",
@@ -427,7 +455,7 @@ function StepJob({
             borderRadius: 8,
             padding: "7px 14px",
             fontSize: 13,
-            color: "#1e3a5f",
+            color: C.textMain,
             display: "flex",
             alignItems: "center",
             gap: 8,
@@ -572,8 +600,8 @@ function StepJob({
           if (canScan) onScan();
         }}
         style={{
-          background: canScan ? C.brand : C.scanDisabled,
-          color: canScan ? "#fff" : C.scanDisabledText,
+          background: canScan ? C.cta : C.scanDisabled,
+          color: canScan ? C.ctaForeground : C.scanDisabledText,
           border: "none",
           borderRadius: 9,
           padding: "11px 52px",
@@ -585,12 +613,12 @@ function StepJob({
         }}
         onMouseEnter={(event) => {
           if (canScan) {
-            event.currentTarget.style.background = C.brandHover;
+            event.currentTarget.style.background = C.ctaHover;
           }
         }}
         onMouseLeave={(event) => {
           if (canScan) {
-            event.currentTarget.style.background = C.brand;
+            event.currentTarget.style.background = C.cta;
           }
         }}
       >
@@ -666,8 +694,7 @@ export function ScanWidget({
             background: C.bg,
             borderRadius: 20,
             padding: "36px 40px",
-            border: "1px solid #d8dbe7",
-            boxShadow: "0 10px 30px rgba(28,27,27,0.06)",
+            border: `1px solid ${C.border}`,
           }}
         >
           <Stepper current={currentStep} />

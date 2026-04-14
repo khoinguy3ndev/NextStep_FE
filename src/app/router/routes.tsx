@@ -11,6 +11,7 @@ import { JobsPage } from "@/pages/jobs/jobs.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
 import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
 import { GoogleCallbackPage } from "@/pages/google-callback/google-callback.page";
+import { Proteched } from "./protected";
 
 export const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -45,29 +46,49 @@ export const homeRoute = createRoute({
 export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
-  component: DashboardPage,
+  component: () => (
+    <Proteched>
+      <DashboardPage />
+    </Proteched>
+  ),
 });
 
 export const resumeOptimizerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/resume-optimizer",
-  component: ResumeOptimizerPage,
+  component: () => (
+    <Proteched>
+      <ResumeOptimizerPage />
+    </Proteched>
+  ),
 });
 
 export const jobsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/jobs",
-  component: JobsPage,
+  component: () => (
+    <Proteched>
+      <JobsPage />
+    </Proteched>
+  ),
 });
 
 export const matchReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/match-report",
-  component: MatchReportPage,
+  component: () => (
+    <Proteched>
+      <MatchReportPage />
+    </Proteched>
+  ),
 });
 
 export const sampleReportRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sample-report",
-  component: SampleReportPage,
+  component: () => (
+    <Proteched>
+      <SampleReportPage />
+    </Proteched>
+  ),
 });
