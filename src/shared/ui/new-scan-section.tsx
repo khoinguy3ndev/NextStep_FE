@@ -29,7 +29,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
   const canScan = resumeText.trim().length > 0 && jdText.trim().length > 0;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       <section className="border-b border-border bg-muted p-5 pb-4">
         <h2 className="text-[22px] font-bold text-foreground">New Scan</h2>
         <p className="mt-1 text-sm text-muted-foreground">
