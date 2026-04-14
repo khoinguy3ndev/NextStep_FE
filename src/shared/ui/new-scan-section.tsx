@@ -3,7 +3,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { CloudUpload, Loader2, Sparkles, Star } from "lucide-react";
 import { useUploadCv } from "@/features/cv/model/cv.model";
 
-export function NewScanSection() {
+type NewScanSectionProps = {
+  onScan?: () => void;
+};
+
+export function NewScanSection({ onScan }: NewScanSectionProps) {
   const navigate = useNavigate();
   const [resumeText, setResumeText] = useState("");
   const [jdText, setJdText] = useState("");
@@ -114,6 +118,10 @@ export function NewScanSection() {
 
           <button
             disabled={!canScan}
+            onClick={() => {
+              if (!canScan) return;
+              onScan?.();
+            }}
             className="px-6 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground cursor-pointer disabled:cursor-not-allowed transition-colors"
           >
             Scan
