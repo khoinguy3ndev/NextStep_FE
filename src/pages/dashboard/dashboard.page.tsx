@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { FileText, Users, Calendar, ArrowRight } from "lucide-react";
 import { AppShell } from "@/shared/ui/app-shell";
-import { AiJobMatchSection } from "@/shared/ui/ai-job-match-section";
+import { AiJobMatchSection } from "../../shared/ui/ai-job-match-section";
 import { NewScanSection } from "@/shared/ui/new-scan-section";
 
 export function DashboardPage() {
-  const hasScan = false;
+  const [hasScan, setHasScan] = useState(true);
 
   return (
     <AppShell fullWidth>
       <div className="space-y-5">
-        <NewScanSection />
+        <NewScanSection
+          onScan={() => {
+            setHasScan(true);
+          }}
+        />
 
         <div className="grid grid-cols-3 gap-3.5">
           <div className="bg-card border border-border rounded-xl p-5 flex flex-col">
