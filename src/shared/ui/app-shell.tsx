@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@apollo/client/react";
 import {
-  Calendar,
   FileText,
   LogOut,
   HelpCircle,
   Home,
-  Linkedin,
   History,
   Menu,
   Shield,
@@ -15,11 +14,11 @@ import {
   Settings,
   Sparkles,
   User,
-  Folder,
-  Pencil,
 } from "lucide-react";
 import { BRAND } from "@/shared/config/brand";
 import { storage } from "@/shared/lib/storage";
+import { useSession } from "@/features/auth/session/session.model";
+import { ME_QUERY } from "@/features/auth/query/me.query";
 
 type NavItem = {
   id: string;
@@ -36,12 +35,12 @@ const navItems: NavItem[] = [
     icon: Sparkles,
     to: "/resume-optimizer",
   },
-  { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
-  { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
-  { id: "job-tracker", label: "Job Tracker", icon: Calendar },
+  // { id: "cover-letter", label: "AI Cover Letter", icon: FileText },
+  // { id: "linkedin", label: "LinkedIn Scan", icon: Linkedin },
+  // { id: "job-tracker", label: "Job Tracker", icon: Calendar },
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
-  { id: "resume-builder", label: "Resume Builder", icon: Pencil },
-  { id: "resume-manager", label: "Resume Manager", icon: Folder },
+  // { id: "resume-builder", label: "Resume Builder", icon: Pencil },
+  // { id: "resume-manager", label: "Resume Manager", icon: Folder },
   { id: "scan-history", label: "Scan History", icon: History },
 ];
 
@@ -58,9 +57,25 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
     return storage.get(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
   });
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { logout } = useSession();
+  const { data: meData } = useQuery<{
+    me: {
+      userId: string;
+      name: string;
+      email: string;
+      avatar?: string | null;
+    } | null;
+  }>(ME_QUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const currentUser = meData?.me;
+  const displayName = currentUser?.name?.trim() || "User";
+  const displayEmail = currentUser?.email?.trim() || "";
+  const avatarFallback = displayName.charAt(0).toUpperCase() || "U";
 
   useEffect(() => {
     storage.set(SIDEBAR_COLLAPSED_STORAGE_KEY, String(isCollapsed));
@@ -184,7 +199,9 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 flex-shrink-0">
-          <h1 className="text-2xl font-bold text-foreground">Welcome, Alex!</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Welcome, {displayName}!
+          </h1>
           <div className="flex items-center gap-3">
             <button className="bg-accent text-accent-foreground border border-primary/20 rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-background transition-colors">
               ⭐ Get 7 days free
@@ -195,7 +212,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
                 className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-xs font-bold text-primary cursor-pointer hover:bg-background transition-colors"
               >
-                A
+                {avatarFallback}
               </button>
 
               {isUserMenuOpen && (
@@ -206,11 +223,13 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">
-                        Alex
+                        {displayName}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        alex@nextstepai.com
-                      </p>
+                      {displayEmail ? (
+                        <p className="text-xs text-muted-foreground">
+                          {displayEmail}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
@@ -241,6 +260,7 @@ export function AppShell({ children, fullWidth = false }: AppShellProps) {
                   <div className="border-t border-border p-2">
                     <button
                       type="button"
+                      onClick={logout}
                       className="w-full px-3 py-2 rounded-lg flex items-center gap-2 text-left text-sm text-destructive hover:bg-destructive/10"
                     >
                       <LogOut className="w-4 h-4" />
