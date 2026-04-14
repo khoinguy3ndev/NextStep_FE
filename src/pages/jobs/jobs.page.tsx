@@ -71,16 +71,75 @@ const formatPosted = (postedAt: string) => {
   return `${days} days ago`;
 };
 
+type JobsUrlFilters = {
+  searchMode: "resume" | "keyword";
+  sortBy: SortBy;
+  dateRange: DateRangeFilter;
+  jobTypeFilter: JobTypeFilter;
+  remoteFilter: RemoteFilter;
+  keyword: string;
+  location: string;
+};
+
+function readJobsFiltersFromUrl(): JobsUrlFilters {
+  if (typeof window === "undefined") {
+    return {
+      searchMode: "resume" as const,
+      sortBy: "relevance" as SortBy,
+      dateRange: "any" as DateRangeFilter,
+      jobTypeFilter: "all" as JobTypeFilter,
+      remoteFilter: "all" as RemoteFilter,
+      keyword: "",
+      location: "",
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+  const sort = params.get("sort");
+  const date = params.get("date");
+  const type = params.get("type");
+  const remote = params.get("remote");
+
+  return {
+    searchMode: mode === "keyword" ? "keyword" : "resume",
+    sortBy: sort === "date" ? "date" : "relevance",
+    dateRange: date === "3d" || date === "7d" || date === "30d" ? date : "any",
+    jobTypeFilter: (JOB_TYPE_OPTIONS.includes(type as JobTypeFilter)
+      ? type
+      : "all") as JobTypeFilter,
+    remoteFilter: (REMOTE_OPTIONS.some((item) => item.value === remote)
+      ? remote
+      : "all") as RemoteFilter,
+    keyword: params.get("q") ?? "",
+    location: params.get("loc") ?? "",
+  };
+}
+
 export function JobsPage() {
   const [selectedJobId, setSelectedJobId] = useState(getDefaultJobId(jobs));
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
-  const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
-  const [sortBy, setSortBy] = useState<SortBy>("relevance");
-  const [dateRange, setDateRange] = useState<DateRangeFilter>("any");
-  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>("all");
-  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>("all");
-  const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("");
+  const [searchMode, setSearchMode] = useState<"resume" | "keyword">(
+    () => readJobsFiltersFromUrl().searchMode,
+  );
+  const [sortBy, setSortBy] = useState<SortBy>(
+    () => readJobsFiltersFromUrl().sortBy,
+  );
+  const [dateRange, setDateRange] = useState<DateRangeFilter>(
+    () => readJobsFiltersFromUrl().dateRange,
+  );
+  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>(
+    () => readJobsFiltersFromUrl().jobTypeFilter,
+  );
+  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>(
+    () => readJobsFiltersFromUrl().remoteFilter,
+  );
+  const [keyword, setKeyword] = useState(
+    () => readJobsFiltersFromUrl().keyword,
+  );
+  const [location, setLocation] = useState(
+    () => readJobsFiltersFromUrl().location,
+  );
   const [leftPanelHeight, setLeftPanelHeight] = useState<number | null>(null);
   const rightPanelRef = useRef<HTMLElement | null>(null);
 
@@ -160,6 +219,53 @@ export function JobsPage() {
   };
 
   const closeDropdown = () => setOpenDropdown(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (searchMode !== "resume") params.set("mode", searchMode);
+    else params.delete("mode");
+
+    if (sortBy !== "relevance") params.set("sort", sortBy);
+    else params.delete("sort");
+
+    if (dateRange !== "any") params.set("date", dateRange);
+    else params.delete("date");
+
+    if (jobTypeFilter !== "all") params.set("type", jobTypeFilter);
+    else params.delete("type");
+
+    if (remoteFilter !== "all") params.set("remote", remoteFilter);
+    else params.delete("remote");
+
+    const normalizedKeyword = keyword.trim();
+    if (normalizedKeyword) params.set("q", normalizedKeyword);
+    else params.delete("q");
+
+    const normalizedLocation = location.trim();
+    if (normalizedLocation) params.set("loc", normalizedLocation);
+    else params.delete("loc");
+
+    const nextSearch = params.toString();
+    const currentSearch = window.location.search.startsWith("?")
+      ? window.location.search.slice(1)
+      : window.location.search;
+
+    if (nextSearch === currentSearch) return;
+
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", nextUrl);
+  }, [
+    searchMode,
+    sortBy,
+    dateRange,
+    jobTypeFilter,
+    remoteFilter,
+    keyword,
+    location,
+  ]);
 
   useEffect(() => {
     const syncPanelHeight = () => {

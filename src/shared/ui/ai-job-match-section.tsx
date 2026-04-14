@@ -74,18 +74,77 @@ function formatPosted(postedAt: string) {
   return `${postedDays} days ago`;
 }
 
+type AiJobUrlFilters = {
+  searchMode: "resume" | "keyword";
+  sortBy: SortBy;
+  dateRange: DateRangeFilter;
+  jobTypeFilter: JobTypeFilter;
+  remoteFilter: RemoteFilter;
+  keyword: string;
+  location: string;
+};
+
+function readAiJobFiltersFromUrl(): AiJobUrlFilters {
+  if (typeof window === "undefined") {
+    return {
+      searchMode: "resume" as const,
+      sortBy: "relevance" as SortBy,
+      dateRange: "any" as DateRangeFilter,
+      jobTypeFilter: "all" as JobTypeFilter,
+      remoteFilter: "all" as RemoteFilter,
+      keyword: "",
+      location: "",
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+  const sort = params.get("sort");
+  const date = params.get("date");
+  const type = params.get("type");
+  const remote = params.get("remote");
+
+  return {
+    searchMode: mode === "keyword" ? "keyword" : "resume",
+    sortBy: sort === "date" ? "date" : "relevance",
+    dateRange: date === "3d" || date === "7d" || date === "30d" ? date : "any",
+    jobTypeFilter: (JOB_TYPE_OPTIONS.includes(type as JobTypeFilter)
+      ? type
+      : "all") as JobTypeFilter,
+    remoteFilter: (REMOTE_OPTIONS.some((item) => item.value === remote)
+      ? remote
+      : "all") as RemoteFilter,
+    keyword: params.get("q") ?? "",
+    location: params.get("loc") ?? "",
+  };
+}
+
 export function AiJobMatchSection({
   hasScan,
   onCreateScan,
 }: AiJobMatchSectionProps) {
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
-  const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
-  const [sortBy, setSortBy] = useState<SortBy>("relevance");
-  const [dateRange, setDateRange] = useState<DateRangeFilter>("any");
-  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>("all");
-  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>("all");
-  const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("");
+  const [searchMode, setSearchMode] = useState<"resume" | "keyword">(
+    () => readAiJobFiltersFromUrl().searchMode,
+  );
+  const [sortBy, setSortBy] = useState<SortBy>(
+    () => readAiJobFiltersFromUrl().sortBy,
+  );
+  const [dateRange, setDateRange] = useState<DateRangeFilter>(
+    () => readAiJobFiltersFromUrl().dateRange,
+  );
+  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>(
+    () => readAiJobFiltersFromUrl().jobTypeFilter,
+  );
+  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>(
+    () => readAiJobFiltersFromUrl().remoteFilter,
+  );
+  const [keyword, setKeyword] = useState(
+    () => readAiJobFiltersFromUrl().keyword,
+  );
+  const [location, setLocation] = useState(
+    () => readAiJobFiltersFromUrl().location,
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [previewJobId, setPreviewJobId] = useState<string | null>(null);
 
@@ -133,6 +192,53 @@ export function AiJobMatchSection({
   };
 
   const closeDropdown = () => setOpenDropdown(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (searchMode !== "resume") params.set("mode", searchMode);
+    else params.delete("mode");
+
+    if (sortBy !== "relevance") params.set("sort", sortBy);
+    else params.delete("sort");
+
+    if (dateRange !== "any") params.set("date", dateRange);
+    else params.delete("date");
+
+    if (jobTypeFilter !== "all") params.set("type", jobTypeFilter);
+    else params.delete("type");
+
+    if (remoteFilter !== "all") params.set("remote", remoteFilter);
+    else params.delete("remote");
+
+    const normalizedKeyword = keyword.trim();
+    if (normalizedKeyword) params.set("q", normalizedKeyword);
+    else params.delete("q");
+
+    const normalizedLocation = location.trim();
+    if (normalizedLocation) params.set("loc", normalizedLocation);
+    else params.delete("loc");
+
+    const nextSearch = params.toString();
+    const currentSearch = window.location.search.startsWith("?")
+      ? window.location.search.slice(1)
+      : window.location.search;
+
+    if (nextSearch === currentSearch) return;
+
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", nextUrl);
+  }, [
+    searchMode,
+    sortBy,
+    dateRange,
+    jobTypeFilter,
+    remoteFilter,
+    keyword,
+    location,
+  ]);
 
   const visibleJobs = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
