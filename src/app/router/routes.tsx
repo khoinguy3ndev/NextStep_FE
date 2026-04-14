@@ -8,6 +8,7 @@ import { ForgotPasswordPage } from "@/pages/forgot-password/forgot-password.page
 import { DashboardPage } from "@/pages/dashboard/dashboard.page";
 import { ResumeOptimizerPage } from "@/pages/resume-optimizer/resume-optimizer.page";
 import { JobsPage } from "@/pages/jobs/jobs.page";
+import { ScanHistoryPage } from "@/pages/scan-history/scan-history.page";
 import { MatchReportPage } from "@/pages/match-report/match-report.page";
 import { SampleReportPage } from "@/pages/sample-report/sample-report.page";
 import { GoogleCallbackPage } from "@/pages/google-callback/google-callback.page";
@@ -69,6 +70,16 @@ export const jobsRoute = createRoute({
   component: () => (
     <Protected>
       <JobsPage />
+    </Protected>
+  ),
+});
+
+export const scanHistoryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/scan-history",
+  component: () => (
+    <Protected>
+      <ScanHistoryPage />
     </Protected>
   ),
 });

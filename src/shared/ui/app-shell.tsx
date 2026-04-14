@@ -24,7 +24,7 @@ type NavItem = {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  to?: "/dashboard" | "/resume-optimizer" | "/jobs";
+  to?: "/dashboard" | "/resume-optimizer" | "/jobs" | "/scan-history";
 };
 
 const navItems: NavItem[] = [
@@ -41,7 +41,12 @@ const navItems: NavItem[] = [
   { id: "find-jobs", label: "Find Jobs", icon: Search, to: "/jobs" },
   // { id: "resume-builder", label: "Resume Builder", icon: Pencil },
   // { id: "resume-manager", label: "Resume Manager", icon: Folder },
-  { id: "scan-history", label: "Scan History", icon: History },
+  {
+    id: "scan-history",
+    label: "Scan History",
+    icon: History,
+    to: "/scan-history",
+  },
 ];
 
 type AppShellProps = {
