@@ -183,6 +183,16 @@ export function AiJobMatchSection({
     closeDropdown();
   };
 
+  const resetFilters = () => {
+    setKeyword("");
+    setLocation("");
+    setDateRange("any");
+    setJobTypeFilter("all");
+    setRemoteFilter("all");
+    setCurrentPage(1);
+    closeDropdown();
+  };
+
   const keywordPlaceholder =
     searchMode === "resume"
       ? "AI is recommending jobs based on your resume"
@@ -465,15 +475,7 @@ export function AiJobMatchSection({
 
           <button
             type="button"
-            onClick={() => {
-              handleKeywordChange("");
-              setLocation("");
-              setDateRange("any");
-              setJobTypeFilter("all");
-              setRemoteFilter("all");
-              setCurrentPage(1);
-              closeDropdown();
-            }}
+            onClick={resetFilters}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
             Clear all
@@ -558,139 +560,164 @@ export function AiJobMatchSection({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {pagedJobs.map((job) => {
-              const badgeClass =
-                job.badge === "top"
-                  ? "bg-primary/10 text-primary"
-                  : "bg-green-100 text-green-700";
-
-              const badgeLabel =
-                job.badge === "top" ? "Top Match" : "Good Match";
-
-              return (
-                <article
-                  key={job.id}
-                  onClick={() => openJobPreview(job)}
-                  className={`group relative rounded-xl border border-border bg-card p-4 ${
-                    job.locked ? "cursor-default" : "cursor-pointer"
-                  }`}
-                >
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
-                  >
-                    {job.badge === "top" ? (
-                      <Star className="mr-1 h-3 w-3" />
-                    ) : (
-                      <CheckCircle2 className="mr-1 h-3 w-3" />
-                    )}
-                    {badgeLabel}
-                  </span>
-
-                  <div
-                    className={
-                      job.locked
-                        ? "mt-2 flex-1 blur-[6px] opacity-70 pointer-events-none select-none"
-                        : "mt-2 flex-1"
-                    }
-                  >
-                    <h3
-                      title={job.title}
-                      className="line-clamp-1 text-base font-bold text-primary"
-                    >
-                      {job.title}
-                    </h3>
-                    <p
-                      title={job.company}
-                      className="mt-1 line-clamp-1 text-sm font-semibold text-foreground"
-                    >
-                      {job.company}
-                    </p>
-                    <p
-                      title={job.location}
-                      className="mt-1 line-clamp-1 text-sm text-muted-foreground"
-                    >
-                      {job.location}
-                    </p>
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      {formatPosted(job.postedAt)}
-                    </p>
-
-                    <div className="mt-4 flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={(e) => e.stopPropagation()}
-                        className="rounded-md border border-border px-4 py-1.5 text-sm font-semibold text-foreground hover:border-foreground"
-                      >
-                        Scan
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-muted-foreground hover:text-foreground"
-                        aria-label="Save job"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {job.locked ? (
-                    <>
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
-                        <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      </div>
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                        <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
-                          <Lock className="h-3.5 w-3.5" />
-                          Unlock to view
-                        </div>
-                      </div>
-                    </>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="mt-5 flex items-center justify-center gap-2 text-sm">
-            <button
-              type="button"
-              disabled={safeCurrentPage === 1}
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
-            >
-              {"<"}
-            </button>
-
-            {pageNumbers.map((page) => (
+          {visibleJobs.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
+              <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                <Search className="h-5 w-5" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">
+                No jobs found
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Try adjusting your filters to see more matching jobs.
+              </p>
               <button
-                key={page}
                 type="button"
-                onClick={() => setCurrentPage(page)}
-                className={`min-w-8 rounded-md px-2 py-1 ${
-                  safeCurrentPage === page
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={resetFilters}
+                className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-foreground"
               >
-                {page}
+                Reset filters
               </button>
-            ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {pagedJobs.map((job) => {
+                  const badgeClass =
+                    job.badge === "top"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-green-100 text-green-700";
 
-            <button
-              type="button"
-              disabled={safeCurrentPage === totalPages}
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
-            >
-              {">"}
-            </button>
-          </div>
+                  const badgeLabel =
+                    job.badge === "top" ? "Top Match" : "Good Match";
+
+                  return (
+                    <article
+                      key={job.id}
+                      onClick={() => openJobPreview(job)}
+                      className={`group relative rounded-xl border border-border bg-card p-4 ${
+                        job.locked ? "cursor-default" : "cursor-pointer"
+                      }`}
+                    >
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeClass}`}
+                      >
+                        {job.badge === "top" ? (
+                          <Star className="mr-1 h-3 w-3" />
+                        ) : (
+                          <CheckCircle2 className="mr-1 h-3 w-3" />
+                        )}
+                        {badgeLabel}
+                      </span>
+
+                      <div
+                        className={
+                          job.locked
+                            ? "mt-2 flex-1 blur-[6px] opacity-70 pointer-events-none select-none"
+                            : "mt-2 flex-1"
+                        }
+                      >
+                        <h3
+                          title={job.title}
+                          className="line-clamp-1 text-base font-bold text-primary"
+                        >
+                          {job.title}
+                        </h3>
+                        <p
+                          title={job.company}
+                          className="mt-1 line-clamp-1 text-sm font-semibold text-foreground"
+                        >
+                          {job.company}
+                        </p>
+                        <p
+                          title={job.location}
+                          className="mt-1 line-clamp-1 text-sm text-muted-foreground"
+                        >
+                          {job.location}
+                        </p>
+                        <p className="mt-4 text-sm text-muted-foreground">
+                          {formatPosted(job.postedAt)}
+                        </p>
+
+                        <div className="mt-4 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            className="rounded-md border border-border px-4 py-1.5 text-sm font-semibold text-foreground hover:border-foreground"
+                          >
+                            Scan
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="Save job"
+                          >
+                            <Bookmark className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {job.locked ? (
+                        <>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+                            <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
+                              <Lock className="h-4 w-4" />
+                            </div>
+                          </div>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                            <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                              <Lock className="h-3.5 w-3.5" />
+                              Unlock to view
+                            </div>
+                          </div>
+                        </>
+                      ) : null}
+                    </article>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 flex items-center justify-center gap-2 text-sm">
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                  className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
+                >
+                  {"<"}
+                </button>
+
+                {pageNumbers.map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    className={`min-w-8 rounded-md px-2 py-1 ${
+                      safeCurrentPage === page
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  className="rounded-md border border-border px-2 py-1 text-muted-foreground disabled:opacity-40"
+                >
+                  {">"}
+                </button>
+              </div>
+            </>
+          )}
         </section>
       )}
 
