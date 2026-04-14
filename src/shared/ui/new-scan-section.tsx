@@ -101,7 +101,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
           <button
             type="button"
             onClick={() => navigate({ to: "/sample-report" })}
-            className="cursor-pointer items-center rounded-md gap-2 rounded-md border px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted"
+            className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
           >
             View sample report
           </button>
