@@ -29,105 +29,113 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
   const canScan = resumeText.trim().length > 0 && jdText.trim().length > 0;
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-      <h2 className="text-[22px] font-bold text-foreground mb-5">New scan</h2>
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <section className="border-b border-border bg-muted p-5 pb-4">
+        <h2 className="text-[22px] font-bold text-foreground">New Scan</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Upload your resume and add a job description to generate a focused AI
+          scan.
+        </p>
+      </section>
 
-      <div className="grid grid-cols-2 gap-5 mb-6">
-        <div className="border border-border rounded-xl overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between p-4 bg-background border-b border-border">
-            <label className="text-sm font-semibold text-foreground">
-              Step 1: Upload a resume
-            </label>
-            <a
-              href="#"
-              className="text-sm text-muted-foreground flex items-center gap-1.5 hover:text-primary transition-colors"
-            >
-              <Star className="w-4 h-4" />
-              Saved Resumes
-            </a>
-          </div>
-          <div className="p-4 flex-1 flex flex-col gap-4 bg-background/50">
-            <textarea
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              placeholder="Copy and paste resume here."
-              className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-muted-foreground resize-none outline-none placeholder:text-muted-foreground"
-            />
-            <label className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border rounded-lg text-sm font-medium text-muted-foreground bg-card cursor-pointer hover:border-primary hover:text-primary transition-colors shadow-sm">
-              {isUploading ? (
-                <Loader2 className="w-4 h-4 animate-spin text-foreground" />
-              ) : (
-                <CloudUpload className="w-4 h-4" />
-              )}
-              {isUploading
-                ? "Processing..."
-                : "Drag & Drop or Upload Your Resume"}{" "}
-              <input
-                type="file"
-                className="hidden"
-                accept=".pdf,.doc,.docx,.txt"
-                disabled={isUploading}
-                onChange={handleFileChange}
+      <section className="bg-background p-5">
+        <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <div className="flex flex-col overflow-hidden rounded-xl border border-border">
+            <div className="flex items-center justify-between border-b border-border bg-card p-4">
+              <label className="text-sm font-semibold text-foreground">
+                Step 1: Upload a resume
+              </label>
+              <a
+                href="#"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
+              >
+                <Star className="w-4 h-4" />
+                Saved Resumes
+              </a>
+            </div>
+            <div className="flex flex-1 flex-col gap-4 bg-background/50 p-4">
+              <textarea
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Copy and paste resume here."
+                className="min-h-[180px] w-full flex-1 resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
               />
-            </label>
+              <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-card py-2.5 text-sm font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary hover:text-primary">
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-foreground" />
+                ) : (
+                  <CloudUpload className="w-4 h-4" />
+                )}
+                {isUploading
+                  ? "Processing..."
+                  : "Drag & Drop or Upload Your Resume"}{" "}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.doc,.docx,.txt"
+                  disabled={isUploading}
+                  onChange={handleFileChange}
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="flex flex-col overflow-hidden rounded-xl border border-border">
+            <div className="flex items-center border-b border-border bg-card p-4">
+              <label className="text-sm font-semibold text-foreground">
+                Step 2: Paste a job description
+              </label>
+            </div>
+            <div className="flex flex-1 flex-col bg-background/50 p-4">
+              <textarea
+                value={jdText}
+                onChange={(e) => setJdText(e.target.value)}
+                placeholder="Copy and paste job description here. Aim to exclude: Benefits, Perks, and Legal Disclaimers"
+                className="min-h-[180px] w-full flex-1 resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="border border-border rounded-xl overflow-hidden flex flex-col">
-          <div className="flex items-center p-4 bg-background border-b border-border">
-            <label className="text-sm font-semibold text-foreground">
-              Step 2: Paste a job description
-            </label>
-          </div>
-          <div className="p-4 flex-1 flex flex-col bg-background/50">
-            <textarea
-              value={jdText}
-              onChange={(e) => setJdText(e.target.value)}
-              placeholder="Copy and paste job description here. Aim to exclude: Benefits, Perks, and Legal Disclaimers"
-              className="w-full flex-1 min-h-[180px] bg-transparent text-sm text-muted-foreground resize-none outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between pt-2">
-        <button
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          onClick={() => navigate({ to: "/sample-report" })}
-        >
-          View sample Scan
-        </button>
-        <div className="flex items-center gap-3">
-          <div className="bg-accent border border-primary/20 rounded-md px-3 py-1.5 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Available scans:{" "}
-              <span className="font-bold text-accent-foreground">5</span>
-            </span>
-            <a
-              href="#"
-              className="text-primary font-semibold text-sm hover:underline"
-            >
-              Upgrade
-            </a>
-          </div>
-
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-muted text-muted-foreground rounded-md text-sm font-semibold cursor-not-allowed">
-            <Sparkles className="w-4 h-4" />
-            One-Click Optimize
-          </button>
-
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <button
-            disabled={!canScan}
-            onClick={() => {
-              if (!canScan) return;
-              onScan?.();
-            }}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground cursor-pointer disabled:cursor-not-allowed transition-colors"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            onClick={() => navigate({ to: "/sample-report" })}
           >
-            Scan
+            View sample Scan
           </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-1.5">
+              <span className="text-sm text-muted-foreground">
+                Available scans:{" "}
+                <span className="font-bold text-accent-foreground">5</span>
+              </span>
+              <a
+                href="#"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                Upgrade
+              </a>
+            </div>
+
+            <button className="flex cursor-not-allowed items-center gap-1.5 rounded-md bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground">
+              <Sparkles className="w-4 h-4" />
+              One-Click Optimize
+            </button>
+
+            <button
+              disabled={!canScan}
+              onClick={() => {
+                if (!canScan) return;
+                onScan?.();
+              }}
+              className="cursor-pointer rounded-md bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+            >
+              Scan
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
