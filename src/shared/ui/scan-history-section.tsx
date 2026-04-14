@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import {
+  ArrowRight,
   ArrowUpDown,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  FileText,
   Search,
 } from "lucide-react";
 
@@ -136,253 +136,267 @@ export function ScanHistorySection({
         <p className="mt-1 text-sm text-muted-foreground">
           Review your past resume scans and revisit job-fit insights anytime.
         </p>
+
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+          <div className="relative w-full max-w-[260px]">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={searchValue}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search"
+              className="h-10 w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-foreground"
+            />
+          </div>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsSortMenuOpen((prev) => !prev)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              <ArrowUpDown className="h-4 w-4" />
+              Sort
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            </button>
+
+            {isSortMenuOpen && (
+              <div className="absolute right-0 top-11 z-20 w-56 overflow-hidden rounded-lg border border-border bg-card shadow-lg">
+                <div className="px-4 py-2 text-sm text-muted-foreground">
+                  Sort by
+                </div>
+
+                {(
+                  [
+                    { value: "score", label: "Score" },
+                    { value: "scanDate", label: "Scan Date" },
+                  ] as const
+                ).map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setSortBy(option.value);
+                      setCurrentPage(1);
+                      setIsSortMenuOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
+                      sortBy === option.value
+                        ? "bg-accent text-accent-foreground"
+                        : "text-foreground"
+                    }`}
+                  >
+                    {option.label}
+                    {sortBy === option.value ? (
+                      <Check className="h-4 w-4" />
+                    ) : null}
+                  </button>
+                ))}
+
+                <div className="border-t border-border px-4 py-2 text-sm text-muted-foreground">
+                  Order
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortOrder("desc");
+                    setCurrentPage(1);
+                    setIsSortMenuOpen(false);
+                  }}
+                  className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
+                    sortOrder === "desc"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-foreground"
+                  }`}
+                >
+                  {orderPrimaryLabel}
+                  {sortOrder === "desc" ? <Check className="h-4 w-4" /> : null}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortOrder("asc");
+                    setCurrentPage(1);
+                    setIsSortMenuOpen(false);
+                  }}
+                  className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
+                    sortOrder === "asc"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-foreground"
+                  }`}
+                >
+                  {orderSecondaryLabel}
+                  {sortOrder === "asc" ? <Check className="h-4 w-4" /> : null}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
       <section className="bg-background p-5">
-        {!hasHistory ? (
-          <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center">
-            <div className="flex flex-col items-center justify-center">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <FileText className="h-5 w-5 text-primary" />
+        <div className="space-y-4">
+          {!hasHistory ? (
+            <div className="p-8 text-center">
+              <div className="relative mx-auto mb-4 h-16 w-16">
+                <div className="absolute left-1 top-1 h-12 w-10 space-y-0.5 rounded border border-border bg-card p-1.5">
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-2/3 rounded bg-border/70" />
+                </div>
+                <div className="absolute -top-1 left-4 h-12 w-10 space-y-0.5 rounded border border-border bg-card p-1.5">
+                  <div className="mb-1 rounded bg-primary px-1 text-[7px] font-bold text-primary-foreground">
+                    TOP MATCH
+                  </div>
+                  <div className="h-1 w-full rounded bg-primary opacity-40" />
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-2/3 rounded bg-border/70" />
+                </div>
+                <div className="absolute -right-1 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                  <ArrowRight className="h-3 w-3 text-primary-foreground" />
+                </div>
               </div>
-              <p className="mb-3 text-sm text-muted-foreground">
-                Scan your resume to start optimizing it for a new job
-                opportunity.
+              <h3 className="mb-1 text-base font-bold text-foreground">
+                No scan history yet
+              </h3>
+              <p className="mx-auto mb-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Complete your first scan to start tracking past results, compare
+                improvements over time, and quickly revisit your reports.
               </p>
               <button
                 type="button"
                 onClick={onScanResume}
-                className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                className="cursor-pointer text-sm font-semibold text-foreground hover:underline"
               >
-                Scan Resume
+                + Start First Scan
               </button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <div className="relative w-full max-w-[260px]">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={searchValue}
-                  onChange={(e) => {
-                    setSearchValue(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="Search"
-                  className="h-10 w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-foreground"
-                />
-              </div>
-
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsSortMenuOpen((prev) => !prev)}
-                  className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground hover:bg-muted"
-                >
-                  <ArrowUpDown className="h-4 w-4" />
-                  Sort
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-
-                {isSortMenuOpen && (
-                  <div className="absolute right-0 top-11 z-20 w-56 overflow-hidden rounded-lg border border-border bg-card shadow-lg">
-                    <div className="px-4 py-2 text-sm text-muted-foreground">
-                      Sort by
-                    </div>
-
-                    {(
-                      [
-                        { value: "score", label: "Score" },
-                        { value: "scanDate", label: "Scan Date" },
-                      ] as const
-                    ).map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => {
-                          setSortBy(option.value);
-                          setCurrentPage(1);
-                          setIsSortMenuOpen(false);
-                        }}
-                        className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
-                          sortBy === option.value
-                            ? "bg-accent text-accent-foreground"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {option.label}
-                        {sortBy === option.value ? (
-                          <Check className="h-4 w-4" />
-                        ) : null}
-                      </button>
-                    ))}
-
-                    <div className="border-t border-border px-4 py-2 text-sm text-muted-foreground">
-                      Order
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSortOrder("desc");
-                        setCurrentPage(1);
-                        setIsSortMenuOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
-                        sortOrder === "desc"
-                          ? "bg-accent text-accent-foreground"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {orderPrimaryLabel}
-                      {sortOrder === "desc" ? (
-                        <Check className="h-4 w-4" />
-                      ) : null}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSortOrder("asc");
-                        setCurrentPage(1);
-                        setIsSortMenuOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-muted ${
-                        sortOrder === "asc"
-                          ? "bg-accent text-accent-foreground"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {orderSecondaryLabel}
-                      {sortOrder === "asc" ? (
-                        <Check className="h-4 w-4" />
-                      ) : null}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {isSortMenuOpen && (
-              <button
-                type="button"
-                aria-label="Close sort menu"
-                onClick={() => setIsSortMenuOpen(false)}
-                className="fixed inset-0 z-10 cursor-default"
-              />
-            )}
-
-            <div className="overflow-hidden rounded-xl border border-border bg-card">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] table-fixed">
-                  <thead>
-                    <tr className="border-b border-border bg-card text-left text-sm font-semibold text-foreground">
-                      <th className="w-[92px] px-5 py-3">Score</th>
-                      <th className="w-[280px] px-4 py-3">
-                        Company name / Job title
-                      </th>
-                      <th className="px-4 py-3">Job description</th>
-                      <th className="w-[160px] px-4 py-3">Scan date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pagedItems.length > 0 ? (
-                      pagedItems.map((item) => (
-                        <tr
-                          key={item.id}
-                          className="border-b border-border last:border-b-0 hover:bg-muted/40"
-                        >
-                          <td className="px-5 py-4 align-top">
-                            <ScoreRing score={item.score} />
-                          </td>
-                          <td className="px-4 py-4 align-top">
-                            <p className="line-clamp-1 text-sm font-semibold text-foreground">
-                              {item.companyName}
-                            </p>
-                            <p className="line-clamp-2 text-sm font-semibold text-primary">
-                              {item.jobTitle}
-                            </p>
-                          </td>
-                          <td className="px-4 py-4 align-top">
-                            <p className="line-clamp-2 text-sm text-muted-foreground">
-                              {item.jobDescription}
-                            </p>
-                          </td>
-                          <td className="px-4 py-4 align-top text-sm text-muted-foreground">
-                            {item.scanDate}
+          ) : (
+            <>
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[860px] table-fixed">
+                    <thead>
+                      <tr className="border-b border-border bg-card text-left text-sm font-semibold text-foreground">
+                        <th className="w-[92px] px-5 py-3">Score</th>
+                        <th className="w-[280px] px-4 py-3">
+                          Company name / Job title
+                        </th>
+                        <th className="px-4 py-3">Job description</th>
+                        <th className="w-[160px] px-4 py-3">Scan date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pagedItems.length > 0 ? (
+                        pagedItems.map((item) => (
+                          <tr
+                            key={item.id}
+                            className="border-b border-border last:border-b-0 hover:bg-muted/40"
+                          >
+                            <td className="px-5 py-4 align-top">
+                              <ScoreRing score={item.score} />
+                            </td>
+                            <td className="px-4 py-4 align-top">
+                              <p className="line-clamp-1 text-sm font-semibold text-foreground">
+                                {item.companyName}
+                              </p>
+                              <p className="line-clamp-2 text-sm font-semibold text-primary">
+                                {item.jobTitle}
+                              </p>
+                            </td>
+                            <td className="px-4 py-4 align-top">
+                              <p className="line-clamp-2 text-sm text-muted-foreground">
+                                {item.jobDescription}
+                              </p>
+                            </td>
+                            <td className="px-4 py-4 align-top text-sm text-muted-foreground">
+                              {item.scanDate}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-10 text-center">
+                            <div className="mx-auto max-w-sm">
+                              <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                                <Search className="h-5 w-5" />
+                              </div>
+                              <p className="text-base font-semibold text-foreground">
+                                No scan history found
+                              </p>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                Try a different keyword or clear search to see
+                                all records.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSearchValue("");
+                                  setCurrentPage(1);
+                                }}
+                                className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                              >
+                                Clear search
+                              </button>
+                            </div>
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={4} className="px-4 py-10 text-center">
-                          <div className="mx-auto max-w-sm">
-                            <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                              <Search className="h-5 w-5" />
-                            </div>
-                            <p className="text-base font-semibold text-foreground">
-                              No scan history found
-                            </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                              Try a different keyword or clear search to see all
-                              records.
-                            </p>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSearchValue("");
-                                setCurrentPage(1);
-                              }}
-                              className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
-                            >
-                              Clear search
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-              <p className="text-muted-foreground">
-                Showing {fromItem}-{toItem} of {totalItems}
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                <p className="text-muted-foreground">
+                  Showing {fromItem}-{toItem} of {totalItems}
+                </p>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={safeCurrentPage === 1}
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Previous page"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <span className="text-muted-foreground">
-                  {safeCurrentPage}/{totalPages}
-                </span>
-                <button
-                  type="button"
-                  disabled={safeCurrentPage === totalPages}
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                  }
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Next page"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={safeCurrentPage === 1}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <span className="text-muted-foreground">
+                    {safeCurrentPage}/{totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={safeCurrentPage === totalPages}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </section>
+
+      {isSortMenuOpen && (
+        <button
+          type="button"
+          aria-label="Close sort menu"
+          onClick={() => setIsSortMenuOpen(false)}
+          className="fixed inset-0 z-10 cursor-default"
+        />
+      )}
     </div>
   );
 }

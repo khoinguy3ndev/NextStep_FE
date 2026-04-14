@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
+  ArrowRight,
   Bookmark,
   BriefcaseBusiness,
   Check,
@@ -17,6 +19,7 @@ import {
 import { AppShell } from "@/shared/ui/app-shell";
 import { FilterSelect } from "@/shared/ui/filter-select";
 import { BRAND } from "@/shared/config/brand";
+import { getHasScannedCv } from "@/shared/config/scan-status";
 import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
 type DropdownName = "mode" | "date" | "type" | "remote" | "sort" | null;
@@ -118,6 +121,8 @@ function readJobsFiltersFromUrl(): JobsUrlFilters {
 }
 
 export function JobsPage() {
+  const navigate = useNavigate();
+  const [hasScan] = useState(() => getHasScannedCv());
   const [selectedJobId, setSelectedJobId] = useState(getDefaultJobId(jobs));
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
   const [searchMode, setSearchMode] = useState<"resume" | "keyword">(
@@ -432,239 +437,284 @@ export function JobsPage() {
         </section>
 
         <section className="bg-background p-5">
-          <div className="mb-4 flex items-start gap-2 text-sm leading-relaxed text-foreground">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p>
-              Your ATS match rate may be different. {BRAND.name} uses AI for
-              smarter matching. Use Scan to spot missing keywords and improve
-              your ATS match rate.
-            </p>
-          </div>
-
-          {visibleJobs.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
-              <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                <Search className="h-5 w-5" />
+          {!hasScan ? (
+            <div className="p-8 text-center">
+              <div className="relative mx-auto mb-4 h-16 w-16">
+                <div className="absolute left-1 top-1 h-12 w-10 space-y-0.5 rounded border border-border bg-card p-1.5">
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-2/3 rounded bg-border/70" />
+                </div>
+                <div className="absolute -top-1 left-4 h-12 w-10 space-y-0.5 rounded border border-border bg-card p-1.5">
+                  <div className="mb-1 rounded bg-primary px-1 text-[7px] font-bold text-primary-foreground">
+                    TOP MATCH
+                  </div>
+                  <div className="h-1 w-full rounded bg-primary opacity-40" />
+                  <div className="h-1 w-full rounded bg-border/70" />
+                  <div className="h-1 w-2/3 rounded bg-border/70" />
+                </div>
+                <div className="absolute -right-1 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                  <ArrowRight className="h-3 w-3 text-primary-foreground" />
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-foreground">
-                No jobs found
+              <h3 className="mb-1 text-base font-bold text-foreground">
+                Let {BRAND.name} match jobs for you
               </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Try adjusting your filters to see more matching jobs.
+              <p className="mx-auto mb-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                {BRAND.name} matches you with jobs based on your resume and
+                experience, not just job titles or keywords like traditional job
+                boards. Create a scan to unlock personalized job
+                recommendations.
               </p>
               <button
                 type="button"
-                onClick={resetFilters}
-                className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-foreground"
+                onClick={() => navigate({ to: "/dashboard" })}
+                className="cursor-pointer text-sm font-semibold text-foreground hover:underline"
               >
-                Reset filters
+                + Create New Scan
               </button>
             </div>
           ) : (
-            <div
-              className="grid items-start gap-4"
-              style={{ gridTemplateColumns: "340px minmax(0, 1fr)" }}
-            >
-              <aside
-                className="overflow-hidden rounded-xl border border-border bg-card flex flex-col"
-                style={
-                  leftPanelHeight
-                    ? { height: `${leftPanelHeight}px` }
-                    : undefined
-                }
-              >
-                <div className="relative border-b border-border px-4 py-3">
+            <>
+              <div className="mb-4 flex items-start gap-2 text-sm leading-relaxed text-foreground">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <p>
+                  Your ATS match rate may be different. {BRAND.name} uses AI for
+                  smarter matching. Use Scan to spot missing keywords and
+                  improve your ATS match rate.
+                </p>
+              </div>
+
+              {visibleJobs.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
+                  <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    No jobs found
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Try adjusting your filters to see more matching jobs.
+                  </p>
                   <button
                     type="button"
-                    onClick={() => toggleDropdown("sort")}
-                    className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
+                    onClick={resetFilters}
+                    className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:border-foreground"
                   >
-                    <ChevronsUpDown className="h-3.5 w-3.5" />
-                    {sortBy === "relevance" ? "Relevance" : "Date"}
+                    Reset filters
                   </button>
-
-                  {openDropdown === "sort" && (
-                    <div className="absolute left-4 top-12 z-20 w-[200px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
-                      <div className="border-b border-border px-4 py-2.5 text-sm text-muted-foreground">
-                        Sort by
-                      </div>
-                      {(["relevance", "date"] as const).map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => {
-                            setSortBy(value);
-                            closeDropdown();
-                          }}
-                          className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
-                            sortBy === value
-                              ? "bg-accent text-accent-foreground"
-                              : "bg-card"
-                          }`}
-                        >
-                          {value === "relevance" ? "Relevance" : "Date"}
-                          {sortBy === value && <Check className="h-4 w-4" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
-
-                <div className="min-h-0 flex-1 overflow-y-auto p-3">
-                  {visibleJobs.map((job) => {
-                    const jobId = getJobId(job);
-                    const isActive = getJobId(selectedJob) === jobId;
-
-                    return (
+              ) : (
+                <div
+                  className="grid items-start gap-4"
+                  style={{ gridTemplateColumns: "340px minmax(0, 1fr)" }}
+                >
+                  <aside
+                    className="overflow-hidden rounded-xl border border-border bg-card flex flex-col"
+                    style={
+                      leftPanelHeight
+                        ? { height: `${leftPanelHeight}px` }
+                        : undefined
+                    }
+                  >
+                    <div className="relative border-b border-border px-4 py-3">
                       <button
-                        key={jobId}
                         type="button"
-                        onClick={() => {
-                          if (job.locked) return;
-                          setSelectedJobId(jobId);
-                        }}
-                        className={`group relative mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
-                          isActive
-                            ? "border-primary/40 bg-accent"
-                            : "border-border bg-card hover:bg-background"
-                        }`}
+                        onClick={() => toggleDropdown("sort")}
+                        className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
                       >
-                        {(job.badge === "top" || job.badge === "good") && (
-                          <span
-                            className={`mb-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${
-                              job.badge === "top"
-                                ? "border border-primary/30 bg-primary/15 text-primary"
-                                : "border border-green-200 bg-green-100 text-green-700"
+                        <ChevronsUpDown className="h-3.5 w-3.5" />
+                        {sortBy === "relevance" ? "Relevance" : "Date"}
+                      </button>
+
+                      {openDropdown === "sort" && (
+                        <div className="absolute left-4 top-12 z-20 w-[200px] overflow-hidden rounded-lg border border-border bg-card shadow-lg">
+                          <div className="border-b border-border px-4 py-2.5 text-sm text-muted-foreground">
+                            Sort by
+                          </div>
+                          {(["relevance", "date"] as const).map((value) => (
+                            <button
+                              key={value}
+                              type="button"
+                              onClick={() => {
+                                setSortBy(value);
+                                closeDropdown();
+                              }}
+                              className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-foreground hover:bg-muted ${
+                                sortBy === value
+                                  ? "bg-accent text-accent-foreground"
+                                  : "bg-card"
+                              }`}
+                            >
+                              {value === "relevance" ? "Relevance" : "Date"}
+                              {sortBy === value && (
+                                <Check className="h-4 w-4" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="min-h-0 flex-1 overflow-y-auto p-3">
+                      {visibleJobs.map((job) => {
+                        const jobId = getJobId(job);
+                        const isActive = getJobId(selectedJob) === jobId;
+
+                        return (
+                          <button
+                            key={jobId}
+                            type="button"
+                            onClick={() => {
+                              if (job.locked) return;
+                              setSelectedJobId(jobId);
+                            }}
+                            className={`group relative mb-2 w-full rounded-xl border p-4 text-left transition-colors ${
+                              isActive
+                                ? "border-primary/40 bg-accent"
+                                : "border-border bg-card hover:bg-background"
                             }`}
                           >
-                            {job.badge === "top" ? (
-                              <Star className="h-3 w-3" />
-                            ) : (
-                              <CheckCircle2 className="h-3 w-3" />
+                            {(job.badge === "top" || job.badge === "good") && (
+                              <span
+                                className={`mb-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${
+                                  job.badge === "top"
+                                    ? "border border-primary/30 bg-primary/15 text-primary"
+                                    : "border border-green-200 bg-green-100 text-green-700"
+                                }`}
+                              >
+                                {job.badge === "top" ? (
+                                  <Star className="h-3 w-3" />
+                                ) : (
+                                  <CheckCircle2 className="h-3 w-3" />
+                                )}
+                                {job.badge === "top"
+                                  ? "Top Match"
+                                  : "Good Match"}
+                              </span>
                             )}
-                            {job.badge === "top" ? "Top Match" : "Good Match"}
-                          </span>
-                        )}
 
-                        <div
-                          className={
-                            job.locked
-                              ? "blur-[4px] opacity-70 select-none"
-                              : undefined
-                          }
-                        >
-                          <div className="line-clamp-1 text-base font-bold text-primary">
-                            {job.title}
-                          </div>
-                          <div className="mt-1 line-clamp-1 text-sm font-semibold text-foreground">
-                            {job.company}
-                          </div>
-                          <div className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-                            {job.location}
-                          </div>
-                          <div className="mt-1 text-sm text-muted-foreground">
-                            {formatPosted(job.postedAt)}
-                          </div>
+                            <div
+                              className={
+                                job.locked
+                                  ? "blur-[4px] opacity-70 select-none"
+                                  : undefined
+                              }
+                            >
+                              <div className="line-clamp-1 text-base font-bold text-primary">
+                                {job.title}
+                              </div>
+                              <div className="mt-1 line-clamp-1 text-sm font-semibold text-foreground">
+                                {job.company}
+                              </div>
+                              <div className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+                                {job.location}
+                              </div>
+                              <div className="mt-1 text-sm text-muted-foreground">
+                                {formatPosted(job.postedAt)}
+                              </div>
+                            </div>
+
+                            {job.locked ? (
+                              <>
+                                <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+                                  <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
+                                    <Lock className="h-4 w-4" />
+                                  </div>
+                                </div>
+                                <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                  <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                                    <Lock className="h-3.5 w-3.5" />
+                                    Unlock to view
+                                  </div>
+                                </div>
+                              </>
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </aside>
+
+                  <article
+                    ref={rightPanelRef}
+                    className="rounded-xl border border-border bg-card"
+                  >
+                    <div className="border-b border-border px-6 pb-4 pt-5">
+                      <h3 className="text-2xl font-bold text-foreground">
+                        {selectedJob.title}
+                      </h3>
+                      <p className="mt-1 text-sm font-semibold text-foreground">
+                        {selectedJob.company}
+                      </p>
+
+                      <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                          {selectedJob.location}
                         </div>
+                        <div className="flex items-center gap-2">
+                          <BriefcaseBusiness className="h-3.5 w-3.5 text-muted-foreground" />
+                          {selectedJob.jobType}
+                        </div>
+                      </div>
 
-                        {job.locked ? (
-                          <>
-                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
-                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
-                                <Lock className="h-4 w-4" />
-                              </div>
-                            </div>
-                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                              <div className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
-                                <Lock className="h-3.5 w-3.5" />
-                                Unlock to view
-                              </div>
-                            </div>
-                          </>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              </aside>
-
-              <article
-                ref={rightPanelRef}
-                className="rounded-xl border border-border bg-card"
-              >
-                <div className="border-b border-border px-6 pb-4 pt-5">
-                  <h3 className="text-2xl font-bold text-foreground">
-                    {selectedJob.title}
-                  </h3>
-                  <p className="mt-1 text-sm font-semibold text-foreground">
-                    {selectedJob.company}
-                  </p>
-
-                  <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                      {selectedJob.location}
+                      <div className="mt-4 flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                        >
+                          Scan
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                        >
+                          <Bookmark className="h-3.5 w-3.5" /> Save Job
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" /> Apply
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <BriefcaseBusiness className="h-3.5 w-3.5 text-muted-foreground" />
-                      {selectedJob.jobType}
+
+                    <div className="px-6 py-5 text-sm leading-relaxed text-foreground">
+                      <p className="mb-3 font-medium text-foreground">
+                        Job Description
+                      </p>
+                      <p className="mb-4">{selectedJob.description}</p>
+
+                      <h4 className="mb-2 font-semibold text-foreground">
+                        Responsibilities
+                      </h4>
+                      <ul className="mb-4 space-y-1.5">
+                        {selectedJob.responsibilities.map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span className="mt-1 text-foreground">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <h4 className="mb-2 font-semibold text-foreground">
+                        Requirements
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {selectedJob.requirements.map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span className="mt-1 text-primary">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-
-                  <div className="mt-4 flex items-center gap-2">
-                    <button
-                      type="button"
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-                    >
-                      Scan
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                    >
-                      <Bookmark className="h-3.5 w-3.5" /> Save Job
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" /> Apply
-                    </button>
-                  </div>
+                  </article>
                 </div>
-
-                <div className="px-6 py-5 text-sm leading-relaxed text-foreground">
-                  <p className="mb-3 font-medium text-foreground">
-                    Job Description
-                  </p>
-                  <p className="mb-4">{selectedJob.description}</p>
-
-                  <h4 className="mb-2 font-semibold text-foreground">
-                    Responsibilities
-                  </h4>
-                  <ul className="mb-4 space-y-1.5">
-                    {selectedJob.responsibilities.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1 text-foreground">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <h4 className="mb-2 font-semibold text-foreground">
-                    Requirements
-                  </h4>
-                  <ul className="space-y-1.5">
-                    {selectedJob.requirements.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1 text-primary">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
-            </div>
+              )}
+            </>
           )}
         </section>
       </div>

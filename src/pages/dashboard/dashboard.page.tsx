@@ -3,15 +3,17 @@ import { AppShell } from "@/shared/ui/app-shell";
 import { NewScanSection } from "@/shared/ui/new-scan-section";
 import { AiJobMatchSection } from "@/shared/ui/ai-job-match-section";
 import { ScanHistorySection } from "@/shared/ui/scan-history-section";
+import { getHasScannedCv, setHasScannedCv } from "@/shared/config/scan-status";
 
 export function DashboardPage() {
-  const [hasScan, setHasScan] = useState(false);
+  const [hasScan, setHasScan] = useState(() => getHasScannedCv());
 
   return (
     <AppShell fullWidth>
       <div className="space-y-5">
         <NewScanSection
           onScan={() => {
+            setHasScannedCv(true);
             setHasScan(true);
           }}
         />
