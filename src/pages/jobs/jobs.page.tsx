@@ -20,6 +20,38 @@ import { mockJobs, type MockJob } from "@/shared/config/mock-jobs";
 
 type DropdownName = "mode" | "date" | "type" | "remote" | "sort" | null;
 type SortBy = "relevance" | "date";
+type DateRangeFilter = "any" | "3d" | "7d" | "30d";
+type JobTypeFilter =
+  | "all"
+  | "Full-time"
+  | "Part-time"
+  | "Contract"
+  | "Internship"
+  | "Temporary"
+  | "Volunteer";
+type RemoteFilter = "all" | "on-site" | "hybrid" | "remote";
+
+const DATE_RANGE_OPTIONS: Array<{ value: DateRangeFilter; label: string }> = [
+  { value: "3d", label: "Last 3 days" },
+  { value: "7d", label: "Last week" },
+  { value: "30d", label: "Last month" },
+  { value: "any", label: "Any time" },
+];
+
+const JOB_TYPE_OPTIONS: JobTypeFilter[] = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Internship",
+  "Temporary",
+  "Volunteer",
+];
+
+const REMOTE_OPTIONS: Array<{ value: RemoteFilter; label: string }> = [
+  { value: "on-site", label: "On-site" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "remote", label: "Remote" },
+];
 
 const jobs: MockJob[] = mockJobs;
 const getJobId = (job: MockJob) => job.id;
@@ -44,6 +76,9 @@ export function JobsPage() {
   const [openDropdown, setOpenDropdown] = useState<DropdownName>(null);
   const [searchMode, setSearchMode] = useState<"resume" | "keyword">("resume");
   const [sortBy, setSortBy] = useState<SortBy>("relevance");
+  const [dateRange, setDateRange] = useState<DateRangeFilter>("any");
+  const [jobTypeFilter, setJobTypeFilter] = useState<JobTypeFilter>("all");
+  const [remoteFilter, setRemoteFilter] = useState<RemoteFilter>("all");
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
   const [leftPanelHeight, setLeftPanelHeight] = useState<number | null>(null);
@@ -54,6 +89,8 @@ export function JobsPage() {
     const normalizedLocation = location.trim().toLowerCase();
 
     let filtered = jobs.filter((job) => {
+      const postedDays = getPostedDays(job.postedAt);
+
       const matchesKeyword =
         !normalizedKeyword ||
         job.title.toLowerCase().includes(normalizedKeyword) ||
@@ -63,7 +100,25 @@ export function JobsPage() {
         !normalizedLocation ||
         job.location.toLowerCase().includes(normalizedLocation);
 
-      return matchesKeyword && matchesLocation;
+      const matchesDateRange =
+        dateRange === "any" ||
+        (dateRange === "3d" && postedDays <= 3) ||
+        (dateRange === "7d" && postedDays <= 7) ||
+        (dateRange === "30d" && postedDays <= 30);
+
+      const matchesJobType =
+        jobTypeFilter === "all" || job.jobType === jobTypeFilter;
+
+      const matchesRemote =
+        remoteFilter === "all" || job.remoteOption === remoteFilter;
+
+      return (
+        matchesKeyword &&
+        matchesLocation &&
+        matchesDateRange &&
+        matchesJobType &&
+        matchesRemote
+      );
     });
 
     if (sortBy === "date") {
@@ -73,7 +128,7 @@ export function JobsPage() {
     }
 
     return filtered;
-  }, [keyword, location, sortBy]);
+  }, [keyword, location, sortBy, dateRange, jobTypeFilter, remoteFilter]);
 
   const selectedJob = useMemo(() => {
     const selectedVisible = visibleJobs.find(
@@ -215,8 +270,28 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("date")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Date range <ChevronDown className="h-3.5 w-3.5" />
+                {DATE_RANGE_OPTIONS.find((item) => item.value === dateRange)
+                  ?.label ?? "Date range"}{" "}
+                <ChevronDown className="h-3.5 w-3.5" />
               </button>
+
+              {openDropdown === "date" && (
+                <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
+                  {DATE_RANGE_OPTIONS.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => {
+                        setDateRange(item.value);
+                        closeDropdown();
+                      }}
+                      className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-muted"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="relative">
@@ -225,8 +300,27 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("type")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Job type <ChevronDown className="h-3.5 w-3.5" />
+                {jobTypeFilter === "all" ? "Job type" : jobTypeFilter}{" "}
+                <ChevronDown className="h-3.5 w-3.5" />
               </button>
+
+              {openDropdown === "type" && (
+                <div className="absolute left-0 top-[34px] z-20 w-36 rounded-lg border border-border bg-card py-1 shadow-lg">
+                  {JOB_TYPE_OPTIONS.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => {
+                        setJobTypeFilter(item);
+                        closeDropdown();
+                      }}
+                      className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-muted"
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="relative">
@@ -235,8 +329,28 @@ export function JobsPage() {
                 onClick={() => toggleDropdown("remote")}
                 className="flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
               >
-                Remote option <ChevronDown className="h-3.5 w-3.5" />
+                {REMOTE_OPTIONS.find((item) => item.value === remoteFilter)
+                  ?.label ?? "Remote option"}{" "}
+                <ChevronDown className="h-3.5 w-3.5" />
               </button>
+
+              {openDropdown === "remote" && (
+                <div className="absolute left-0 top-[34px] z-20 w-32 rounded-lg border border-border bg-card py-1 shadow-lg">
+                  {REMOTE_OPTIONS.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => {
+                        setRemoteFilter(item.value);
+                        closeDropdown();
+                      }}
+                      className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-muted"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button
@@ -244,6 +358,9 @@ export function JobsPage() {
               onClick={() => {
                 setKeyword("");
                 setLocation("");
+                setDateRange("any");
+                setJobTypeFilter("all");
+                setRemoteFilter("all");
                 closeDropdown();
               }}
               className="text-xs text-muted-foreground hover:text-foreground"
