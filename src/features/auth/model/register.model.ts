@@ -8,19 +8,25 @@ export interface RegisterInput {
   password: string;
 }
 
+interface RegisterResponse {
+  register: string;
+}
+
 export function useRegister() {
   const navigate = useNavigate();
 
-  const [registerMutation, { loading, error }] = useMutation(REGISTER_MUTATION, {
-    onCompleted: (data: any) => {
-      console.log(data.register); 
+  const [registerMutation, { loading, error }] = useMutation<RegisterResponse>(
+    REGISTER_MUTATION,
+    {
+      onCompleted: () => {
       navigate({ to: '/login' });
-    }
-  })
+      },
+    },
+  )
 
-  const register = (registerInput: RegisterInput) => {
-    registerMutation({
-      variables: { registerInput }
+  const register = async (registerInput: RegisterInput) => {
+    return registerMutation({
+      variables: { registerInput },
     })
   }
 

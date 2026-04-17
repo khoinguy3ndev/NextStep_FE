@@ -29,8 +29,8 @@ const GoogleIcon = () => (
 
 const registerSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  name: z.string().min(2, "Username must be at least 2 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export function RegisterForm() {
@@ -191,7 +191,7 @@ export function RegisterForm() {
                     <input
                       id={field.name}
                       type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      placeholder="........"
                       required
                       value={field.state.value}
                       onChange={(e) => field.setValue(e.target.value)}

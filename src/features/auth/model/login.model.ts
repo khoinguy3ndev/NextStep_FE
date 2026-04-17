@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client/react";
 import { LOGIN_MUTATION } from "../mutation/login.mutation";
-import { storage } from "@/shared/lib/storage";
+import { setSessionTokens } from "@/shared/lib/storage";
 import { useNavigate } from "@tanstack/react-router";
 
 export interface LoginInput {
@@ -25,8 +25,7 @@ export function useLogin() {
         if (!data?.login) return;
 
         const { accessToken, refreshToken } = data.login;
-        storage.set("accessToken", accessToken);
-        storage.set("refreshToken", refreshToken);
+        setSessionTokens({ accessToken, refreshToken });
         navigate({ to: "/dashboard" });
       },
     },

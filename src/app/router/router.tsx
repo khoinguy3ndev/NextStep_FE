@@ -14,9 +14,9 @@ import {
   sampleReportRoute,
 } from "./routes";
 
-// Thêm homeRoute vào danh sách, bỏ todosRoute đi
+// Add the current app routes to the root route tree.
 const routeTree = rootRoute.addChildren([
-  homeRoute, // <-- Trang chủ
+  homeRoute,
   dashboardRoute,
   resumeOptimizerRoute,
   jobsRoute,

@@ -1,14 +1,17 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { storage } from "@/shared/lib/storage";
+import { errorLink } from "./error-link";
+import { getAccessToken } from "@/shared/lib/storage";
+
+const graphqlUrl =
+  import.meta.env.VITE_GRAPHQL_URL ?? "http://localhost:3003/graphql";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:3003/graphql",
+  uri: graphqlUrl,
 });
 
 const authLink = setContext((_, { headers }) => {
-  // Lấy token từ storage mà bạn đã lưu ở bước login
-  const token = storage.get("accessToken");
+  const token = getAccessToken();
 
   return {
     headers: {
@@ -19,6 +22,6 @@ const authLink = setContext((_, { headers }) => {
 });
 
 export const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: errorLink.concat(authLink).concat(httpLink),
   cache: new InMemoryCache(),
 });

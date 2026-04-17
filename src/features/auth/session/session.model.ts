@@ -1,12 +1,13 @@
-import { storage } from "@/shared/lib/storage";
+import {
+  clearSessionTokens,
+  getAccessToken,
+} from "@/shared/lib/storage";
 
 export function useSession() {
-  const accessToken = storage.get("accessToken");
+  const accessToken = getAccessToken();
 
   const logout = () => {
-    storage.remove("accessToken");
-    storage.remove("access_token");
-    storage.remove("refreshToken");
+    clearSessionTokens();
     location.href = "/";
   };
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { storage } from "@/shared/lib/storage";
+import { setSessionTokens } from "@/shared/lib/storage";
 
 export function GoogleCallbackPage() {
   const navigate = useNavigate();
@@ -10,8 +10,7 @@ export function GoogleCallbackPage() {
     const token = params.get("token");
 
     if (token) {
-      storage.set("access_token", token);
-      storage.set("accessToken", token);
+      setSessionTokens({ accessToken: token });
       navigate({ to: "/dashboard" });
       return;
     }
