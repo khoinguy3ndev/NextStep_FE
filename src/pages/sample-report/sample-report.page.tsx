@@ -237,10 +237,10 @@ export function SampleReportPage() {
                             className={`mr-2 font-semibold ${statusColor(item.status)}`}
                           >
                             {item.status === "ok"
-                              ? "✓"
+                              ? "OK"
                               : item.status === "warn"
                                 ? "!"
-                                : "✕"}
+                                : "X"}
                           </span>
                           {item.text}{" "}
                           {item.link ? (
@@ -326,10 +326,10 @@ export function SampleReportPage() {
                             className={`mr-2 font-semibold ${statusColor(item.status)}`}
                           >
                             {item.status === "ok"
-                              ? "✓"
+                              ? "OK"
                               : item.status === "warn"
                                 ? "!"
-                                : "✕"}
+                                : "X"}
                           </span>
                           {item.text}{" "}
                           {item.link ? (
@@ -358,7 +358,7 @@ export function SampleReportPage() {
                         </p>
                         <p className="text-sm text-muted-foreground">
                           <span className="mr-2 font-semibold text-foreground">
-                            ✓
+                            OK
                           </span>
                           {item.text}
                         </p>
@@ -373,51 +373,13 @@ export function SampleReportPage() {
                   Product Manager
                 </h2>
                 <p className="leading-7 text-foreground">
-                  Mobile Shopping is one of Amazon’s fastest growing new
-                  businesses.The Mobile team builds world-class customer
-                  experiences in all Amazon countries.Focused on mobile
-                  commerce, the team supports mobile browser experiences across
-                  platforms and shopping applications (apps) on high technology
-                  devices including BlackBerry, Android phones, Apple devices,
-                  Windows Phone 7, and Android tablets.Role Summary: We’re
-                  looking for a senior product manager to lead a team of product
-                  managers focused on engagement across all mobile platforms and
-                  the phone application platforms (e.g. iPhone, Android, and
-                  Windows Phone). Although the primary execution focus of this
-                  role is on the phone applications, the mobile team is a
-                  multi-platform, global organization and the senior product
-                  manager will be expected to lead strategic thinking,
-                  innovation, and initiatives that extend across the entire
-                  organization. Traits that are not unique to this position, but
-                  necessary for Amazon leaders:• Exhibits excellent judgment•
-                  Hires and develops great people• Has relentlessly high
-                  standards (is never satisfied with the status quo) • Dives
-                  deep and is never out of touch with the details of the
-                  business • Expects and requires innovation of her/his team•
-                  Strong bias for action and delivery of results• Thinks big
-                  Role Responsibilities: As the Senior Product Manager, you and
-                  your team’s key responsibilities will include:• Understanding
-                  the worldwide mobile market including the size of the global
-                  opportunities and the competitive landscape• Building
-                  forecasts that set aggressive goals for the worldwide platform
-                  and managing the platform to results in line with those goals•
-                  Sweating the small stuff when it comes to the customer
-                  experience and your business. Your product management team
-                  will be the foremost experts on all client and business
-                  aspects of this platform· Being conversant in the technology.·
-                  Writing lightweight product requirements documents and
-                  ensuring clear understanding of these requirements to the
-                  business, design, and development teams · Managing priorities
-                  and trade-offs among customer experience, site performance and
-                  support load· Leading detailed execution of features ensuring
-                  a high quality bar, timely delivery , and an keen to detail·
-                  Proactively identifying and fixing issues that may impair the
-                  team’s ability to meet strategic, financial, and technical
-                  goals· Leading across the organization to ensure we implement
-                  ourgoals efficiently Basic Qualifications• 5-7+ years product
-                  management experience in a technological industry • 3+ years
-                  experience in consumer-facing mobile commerce and/or wireless
-                  content or mobile services
+                  Mobile Shopping is one of Amazon's fastest-growing
+                  businesses. The Mobile team builds customer experiences across
+                  markets and platforms, including phones, tablets, browsers,
+                  and shopping apps. This sample role looks for a senior
+                  product manager who can lead engagement initiatives across
+                  mobile platforms, balance strategy with execution, and drive
+                  strong customer outcomes.
                 </p>
                 <p className="mt-4 leading-7 text-foreground">
                   Basic Qualifications: 5-7+ years of product management

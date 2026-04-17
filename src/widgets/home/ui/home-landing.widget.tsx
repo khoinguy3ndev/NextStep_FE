@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import { useEffect, useState, type ComponentType } from "react";
 import { BRAND } from "@/shared/config/brand";
+import { useSession } from "@/features/auth/session/session.model";
 import { ScanWidget } from "./scan-widget";
 
 type SectionNavItem = {
@@ -116,23 +117,23 @@ const testimonials: TestimonialItem[] = [
 const logos = ["TECHCORP", "NEXUS", "QUANTUM", "ORBIT", "APEX"];
 
 const sectionNavItems: SectionNavItem[] = [
-  { id: "features", label: "Features", href: "#features" },
   { id: "how-it-works", label: "How It Works", href: "#how-it-works" },
+  { id: "features", label: "Features", href: "#features" },
   { id: "pricing", label: "Pricing", href: "#pricing" },
 ];
 
 export function HomeLandingWidget() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSession();
   const [activeSection, setActiveSection] =
-    useState<SectionNavItem["id"]>("features");
+    useState<SectionNavItem["id"]>("how-it-works");
   const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
 
   useEffect(() => {
     const updateActiveSectionFromHash = () => {
       const hash = window.location.hash.replace("#", "");
       const matched = sectionNavItems.find((item) => item.id === hash);
-      setActiveSection(matched?.id ?? "features");
+      setActiveSection(matched?.id ?? "how-it-works");
     };
 
     updateActiveSectionFromHash();
@@ -146,22 +147,14 @@ export function HomeLandingWidget() {
   useEffect(() => {
     if (!isScanning) return;
 
-    const t1 = window.setTimeout(() => setScanProgress(42), 180);
-    const t2 = window.setTimeout(() => setScanProgress(68), 500);
-    const t3 = window.setTimeout(() => setScanProgress(86), 900);
-    const t4 = window.setTimeout(() => setScanProgress(100), 1200);
     const navTimer = window.setTimeout(() => {
-      navigate({ to: "/match-report" });
+      navigate({ to: isAuthenticated ? "/match-report" : "/login" });
     }, 1350);
 
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-      window.clearTimeout(t3);
-      window.clearTimeout(t4);
       window.clearTimeout(navTimer);
     };
-  }, [isScanning, navigate]);
+  }, [isAuthenticated, isScanning, navigate]);
 
   const handleAnalyzeCV = () => {
     const scanSection = document.getElementById("how-it-works");
@@ -214,18 +207,29 @@ export function HomeLandingWidget() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-            >
-              Log In
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-foreground"
-            >
-              <span>Try for Free</span>
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-foreground"
+              >
+                <span>Go to Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-foreground"
+                >
+                  <span>Try for Free</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -344,31 +348,10 @@ export function HomeLandingWidget() {
       <ScanWidget
         onScanComplete={() => {
           if (isScanning) return;
-          setScanProgress(14);
           setIsScanning(true);
         }}
         onViewSampleReport={() => navigate({ to: "/sample-report" })}
       />
-
-      {isScanning ? (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-background">
-          <div className="w-[360px] max-w-[90vw] text-center">
-            <h3 className="text-[32px] font-bold leading-tight text-foreground">
-              Scanning your resume
-            </h3>
-            <p className="mt-2 text-base text-muted-foreground">
-              Loading your result ...
-            </p>
-
-            <div className="mx-auto mt-6 h-1.5 w-[240px] overflow-hidden rounded-full bg-border">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
-                style={{ width: `${scanProgress}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <section id="features" className="bg-muted py-20">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">

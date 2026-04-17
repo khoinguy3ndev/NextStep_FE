@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { CloudUpload, Loader2, Sparkles, Star } from "lucide-react";
+import {
+  CheckCircle2,
+  CloudUpload,
+  Loader2,
+  Sparkles,
+  Star,
+  X,
+} from "lucide-react";
 import { useUploadCv } from "@/features/cv/model/cv.model";
 
 type NewScanSectionProps = {
@@ -11,22 +18,61 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
   const navigate = useNavigate();
   const [resumeText, setResumeText] = useState("");
   const [jdText, setJdText] = useState("");
+  const [selectedResumeFile, setSelectedResumeFile] = useState<File | null>(
+    null,
+  );
+  const [selectedResumeName, setSelectedResumeName] = useState<string | null>(
+    null,
+  );
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const { uploadCv, isUploading } = useUploadCv();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const clearSelectedResume = () => {
+    setSelectedResumeFile(null);
+    setSelectedResumeName(null);
+    setUploadMessage(null);
+    setUploadError(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      const result = await uploadCv(file);
-      alert(`Upload successful: ${result.fileName}`);
-    } catch (err) {
-      alert("Upload failed, please try again.");
-    }
+    setSelectedResumeFile(file);
+    setSelectedResumeName(file.name);
+    setResumeText("");
+    setUploadError(null);
+    setUploadMessage(
+      "Resume uploaded successfully. Now paste the job description to continue.",
+    );
+    e.target.value = "";
   };
 
-  const canScan = resumeText.trim().length > 0 && jdText.trim().length > 0;
+  const hasResumeInput =
+    resumeText.trim().length > 0 || selectedResumeFile !== null;
+  const canScan = hasResumeInput && jdText.trim().length > 0;
+
+  const handleScan = async () => {
+    if (!canScan || isUploading) return;
+
+    if (!selectedResumeFile) {
+      onScan?.();
+      return;
+    }
+
+    try {
+      const result = await uploadCv(selectedResumeFile);
+      setSelectedResumeName(result.fileName);
+      setUploadError(null);
+      setUploadMessage("Resume uploaded successfully. Starting scan...");
+      onScan?.();
+    } catch {
+      setUploadMessage(null);
+      setUploadError("Upload failed. Please try again before scanning.");
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -56,7 +102,12 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
             <div className="flex flex-1 flex-col gap-4 bg-background/50 p-4">
               <textarea
                 value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
+                onChange={(e) => {
+                  setResumeText(e.target.value);
+                  if (e.target.value.trim().length > 0) {
+                    clearSelectedResume();
+                  }
+                }}
                 placeholder="Copy and paste resume here."
                 className="min-h-[180px] w-full flex-1 resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
               />
@@ -77,6 +128,38 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
                   onChange={handleFileChange}
                 />
               </label>
+
+              {selectedResumeName ? (
+                <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-sm text-foreground">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2 font-medium text-primary">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Resume selected
+                      </div>
+                      <p className="mt-1 text-muted-foreground">
+                        {selectedResumeName}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearSelectedResume}
+                      className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+                      aria-label="Remove selected resume"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              {uploadMessage ? (
+                <p className="text-sm text-primary">{uploadMessage}</p>
+              ) : null}
+
+              {uploadError ? (
+                <p className="text-sm text-destructive">{uploadError}</p>
+              ) : null}
             </div>
           </div>
 
@@ -125,14 +208,13 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
             </button>
 
             <button
-              disabled={!canScan}
+              disabled={!canScan || isUploading}
               onClick={() => {
-                if (!canScan) return;
-                onScan?.();
+                void handleScan();
               }}
               className="cursor-pointer rounded-md bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
             >
-              Scan
+              {isUploading ? "Uploading..." : "Scan"}
             </button>
           </div>
         </div>
