@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -8,7 +8,9 @@ import {
   Star,
   X,
 } from "lucide-react";
-import { useUploadCv } from "@/features/cv/model/cv.model";
+import { useAnalyzeCv, useUploadCv } from "@/features/cv/model/cv.model";
+import { useJobsCatalog } from "@/features/jobs/model/jobs.model";
+import { setLatestAnalysisId } from "@/shared/config/latest-analysis";
 
 type NewScanSectionProps = {
   onScan?: () => void;
@@ -24,10 +26,28 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
   const [selectedResumeName, setSelectedResumeName] = useState<string | null>(
     null,
   );
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const deferredJobSearch = useDeferredValue(jdText.trim().slice(0, 160));
 
   const { uploadCv, isUploading } = useUploadCv();
+  const { analyzeCv, isAnalyzing } = useAnalyzeCv();
+  const { jobs, loading: isLoadingJobs } = useJobsCatalog({
+    search: deferredJobSearch || undefined,
+    location: undefined,
+    limit: 5,
+    offset: 0,
+    sortBy: deferredJobSearch ? "RELEVANCE" : "DATE",
+    dateRange: "ANY",
+    employmentType: "ALL",
+    experienceRange: "ALL",
+  });
+
+  const selectedJob = useMemo(
+    () => jobs.find((job) => job.jobId === selectedJobId) ?? null,
+    [jobs, selectedJobId],
+  );
 
   const clearSelectedResume = () => {
     setSelectedResumeFile(null);
@@ -45,32 +65,43 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
     setResumeText("");
     setUploadError(null);
     setUploadMessage(
-      "Resume uploaded successfully. Now paste the job description to continue.",
+      "Resume selected successfully. Choose a job match below to continue.",
     );
     e.target.value = "";
   };
 
   const hasResumeInput =
     resumeText.trim().length > 0 || selectedResumeFile !== null;
-  const canScan = hasResumeInput && jdText.trim().length > 0;
+  const isBusy = isUploading || isAnalyzing;
+  const canScan = hasResumeInput && selectedJobId !== null;
+
+  const buildTextResumeFile = () =>
+    new File([resumeText.trim()], "resume.txt", { type: "text/plain" });
 
   const handleScan = async () => {
-    if (!canScan || isUploading) return;
-
-    if (!selectedResumeFile) {
-      onScan?.();
-      return;
-    }
+    if (!canScan || isBusy || !selectedJobId) return;
 
     try {
-      const result = await uploadCv(selectedResumeFile);
-      setSelectedResumeName(result.fileName);
       setUploadError(null);
-      setUploadMessage("Resume uploaded successfully. Starting scan...");
+      setUploadMessage("Uploading resume...");
+
+      const fileToUpload = selectedResumeFile ?? buildTextResumeFile();
+      const uploadedCv = await uploadCv(fileToUpload);
+
+      setSelectedResumeName(uploadedCv.fileName);
+      setUploadMessage("Resume uploaded. Running AI analysis...");
+
+      const analysis = await analyzeCv(Number(uploadedCv.cvId), selectedJobId);
+      if (analysis.analysisResultId) {
+        setLatestAnalysisId(analysis.analysisResultId);
+      }
+
       onScan?.();
-    } catch {
+      navigate({ to: "/match-report" });
+    } catch (error) {
+      console.error("Analyze error:", error);
       setUploadMessage(null);
-      setUploadError("Upload failed. Please try again before scanning.");
+      setUploadError("Scan failed. Please try again with another resume or job.");
     }
   };
 
@@ -79,8 +110,8 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
       <section className="border-b border-border bg-muted p-5 pb-4">
         <h2 className="text-[22px] font-bold text-foreground">New Scan</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload your resume and add a job description to generate a focused AI
-          scan.
+          Upload or paste your resume, then choose the job you want the AI
+          report to target.
         </p>
       </section>
 
@@ -95,7 +126,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
                 href="#"
                 className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
               >
-                <Star className="w-4 h-4" />
+                <Star className="h-4 w-4" />
                 Saved Resumes
               </a>
             </div>
@@ -112,19 +143,17 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
                 className="min-h-[180px] w-full flex-1 resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
               />
               <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-card py-2.5 text-sm font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary hover:text-primary">
-                {isUploading ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-foreground" />
+                {isBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-foreground" />
                 ) : (
-                  <CloudUpload className="w-4 h-4" />
+                  <CloudUpload className="h-4 w-4" />
                 )}
-                {isUploading
-                  ? "Processing..."
-                  : "Drag & Drop or Upload Your Resume"}{" "}
+                {isBusy ? "Processing..." : "Drag & Drop or Upload Your Resume"}{" "}
                 <input
                   type="file"
                   className="hidden"
                   accept=".pdf,.doc,.docx,.txt"
-                  disabled={isUploading}
+                  disabled={isBusy}
                   onChange={handleFileChange}
                 />
               </label>
@@ -166,16 +195,84 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
           <div className="flex flex-col overflow-hidden rounded-xl border border-border">
             <div className="flex items-center border-b border-border bg-card p-4">
               <label className="text-sm font-semibold text-foreground">
-                Step 2: Paste a job description
+                Step 2: Paste a job description and pick a matched job
               </label>
             </div>
-            <div className="flex flex-1 flex-col bg-background/50 p-4">
+            <div className="flex flex-1 flex-col gap-4 bg-background/50 p-4">
               <textarea
                 value={jdText}
-                onChange={(e) => setJdText(e.target.value)}
-                placeholder="Copy and paste job description here. Aim to exclude: Benefits, Perks, and Legal Disclaimers"
-                className="min-h-[180px] w-full flex-1 resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
+                onChange={(e) => {
+                  setJdText(e.target.value);
+                  setSelectedJobId(null);
+                }}
+                placeholder="Paste the job description or keywords here to search matching jobs from the backend."
+                className="min-h-[140px] w-full resize-none bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
               />
+
+              <div className="rounded-lg border border-border bg-card">
+                <div className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Matching Jobs
+                </div>
+                <div className="max-h-[220px] overflow-y-auto">
+                  {isLoadingJobs ? (
+                    <div className="flex items-center gap-2 px-3 py-4 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Searching jobs...
+                    </div>
+                  ) : jobs.length > 0 ? (
+                    jobs.map((job) => {
+                      const isSelected = job.jobId === selectedJobId;
+
+                      return (
+                        <button
+                          key={job.jobId}
+                          type="button"
+                          onClick={() => setSelectedJobId(Number(job.jobId))}
+                          className={`w-full border-b border-border px-3 py-3 text-left last:border-b-0 ${
+                            isSelected
+                              ? "bg-primary/5"
+                              : "hover:bg-background/80"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-foreground">
+                                {job.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {job.company.name}
+                                {job.location ? ` • ${job.location}` : ""}
+                              </p>
+                            </div>
+                            {isSelected ? (
+                              <CheckCircle2 className="h-4 w-4 text-primary" />
+                            ) : null}
+                          </div>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <p className="px-3 py-4 text-sm text-muted-foreground">
+                      No jobs found yet. Paste more specific keywords or use a
+                      shorter JD excerpt.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {selectedJob ? (
+                <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-foreground">
+                  <p className="font-medium text-primary">Selected target job</p>
+                  <p className="mt-1">
+                    {selectedJob.title} • {selectedJob.company.name}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Choose one job above so the AI can compare your resume against
+                  a real backend record.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -184,7 +281,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
           <button
             type="button"
             onClick={() => navigate({ to: "/sample-report" })}
-            className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
           >
             View sample report
           </button>
@@ -203,18 +300,18 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
             </div>
 
             <button className="flex cursor-not-allowed items-center gap-1.5 rounded-md bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground">
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="h-4 w-4" />
               One-Click Optimize
             </button>
 
             <button
-              disabled={!canScan || isUploading}
+              disabled={!canScan || isBusy}
               onClick={() => {
                 void handleScan();
               }}
               className="cursor-pointer rounded-md bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
             >
-              {isUploading ? "Uploading..." : "Scan"}
+              {isBusy ? "Scanning..." : "Scan"}
             </button>
           </div>
         </div>

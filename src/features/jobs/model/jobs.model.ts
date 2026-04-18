@@ -45,7 +45,6 @@ export type JobItem = {
   employmentType?: string | null;
   experience?: string | null;
   applicationDeadline?: string | null;
-  remoteOption?: string | null;
   sourceUrl: string;
   sourceSite: string;
   postedAt?: string | null;
@@ -99,8 +98,13 @@ export function useJobsCatalog({
     notifyOnNetworkStatusChange: true,
   });
 
+  const jobs = (query.data?.getJobs.items ?? []).map((job) => ({
+    ...job,
+    jobId: Number(job.jobId),
+  }));
+
   return {
-    jobs: query.data?.getJobs.items ?? [],
+    jobs,
     totalCount: query.data?.getJobs.totalCount ?? 0,
     loading: query.loading,
     error: query.error,

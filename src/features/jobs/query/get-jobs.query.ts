@@ -38,7 +38,6 @@ export const GET_JOBS = gql`
         employmentType
         experience
         applicationDeadline
-        remoteOption
         sourceUrl
         sourceSite
         postedAt
