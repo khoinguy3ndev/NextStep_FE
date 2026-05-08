@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { useCvAnalysisHistory } from "@/features/cv/model/cv.model";
 import { getUserFacingErrorMessage } from "@/shared/api/graphql/error-message";
+import { setLatestAnalysisId } from "@/shared/config/latest-analysis";
+import { useNavigate } from "@tanstack/react-router";
 
 export type ScanHistoryItem = {
   id: string;
@@ -80,6 +82,7 @@ function parseScanDate(scanDate: string) {
 }
 
 export function ScanHistorySection({ onScanResume }: ScanHistorySectionProps) {
+  const navigate = useNavigate();
   const { items: historyItems, loading, error } = useCvAnalysisHistory();
   const [searchValue, setSearchValue] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("scanDate");
@@ -163,6 +166,11 @@ export function ScanHistorySection({ onScanResume }: ScanHistorySectionProps) {
     sortBy === "scanDate" ? "Newest First" : "Highest First";
   const orderSecondaryLabel =
     sortBy === "scanDate" ? "Oldest First" : "Lowest First";
+
+  const openAnalysis = (analysisId: number) => {
+    setLatestAnalysisId(analysisId);
+    navigate({ to: "/match-report" });
+  };
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -344,7 +352,16 @@ export function ScanHistorySection({ onScanResume }: ScanHistorySectionProps) {
                         pagedItems.map((item) => (
                           <tr
                             key={item.id}
-                            className="border-b border-border last:border-b-0 hover:bg-muted/40"
+                            tabIndex={0}
+                            role="button"
+                            onClick={() => openAnalysis(item.analysisId)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                openAnalysis(item.analysisId);
+                              }
+                            }}
+                            className="cursor-pointer border-b border-border last:border-b-0 hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-none"
                           >
                             <td className="px-5 py-4 align-middle">
                               <ScoreRing score={item.score} />

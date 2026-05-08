@@ -88,6 +88,8 @@ const CV_ANALYSIS_FIELDS = gql`
           estimatedWeeks
           baselineHours
           transferBonus
+          transferDirectionFactor
+          effectiveTransferBonus
           adjustedHours
           recommendedResources {
             title
@@ -97,6 +99,14 @@ const CV_ANALYSIS_FIELDS = gql`
           }
         }
       }
+    }
+    aiReview {
+      summary
+      strengths
+      concerns
+      recommendations
+      verdict
+      source
     }
   }
 `;

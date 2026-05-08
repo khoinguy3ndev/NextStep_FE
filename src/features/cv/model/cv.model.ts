@@ -130,6 +130,8 @@ export type CvAnalysisResult = {
         estimatedWeeks: number;
         baselineHours?: number | null;
         transferBonus: number;
+        transferDirectionFactor?: number | null;
+        effectiveTransferBonus?: number | null;
         adjustedHours?: number | null;
         recommendedResources: Array<{
           title: string;
@@ -140,6 +142,14 @@ export type CvAnalysisResult = {
       }>;
     }>;
   };
+  aiReview?: {
+    summary: string;
+    strengths: string[];
+    concerns: string[];
+    recommendations: string[];
+    verdict: string;
+    source: string;
+  } | null;
 };
 
 interface AnalyzeCvResponse {
