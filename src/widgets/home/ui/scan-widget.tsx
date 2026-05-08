@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type DragEvent } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+} from "react";
 import {
   Check,
   CheckCircle2,
@@ -8,8 +15,10 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import { useUploadCv } from "@/features/cv/model/cv.model";
+import { useAnalyzeCv, useUploadCv } from "@/features/cv/model/cv.model";
 import { useSession } from "@/features/auth/session/session.model";
+import { useJobsCatalog } from "@/features/jobs/model/jobs.model";
+import { setLatestAnalysisId } from "@/shared/config/latest-analysis";
 
 const JD_SAMPLES = [
   "Full Stack Developer",
@@ -110,8 +119,6 @@ function StepUpload({
   onViewSampleReport?: () => void;
 }) {
   const [dragging, setDragging] = useState(false);
-  const [pasting, setPasting] = useState(false);
-  const [pasteText, setPasteText] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFile = (file?: File) => {
@@ -125,41 +132,6 @@ function StepUpload({
     setDragging(false);
     handleFile(event.dataTransfer.files?.[0]);
   };
-
-  if (pasting) {
-    return (
-      <div className="flex flex-col gap-3">
-        <textarea
-          autoFocus
-          value={pasteText}
-          onChange={(event) => setPasteText(event.target.value)}
-          placeholder="Paste your resume text here..."
-          className="min-h-[220px] w-full resize-y rounded-[10px] border border-border px-4 py-3.5 text-sm leading-7 text-foreground outline-none"
-        />
-        <div className="flex gap-2.5">
-          <button
-            disabled={!pasteText.trim()}
-            onClick={() => {
-              const blob = new Blob([pasteText], { type: "text/plain" });
-              onFile(new File([blob], "resume.txt", { type: "text/plain" }));
-            }}
-            className="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
-          >
-            Continue
-          </button>
-          <button
-            onClick={() => {
-              setPasting(false);
-              setPasteText("");
-            }}
-            className="rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col items-center gap-[18px]">
@@ -199,13 +171,6 @@ function StepUpload({
       </label>
 
       <button
-        onClick={() => setPasting(true)}
-        className="cursor-pointer text-sm font-semibold text-primary"
-      >
-        Or paste resume text
-      </button>
-
-      <button
         type="button"
         onClick={onViewSampleReport}
         className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
@@ -222,27 +187,69 @@ function StepJob({
   onRemoveFile,
   onViewSampleReport,
   isUploading = false,
+  isAnalyzing = false,
   statusMessage,
   errorMessage,
   isAuthenticated = false,
 }: {
   fileName?: string;
-  onScan: () => void;
+  onScan: (jobId: number) => void;
   onRemoveFile?: () => void;
   onViewSampleReport?: () => void;
   isUploading?: boolean;
+  isAnalyzing?: boolean;
   statusMessage?: string | null;
   errorMessage?: string | null;
   isAuthenticated?: boolean;
 }) {
   const [jd, setJd] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
+  const [jdFileName, setJdFileName] = useState<string | null>(null);
+  const [draggingJd, setDraggingJd] = useState(false);
+  const deferredJobSearch = useDeferredValue(jd.trim().slice(0, 160));
+  const { jobs, loading: isLoadingJobs } = useJobsCatalog({
+    search: deferredJobSearch || undefined,
+    location: undefined,
+    limit: 5,
+    offset: 0,
+    sortBy: deferredJobSearch ? "RELEVANCE" : "DATE",
+    dateRange: "ANY",
+    employmentType: "ALL",
+    experienceRange: "ALL",
+    skip: jd.trim().length === 0,
+  });
+  const targetJobId = jobs[0]?.jobId ?? null;
 
-  const canScan = jd.trim().length > 0;
+  const canScan = jd.trim().length > 0 && targetJobId !== null && !isLoadingJobs;
 
   const pickSample = (name: string) => {
     setSelected(name);
     setJd(JD_CONTENT[name] ?? "");
+    setJdFileName(null);
+  };
+
+  const handleJdFile = (selectedFile?: File) => {
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === "string" ? reader.result : "";
+      setJd(text);
+      setSelected(null);
+      setJdFileName(selectedFile.name);
+    };
+    reader.readAsText(selectedFile);
+  };
+
+  const handleJdFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleJdFile(event.target.files?.[0]);
+    event.target.value = "";
+  };
+
+  const handleJdDrop = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    setDraggingJd(false);
+    handleJdFile(event.dataTransfer.files?.[0]);
   };
 
   return (
@@ -280,17 +287,76 @@ function StepJob({
       <div className="grid min-h-[320px] w-full grid-cols-[1fr_auto_1fr] overflow-hidden rounded-xl border border-border bg-card">
         <div className="flex flex-col">
           <div className="border-b border-border px-4 py-3 text-sm font-semibold text-muted-foreground">
-            Paste a Job Description below
+            Upload a Job Description
           </div>
-          <textarea
-            value={jd}
-            onChange={(event) => {
-              setJd(event.target.value);
-              setSelected(null);
-            }}
-            placeholder="Copy and paste a job description here"
-            className="min-h-[260px] flex-1 resize-none border-none px-4 py-3.5 text-sm leading-7 text-foreground outline-none"
-          />
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            <label
+              onDragOver={(event) => {
+                event.preventDefault();
+                setDraggingJd(true);
+              }}
+              onDragLeave={(event) => {
+                event.preventDefault();
+                setDraggingJd(false);
+              }}
+              onDrop={handleJdDrop}
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-4 py-8 text-center transition-colors hover:border-primary hover:text-primary ${
+                draggingJd
+                  ? "border-primary bg-muted"
+                  : "border-border bg-background"
+              }`}
+            >
+              <CloudUpload className="h-8 w-8" />
+              <span className="mt-3 text-sm font-semibold">
+                Drag & Drop or <span className="underline">Choose JD file</span>
+              </span>
+              <span className="mt-1 text-xs text-muted-foreground">
+                as .txt or .md file
+              </span>
+              <input
+                type="file"
+                accept=".txt,.md"
+                className="hidden"
+                onChange={handleJdFileChange}
+              />
+            </label>
+
+            {jdFileName ? (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-sm text-foreground">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 font-medium text-primary">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Job description selected
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{jdFileName}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setJd("");
+                      setJdFileName(null);
+                    }}
+                    className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+                    aria-label="Remove selected job description"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <textarea
+              value={jd}
+              onChange={(event) => {
+                setJd(event.target.value);
+                setSelected(null);
+                setJdFileName(null);
+              }}
+              placeholder="Or paste a job description here"
+              className="min-h-[104px] flex-1 resize-none rounded-lg border border-border bg-background px-4 py-3 text-sm leading-6 text-foreground outline-none"
+            />
+          </div>
         </div>
 
         <div className="relative w-px bg-border">
@@ -326,19 +392,19 @@ function StepJob({
       </div>
 
       <button
-        disabled={!canScan || isUploading}
+        disabled={!canScan || isUploading || isAnalyzing}
         onClick={() => {
-          if (canScan) onScan();
+          if (canScan && targetJobId) onScan(targetJobId);
         }}
         className="rounded-md bg-primary px-8 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
       >
-        {isUploading ? (
+        {isUploading || isAnalyzing ? (
           <span className="inline-flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Uploading...
+            {isUploading ? "Uploading..." : "Scanning..."}
           </span>
         ) : (
-          "Scan"
+          isLoadingJobs ? "Preparing..." : "Scan"
         )}
       </button>
 
@@ -413,10 +479,11 @@ export function ScanWidget({
   const [loadingStage, setLoadingStage] = useState<LoadingStage>("uploading");
   const [loadingProgress, setLoadingProgress] = useState(0);
   const { uploadCv, isUploading } = useUploadCv();
+  const { analyzeCv, isAnalyzing } = useAnalyzeCv();
   const { isAuthenticated } = useSession();
   const currentStep = isPreparingScan ? 3 : file ? 2 : 1;
 
-  const handleScan = async () => {
+  const handleScan = async (jobId: number) => {
     setErrorMessage(null);
     setStatusMessage(null);
 
@@ -435,9 +502,14 @@ export function ScanWidget({
         setStatusMessage(`Resume uploaded: ${result.fileName}. Starting scan...`);
         setLoadingStage("scanning");
         setLoadingProgress(72);
+
+        const analysis = await analyzeCv(Number(result.cvId), jobId);
+        if (analysis.analysisResultId) {
+          setLatestAnalysisId(analysis.analysisResultId);
+        }
       } catch {
         setStatusMessage(null);
-        setErrorMessage("Upload failed. Please try again before scanning.");
+        setErrorMessage("Scan failed. Please try again with another resume or job.");
         setIsPreparingScan(false);
         setLoadingProgress(0);
         return;
@@ -507,8 +579,8 @@ export function ScanWidget({
           {currentStep === 2 ? (
             <StepJob
               fileName={file?.name}
-              onScan={() => {
-                void handleScan();
+              onScan={(jobId) => {
+                void handleScan(jobId);
               }}
               onRemoveFile={() => {
                 setFile(null);
@@ -517,6 +589,7 @@ export function ScanWidget({
               }}
               onViewSampleReport={onViewSampleReport}
               isUploading={isUploading}
+              isAnalyzing={isAnalyzing}
               statusMessage={statusMessage}
               errorMessage={errorMessage}
               isAuthenticated={isAuthenticated}
