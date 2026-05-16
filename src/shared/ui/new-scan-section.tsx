@@ -14,10 +14,7 @@ import {
   useUploadCv,
   useUserCvs,
 } from "@/features/cv/model/cv.model";
-import {
-  setLatestAnalysisId,
-  setLatestAnalysisResult,
-} from "@/shared/config/latest-analysis";
+import { setLatestAnalysisId } from "@/shared/config/latest-analysis";
 
 type NewScanSectionProps = {
   onScan?: () => void;
@@ -25,6 +22,10 @@ type NewScanSectionProps = {
 
 type InputMode = "file" | "paste";
 type ResumeInputMode = InputMode | "saved";
+
+const MIN_JOB_DESCRIPTION_LENGTH = 30;
+const MIN_JOB_DESCRIPTION_WORDS = 8;
+const MIN_UNIQUE_JOB_DESCRIPTION_WORDS = 5;
 
 const scanProgressMessages = [
   "Uploading resume...",
@@ -47,6 +48,30 @@ function formatUploadDate(value?: string | null) {
     month: "short",
     year: "numeric",
   }).format(new Date(timestamp));
+}
+
+function getJobDescriptionValidationMessage(value: string): string | null {
+  const normalized = value.trim();
+  if (!normalized) return null;
+
+  const words = normalized
+    .toLowerCase()
+    .split(/[^\p{L}\p{N}+#.]+/u)
+    .filter((word) => word.length > 1);
+  const uniqueWords = new Set(words);
+
+  if (normalized.length < MIN_JOB_DESCRIPTION_LENGTH) {
+    return "Add a fuller job description so we can compare skills, experience, and responsibilities.";
+  }
+
+  if (
+    words.length < MIN_JOB_DESCRIPTION_WORDS ||
+    uniqueWords.size < MIN_UNIQUE_JOB_DESCRIPTION_WORDS
+  ) {
+    return "Paste a more complete job description with role duties, required skills, or experience details.";
+  }
+
+  return null;
 }
 
 export function NewScanSection({ onScan }: NewScanSectionProps) {
@@ -106,14 +131,19 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
     [cvs, selectedSavedCvId],
   );
   const isBusy = isUploading || isAnalyzing || isAnalyzingWithJd;
+  const normalizedJdText = jdText.trim();
+  const jobDescriptionValidationMessage =
+    attachedJobId === null && jdInputMode === "paste"
+      ? getJobDescriptionValidationMessage(normalizedJdText)
+      : null;
   const hasResumeInput =
     (resumeInputMode === "paste" && resumeText.trim().length > 0) ||
     (resumeInputMode === "file" && selectedResumeFile !== null) ||
     (resumeInputMode === "saved" && selectedSavedCv !== null);
   const hasJdInput =
     attachedJobId !== null ||
-    jdText.trim().length > 0 ||
-    selectedJdFile !== null;
+    selectedJdFile !== null ||
+    (normalizedJdText.length > 0 && jobDescriptionValidationMessage === null);
   const canScan = hasResumeInput && hasJdInput;
 
   const clearSelectedResume = () => {
@@ -156,7 +186,6 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
     setSelectedJdName(file.name);
     setSelectedJdFile(file);
     setJdError(null);
-    setJdMessage("Job description selected.");
 
     try {
       const isTextFile =
@@ -223,6 +252,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
 
     try {
       setUploadError(null);
+      setJdError(null);
       startScanProgressMessages();
 
       let cvId = resumeInputMode === "saved" ? selectedSavedCvId : null;
@@ -241,7 +271,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
         attachedJobId !== null
           ? await analyzeCv(cvId, attachedJobId)
           : await analyzeCvWithJd(cvId, {
-              jdText: selectedJdFile ? null : jdText.trim() || null,
+              jdText: selectedJdFile ? null : normalizedJdText || null,
               jdFileBase64: selectedJdFile
                 ? await readFileAsBase64(selectedJdFile)
                 : null,
@@ -254,7 +284,7 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
       if (analysis.analysisResultId) {
         setLatestAnalysisId(analysis.analysisResultId);
       } else {
-        setLatestAnalysisResult(analysis);
+        throw new Error("Scan completed without a report id");
       }
 
       onScan?.();
@@ -587,6 +617,12 @@ export function NewScanSection({ onScan }: NewScanSectionProps) {
                   />
                 </div>
               )}
+
+              {jobDescriptionValidationMessage ? (
+                <p className="text-sm text-destructive">
+                  {jobDescriptionValidationMessage}
+                </p>
+              ) : null}
 
               {jdError ? (
                 <p className="text-sm text-destructive">{jdError}</p>
